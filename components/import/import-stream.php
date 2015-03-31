@@ -89,6 +89,8 @@ class FacebookFanpageImportFacebookStream{
 	public function import(){
 		global $wpdb;
 		
+		set_time_limit( 240 );
+		
 		$ffbc = new FacebookFanpageConnect( $this->page_id );
 		$page_details = $ffbc->get_page();
 		$entries = $ffbc->get_posts( $this->update_num );
@@ -211,7 +213,7 @@ class FacebookFanpageImportFacebookStream{
 						
 						break;
 					default:
-						skip\p( $entry );
+						// skip\p( $entry );
 						break;
 				}
 				wp_update_post( $post );
