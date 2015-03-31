@@ -1,0 +1,224 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Facebook Fanpage Import\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2015-03-31 09:50+0100\n"
+"Last-Translator: Sven Wagener <sven.wagener@rheinschmiede.de>\n"
+"Language-Team: Awesome UG <very@awesome.ug>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Poedit 1.7.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
+"X-Poedit-Basepath: ../\n"
+"X-Textdomain-Support: yes\n"
+"Language: de_DE\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+# @ fbfpi
+#: components/admin/settings.php:60
+msgid "Facebook Fanpage Import Settings"
+msgstr "Facebook Fanpage Import Einstellungen"
+
+# @ fbfpi
+#: components/admin/settings.php:60
+msgid "Fanpage Import"
+msgstr "Fanpage Import"
+
+# @ fbfpi
+#: components/admin/settings.php:91
+msgid "Setup your Facebook API data and provide your fanpage ID."
+msgstr "Geben Sie Ihre Facebook API Daten an und geben Sie Ihre Fanpage ID an."
+
+# @ fbfpi
+#: components/admin/settings.php:95
+msgid "App ID"
+msgstr "App ID"
+
+# @ fbfpi
+#: components/admin/settings.php:96
+msgid "App secret"
+msgstr "App secret"
+
+# @ fbfpi
+#: components/admin/settings.php:97
+msgid "Page ID"
+msgstr "Page ID"
+
+# @ fbfpi
+#: components/admin/settings.php:134
+msgid "Save"
+msgstr "Speichern"
+
+# @ fbfpi
+#: components/import/import-stream.php:57
+#, php-format
+msgid "<a href=\"%s\">App ID have to be provided.</a>"
+msgstr "<a href=\"%s\">App ID muss angegeben werden.</a>"
+
+# @ fbfpi
+#: components/import/import-stream.php:60
+#, php-format
+msgid "<a href=\"%s\">App secret have to be provided.</a>"
+msgstr "<a href=\"%s\">App secret muss angegeben werden.</a>"
+
+# @ fbfpi
+#: components/import/import-stream.php:63
+#, php-format
+msgid "<a href=\"%s\">Fanpage ID have to be provided.</a>"
+msgstr "<a href=\"%s\">Fanpage ID muss angegeben werden.</a>"
+
+# @ fbfpi
+#: components/showdata/shortcodes.php:154
+#, php-format
+msgid "Link to: %s"
+msgstr "Link zu: %s"
+
+# @ skip_framework
+#: includes/skip/elements/forms/form-element.php:44
+msgid "Form could not be verified. Field could not be saved."
+msgstr ""
+
+# @ skip_framework
+#: includes/skip/elements/forms/form-element.php:45
+#, php-format
+msgid "Upload limit exceeded. %s Bytes uploaded, %s Bytes allowed. Please try to upload one file after another or choose a smaller file."
+msgstr ""
+
+# @ tkf
+#: includes/skip/elements/forms/import.php:65
+msgid "Import settings"
+msgstr ""
+
+# @ default
+#: includes/skip/elements/forms/wp-file.php:19
+msgid "Browse ..."
+msgstr ""
+
+# @ fbfpi
+#: components/showdata/shortcodes.php:118
+#, php-format
+msgid "Start %s %s."
+msgstr "Am %s %s."
+
+# @ fbfpi
+#: components/showdata/shortcodes.php:179
+msgid "<span class=\"meta-nav\">&larr;</span>Older entries"
+msgstr "<span class=\"meta-nav\">&larr;</span>Ältere Einträge"
+
+# @ fbfpi
+#: components/showdata/shortcodes.php:180
+msgid "Newer entries <span class=\"meta-nav\">&rarr;</span>"
+msgstr "Neuere Einträge<span class=\"meta-nav\">&rarr;</span>"
+
+# @ fbfpi
+#: components/admin/settings.php:90 components/admin/settings.php:146
+#: components/admin/settings.php:151 components/import/import-stream.php:385
+#: components/import/import-stream.php:390
+msgid "Facebook Fanpage Import"
+msgstr "Facebook Fanpage Import"
+
+# @ fbfpi
+#: components/showdata/shortcodes.php:83
+#, php-format
+msgid "<a href=\"%s\" target=\"%s\">%s</a> shared a link."
+msgstr "<a href=\"%s\" target=\"%s\">%s</a> hat einen Link geteilt."
+
+# @ fbfpi
+#: components/showdata/shortcodes.php:86
+#, php-format
+msgid "<a href=\"%s\" target=\"%s\">%s</a> shared a photo."
+msgstr "<a href=\"%s\" target=\"%s\">%s</a> hat ein Foto geteilt."
+
+# @ fbfpi
+#: components/showdata/shortcodes.php:90
+#, php-format
+msgid "<a href=\"%s\" target=\"%s\">%s</a> shared a status."
+msgstr "<a href=\"%s\" target=\"%s\">%s</a> hat einen Status geteilt."
+
+# @ fbfpi
+#: components/admin/settings.php:78
+#, php-format
+msgid "<a href=\"%s\">Data incorrect. Please check your Facebook App ID, App Secret and your Fanpage ID.</a>"
+msgstr "<a href=\"%s\">Daten Fehlerhaft. Bitte überprüfen Sie Ihre Facebook App ID, App Secret und Ihre Fanpage ID.</a>"
+
+# @ fbfpi
+#: components/admin/settings.php:95
+#, php-format
+msgid "<a href=\"%s\" target=\"blank\">Create an app and get your App ID at Facebook</a>."
+msgstr "<a href=\"%s\" target=\"blank\">Erstellen Sie eine App und erhalten Sie Ihre App ID bei Facebook</a>."
+
+# @ fbfpi
+#: components/admin/settings.php:96
+#, php-format
+msgid "<a href=\"%s\" target=\"blank\">Create an app and get your App Secret at Facebook</a>."
+msgstr "<a href=\"%s\" target=\"blank\">Erstellen Sie eine App und erhalten Sie Ihre App Secret bei Facebook</a>."
+
+# @ fbfpi
+#: components/admin/settings.php:106
+msgid "Facebook Language"
+msgstr "Facebook Sprache"
+
+# @ fbfpi
+#: components/admin/settings.php:113
+msgid "Import Interval"
+msgstr "Import Intervall"
+
+# @ fbfpi
+#: components/admin/settings.php:115
+msgid "Entries to import"
+msgstr "Zu importierende Einträge"
+
+# @ fbfpi
+#: components/admin/settings.php:120
+msgid "same window"
+msgstr "gleichem Fenster"
+
+# @ fbfpi
+#: components/admin/settings.php:124
+msgid "new window"
+msgstr "neuem Fenster"
+
+# @ fbfpi
+#: components/admin/settings.php:128
+msgid "Open Links in"
+msgstr "Öffne Links in"
+
+# @ fbfpi
+#: components/admin/settings.php:136
+msgid "Import Now"
+msgstr "Jetzt importieren"
+
+# @ fbfpi
+#: components/import/import-stream.php:377
+#, php-format
+msgid "%s entries have been imported."
+msgstr "%s Einträge wurden importiert."
+
+# @ fbfpi
+#: components/admin/settings.php:106
+msgid "Import language of the Fanpage stream."
+msgstr "Sprache des zu importierenden Fanpage streams."
+
+# @ fbfpi
+#: components/admin/settings.php:113
+msgid "Interval of the automatic import."
+msgstr "Intervall des automatischen Imports."
+
+# @ fbfpi
+#: components/admin/settings.php:115
+msgid "The number of last entries which have to be imported at once. "
+msgstr "Anzahl der letzten Einträge die auf ein mal importiert werden."
+
+# @ fbfpi
+#: components/admin/settings.php:130
+msgid "Deactivate Plugin CSS"
+msgstr "Plugin CSS deaktivieren"
+
+# @ fbfpi
+#: components/admin/settings.php:97
+msgid "Go to the Fanpage, find the \"Edit Page\" link, and click it. The Fanpage ID number will be in the URL of the Edit page."
+msgstr "Besuchen Sie Ihre Fanpage, suchen Sie nach \"Seite bearbeiten\" und klicken darauf. Die Fanpage ID finden Sie in der URL der folgenden Seite."

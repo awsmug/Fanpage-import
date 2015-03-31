@@ -1,0 +1,9 @@
+/* This stylesheet is used to style the admin option form of the plugin. */
+.skip_form input,
+.skip_form select{
+	float:left;
+	margin-right:10px;
+}
+.skip_field_row{
+	line-height:28px;
+}

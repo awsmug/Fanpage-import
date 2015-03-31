@@ -1,0 +1,24 @@
+/* This stylesheet is used to style the public view of the plugin. */
+.fbfpi_link{
+	border:1px solid #ccc;
+}
+.fbfpi_link a{
+	text-decoration:none;
+}
+.fbfpi_text{
+	padding:10px;
+}
+.fbfpi_text h4{
+	margin: 0;
+}
+.fbfpi_text p{
+	margin: 5px 0 0 0;
+}
+.fbfpi_image{
+	background-color: #EFEFEF;
+	text-align:center;
+}
+.fbfpi_image a{
+	display:block;
+	line-height: 0;
+}
