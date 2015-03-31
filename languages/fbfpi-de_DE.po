@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Facebook Fanpage Import\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-31 09:53+0100\n"
-"PO-Revision-Date: 2015-03-31 09:56+0100\n"
+"POT-Creation-Date: 2015-03-31 10:00+0100\n"
+"PO-Revision-Date: 2015-03-31 10:01+0100\n"
 "Last-Translator: Sven Wagener <sven.wagener@rheinschmiede.de>\n"
 "Language-Team: Awesome UG <very@awesome.ug>\n"
 "Language: de_DE\n"
@@ -45,10 +45,9 @@ msgstr "Fanpage Import"
 msgid "Facebook Fanpage Import"
 msgstr "Facebook Fanpage Import"
 
-# @ fbfpi
 #: ../components/admin/settings.php:125
-msgid "Setup your Facebook API data and provide your fanpage ID."
-msgstr "Geben Sie Ihre Facebook API Daten an und geben Sie Ihre Fanpage ID an."
+msgid "Just put in your Fanpage ID and start importing."
+msgstr "Geben Sie einfach Ihre Fanpage ID ein und starten Sie den Import."
 
 # @ fbfpi
 #: ../components/admin/settings.php:132
@@ -215,6 +214,11 @@ msgstr "Import-Einstellungen"
 #: ../includes/skip/elements/forms/wp-file.php:22
 msgid "Add Media"
 msgstr "Mediendatei hinzufügen"
+
+# @ fbfpi
+#~ msgid "Setup your Facebook API data and provide your fanpage ID."
+#~ msgstr ""
+#~ "Geben Sie Ihre Facebook API Daten an und geben Sie Ihre Fanpage ID an."
 
 # @ fbfpi
 #~ msgid "App ID"

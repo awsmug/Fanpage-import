@@ -122,7 +122,7 @@ class FacebookFanpageImportAdminSettings{
 		
 		echo '<div id="icon-options-general" class="icon32 icon32-posts-post"></div>';
 		echo '<h2>' . __( 'Facebook Fanpage Import', 'fbfpi' ) . '</h2>';
-		echo '<p>' . __( 'Setup your Facebook API data and provide your fanpage ID.', 'fbfpi' ) . '</p>';
+		echo '<p>' . __( 'Just put in your Fanpage ID and start importing.', 'fbfpi' ) . '</p>';
 		
 		skip\form_start( 'fbfpi_settings' );
 		
