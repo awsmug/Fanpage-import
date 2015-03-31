@@ -1,5 +1,5 @@
 === Facebook Fanpage import ===
-Contributors: mahype, awesome
+Contributors: mahype, awesome-ug
 Tags: facebook, fanpage
 Requires at least: 4.1.1
 Tested up to: 4.1.1
