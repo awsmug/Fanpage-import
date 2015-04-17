@@ -9,13 +9,11 @@ Easy import Facebook Fanpage messages to your WordPress.
 
 == Description ==
 
-Import Status messages from your Facebook Fanpage. Choose to import as post or Custom Post Type and select post status and much more. Just input your Fanpage ID and start to import Messages of your Facebook Fanpage.
+Import Status messages from your Facebook Fanpage. Choose to import as post or Custom Post Type and select post status and much more. 
 
-Please report issues at Github: https://github.com/awsmug/Fanpage-import/issues
+This very easy plugin prevents you from double writing content on your Facebook page and in WordPress.
 
-This is an Awesome Plugin.
-
-twitter: http://twitter.com/awsmug - GitHub: https://github.com/awsmug
+Only Fanpage ID is needed!
 
 == Installation ==
 
@@ -30,6 +28,9 @@ This section describes how to install the plugin and get it working.
 2. **An imported Link**
 
 == Changelog ==
+
+= 1.0.0 beta 2 =
+* Fixed problems with double import of drafted posts
 
 = 1.0.0 beta =
 * Fist official 1.0.0 beta
