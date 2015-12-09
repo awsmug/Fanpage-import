@@ -27,7 +27,9 @@
  */
 
 if( !defined( 'ABSPATH' ) )
+{
 	exit;
+}
 
 use skip\v1_0_0 as skip;
 
@@ -52,13 +54,16 @@ class FacebookFanpageImport
 		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
 		// register_uninstall_hook( __FILE__, array( $this, 'uninstall' ) );
 
-		if( is_admin() ):
+		if( is_admin() )
+		{
 			add_action( 'admin_print_styles', array( $this, 'register_admin_styles' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'register_admin_scripts' ) );
-		else:
+		}
+		else
+		{
 			add_action( 'wp_enqueue_scripts', array( $this, 'register_plugin_styles' ) );
 			add_action( 'wp_enqueue_scripts', array( $this, 'register_plugin_scripts' ) );
-		endif;
+		}
 	}
 
 	/**
@@ -84,7 +89,7 @@ class FacebookFanpageImport
 		require_once( FBFPI_FOLDER . '/functions.php' );
 	}
 
-		/**
+	/**
 	 * Defining Constants for Use in Plugin
 	 *
 	 * @since 1.0.0
