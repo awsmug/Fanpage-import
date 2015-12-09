@@ -282,8 +282,6 @@ class FacebookFanpageImportFacebookStream
 						break;
 
 					default:
-						skip\p( $entry );
-
 						$skip_unknown_count++;
 
 						break;
