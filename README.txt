@@ -33,6 +33,8 @@ This section describes how to install the plugin and get it working.
 
 = 1.0.0 beta 3 =
 * Fixed allow_url_fopen problem
+* Added option 500 and 1000 for number of posts which have to be imported
+* Added more information on importing
 
 = 1.0.0 beta 2 =
 * Fixed problems with double import of drafted posts

@@ -33,17 +33,31 @@ if( !defined( 'ABSPATH' ) )
 
 class FacebookFanpageConnect
 {
+	/**
+	 * @var string Access token for facebook
+	 */
 	var $access_token;
+
+	/**
+	 * @var Facebook Fanpage ID
+	 */
 	var $page_id;
+
+	/**
+	 * @var string Locale settings
+	 */
+	var $locale;
 
 	/**
 	 * Initializes the Component.
 	 *
 	 * @since 1.0.0
 	 */
-	function __construct( $page_id, $access_token = '' )
+	function __construct( $page_id, $access_token = '', $locale = 'en_EN' )
 	{
 		$this->access_token = '1412978082344911|a7f5722a2b02f24aad0cda61ae5c4fe9';
+		$this->graph_url = 'https://graph.facebook.com/v2.1/';
+		$this->locale = $locale;
 
 		if( '' != $access_token )
 		{
@@ -75,9 +89,9 @@ class FacebookFanpageConnect
 	 */
 	function get_page()
 	{
-		$url = 'https://graph.facebook.com/v2.1/';
+		$url = $this->graph_url;
 		$url .= $this->page_id;
-		$url .= '?access_token=' . $this->access_token;
+		$url .= '?access_token=' . $this->access_token . '&locale=' . $this->locale;
 
 		$data = $this->fetch_data( $url );
 		$data = json_decode( $data );
@@ -135,10 +149,10 @@ class FacebookFanpageConnect
 	 */
 	function get_posts( $limit = FALSE )
 	{
-		$url = 'https://graph.facebook.com/v2.1/';
+		$url = $this->graph_url;
 		$url .= $this->page_id . '/';
 		$url .= 'posts/';
-		$url .= '?access_token=' . $this->access_token;
+		$url .= '?access_token=' . $this->access_token . '&locale=' . $this->locale;;
 
 		if( FALSE !== $limit )
 		{
@@ -161,9 +175,9 @@ class FacebookFanpageConnect
 	 */
 	function get_post_picture( $post_id )
 	{
-		$url = 'https://graph.facebook.com/v2.1/';
+		$url = $this->graph_url;
 		$url .= $post_id;
-		$url .= '?access_token=' . $this->access_token;
+		$url .= '?access_token=' . $this->access_token . '&locale=' . $this->locale;;
 		$url .= '&fields=full_picture';
 
 		$data = $this->fetch_data( $url );
@@ -181,9 +195,9 @@ class FacebookFanpageConnect
 	 */
 	function get_photo_by_object( $object_id )
 	{
-		$url = 'https://graph.facebook.com/v2.1/';
+		$url = $this->graph_url;
 		$url .= $object_id;
-		$url .= '?access_token=' . $this->access_token;
+		$url .= '?access_token=' . $this->access_token . '&locale=' . $this->locale;;
 
 		$data = $this->fetch_data( $url );
 		$data = json_decode( $data );

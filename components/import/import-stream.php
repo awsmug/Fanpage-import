@@ -74,7 +74,7 @@ class FacebookFanpageImportFacebookStream
 			$this->update_interval = 'hourly';
 		}
 
-		if( '' == $this->update_num || 'unlimited' == $this->update_num )
+		if( '' == $this->update_num )
 		{
 			$this->update_num = FALSE;
 		}
@@ -106,7 +106,7 @@ class FacebookFanpageImportFacebookStream
 
 		set_time_limit( 240 );
 
-		$ffbc = new FacebookFanpageConnect( $this->page_id );
+		$ffbc = new FacebookFanpageConnect( $this->page_id, '', get_locale() );
 		$page_details = $ffbc->get_page();
 		$entries = $ffbc->get_posts( $this->update_num );
 
@@ -135,8 +135,14 @@ class FacebookFanpageImportFacebookStream
 
 		$i = 0;
 
-		if( count( $entries ) > 0 )
+		$found_entries = count( $entries );
+
+		if( $found_entries > 0 )
 		{
+			$skip_existing_count = 0;
+			$skip_unknown_count = 0;
+			$skip_without_message = 0;
+
 			foreach( $entries AS $entry )
 			{
 
@@ -145,11 +151,7 @@ class FacebookFanpageImportFacebookStream
 
 				if( $post_count > 0 ) // If entry already exists
 				{
-					continue;
-				}
-
-				if( !property_exists( $entry, 'message' ) )
-				{
+					$skip_existing_count++;
 					continue;
 				}
 
@@ -163,17 +165,28 @@ class FacebookFanpageImportFacebookStream
 				// Post title
 				$post_title = '';
 
-				if( property_exists( $entry, 'message' ) && '' != $entry->message )
+				if( !property_exists( $entry, 'message' ) )
+				{
+					$post_title = $entry->story;
+					$skip_without_message++;
+					continue;
+				}
+				elseif( property_exists( $entry, 'message' ) && '' != $entry->message )
 				{
 					$post_title = $entry->message;
 				}
-
-				if( property_exists( $entry, 'description' ) && '' != $entry->description && '' == $post_title )
+				elseif( property_exists( $entry, 'description' ) && '' != $entry->description && '' == $post_title )
 				{
 					$post_title = $entry->description;
 				}
 
 				$post_title = $this->filter_title( $post_title );
+
+				$post_excerpt = '';
+				if( property_exists( $entry, 'message' ) )
+				{
+					$post_excerpt = $entry->message;
+				}
 
 				// Inserting raw post without content
 				$post = array(
@@ -188,14 +201,14 @@ class FacebookFanpageImportFacebookStream
 					//The title of your post.
 					'post_type'      => $post_type,
 					//You may want to insert a regular post, page, link, a menu item or some custom post type
-					'post_excerpt'   => $entry->message,
+					'post_excerpt'   => $post_excerpt,
 					'post_author'    => $author_id
 				);
+
 				$post_id = wp_insert_post( $post );
 				$post = get_post( $post_id );
 				$attach_id = '';
 
-				// Relink URLs
 				$entry->message = $this->replace_urls_by_links( $entry->message );
 
 				// Getting Hashtags
@@ -257,8 +270,9 @@ class FacebookFanpageImportFacebookStream
 						}
 
 						break;
+
 					case 'status':
-						$post->post_content = $this->replace_urls_by_links( $entry->message );
+						$post->post_content = $entry->message;
 
 						if( !empty( $attach_id ) )
 						{
@@ -266,8 +280,12 @@ class FacebookFanpageImportFacebookStream
 						}
 
 						break;
+
 					default:
-						// skip\p( $entry );
+						skip\p( $entry );
+
+						$skip_unknown_count++;
+
 						break;
 				}
 				wp_update_post( $post );
@@ -307,7 +325,25 @@ class FacebookFanpageImportFacebookStream
 				$i++;
 			}
 
-			$this->notices[] = sprintf( __( '%s entries have been imported.', 'fbfpi' ), $i );
+			$notice = '<br /><br />' . sprintf( __( '%d entries have been found.', 'fbfpi' ), $found_entries );
+			$notice .= '<br />' . sprintf( __( '%d entries have been imported.', 'fbfpi' ), $i ) . '<br />';
+
+			if( $skip_without_message > 0 )
+			{
+				$notice .= '<br />' . sprintf( __( '%d skipped because containing no message.', 'fbfpi' ), $skip_without_message );
+			}
+
+			if( $skip_existing_count > 0 )
+			{
+				$notice .= '<br />' . sprintf( __( '%d skipped because already existing.', 'fbfpi' ), $skip_existing_count );
+			}
+
+			if( $skip_unknown_count > 0 )
+			{
+				$notice .= '<br />' . sprintf( __( '%d skipped because entry type unknown.', 'fbfpi' ), $skip_unknown_count );
+			}
+
+			$this->notices[] = $notice;
 		}
 	}
 
@@ -485,7 +521,7 @@ class FacebookFanpageImportFacebookStream
 		{
 			$content .= '<p><small>' . $entry->caption . '</small><br /></p>';
 		}
-		
+
 		if( property_exists( $entry, 'description' ) )
 		{
 			$content .= '<p>' . $entry->description . '</p>';
@@ -518,6 +554,7 @@ class FacebookFanpageImportFacebookStream
 
 	/**
 	 * Get video content
+	 *
 	 * @param $entry
 	 *
 	 * @return string
