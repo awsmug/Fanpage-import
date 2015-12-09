@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Facebook Fanpage Import\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-31 10:00+0100\n"
-"PO-Revision-Date: 2015-03-31 10:01+0100\n"
+"POT-Creation-Date: 2015-12-09 13:11+0100\n"
+"PO-Revision-Date: 2015-12-09 13:11+0100\n"
 "Last-Translator: Sven Wagener <sven.wagener@rheinschmiede.de>\n"
 "Language-Team: Awesome UG <very@awesome.ug>\n"
 "Language: de_DE\n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 1.7.4\n"
+"X-Generator: Poedit 1.8.6\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
 "_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
@@ -19,172 +19,191 @@ msgstr ""
 "X-Textdomain-Support: yes\n"
 "X-Poedit-SearchPath-0: ..\n"
 
-#: ../components/admin/component.php:64
+#: ../components/admin/component.php:73
 msgid "Status Messages"
 msgstr "Statusmeldungen"
 
-#: ../components/admin/component.php:65
+#: ../components/admin/component.php:74
 msgid "Status Message"
 msgstr "Statusmeldung"
 
 # @ fbfpi
-#: ../components/admin/settings.php:62
+#: ../components/admin/settings.php:79
 msgid "Facebook Fanpage Import Settings"
 msgstr "Facebook Fanpage Import Einstellungen"
 
 # @ fbfpi
-#: ../components/admin/settings.php:62
+#: ../components/admin/settings.php:79
 msgid "Fanpage Import"
 msgstr "Fanpage Import"
 
 # @ fbfpi
-#: ../components/admin/settings.php:124 ../components/admin/settings.php:269
-#: ../components/admin/settings.php:274
-#: ../components/import/import-stream.php:382
-#: ../components/import/import-stream.php:387
+#: ../components/admin/settings.php:95 ../components/admin/settings.php:256
+#: ../components/admin/settings.php:263
+#: ../components/import/import-stream.php:588
+#: ../components/import/import-stream.php:593
 msgid "Facebook Fanpage Import"
 msgstr "Facebook Fanpage Import"
 
-#: ../components/admin/settings.php:125
+#: ../components/admin/settings.php:96
 msgid "Just put in your Fanpage ID and start importing."
 msgstr "Geben Sie einfach Ihre Fanpage ID ein und starten Sie den Import."
 
 # @ fbfpi
-#: ../components/admin/settings.php:132
+#: ../components/admin/settings.php:103
 msgid "Page ID"
 msgstr "Page ID"
 
 # @ fbfpi
-#: ../components/admin/settings.php:144
+#: ../components/admin/settings.php:120
 msgid "Facebook Language"
 msgstr "Facebook Sprache"
 
 # @ fbfpi
-#: ../components/admin/settings.php:153
+#: ../components/admin/settings.php:131
 msgid "Import Interval"
 msgstr "Import Intervall"
 
 # @ fbfpi
-#: ../components/admin/settings.php:158
+#: ../components/admin/settings.php:136
 msgid "Entries to import"
 msgstr "Zu importierende Einträge"
 
-#: ../components/admin/settings.php:166
+#: ../components/admin/settings.php:144
 msgid "Posts"
 msgstr "Beiträge"
 
-#: ../components/admin/settings.php:170
+#: ../components/admin/settings.php:148
 msgid "Status message (own post type)"
 msgstr "Statusmeldung (eigener Post-Typ)"
 
-#: ../components/admin/settings.php:173
+#: ../components/admin/settings.php:151
 msgid "Insert Messages as"
 msgstr "Meldung anlegen als"
 
-#: ../components/admin/settings.php:187
+#: ../components/admin/settings.php:167
 msgid "Inserting User"
 msgstr "Einfügen von Benutzer"
 
-#: ../components/admin/settings.php:195
+#: ../components/admin/settings.php:175
 msgid "Published"
 msgstr "Veröffentlicht"
 
-#: ../components/admin/settings.php:199
+#: ../components/admin/settings.php:179
 msgid "Draft"
 msgstr "Entwurf"
 
-#: ../components/admin/settings.php:203
+#: ../components/admin/settings.php:183
 msgid "Post status"
 msgstr "Beitragsstatus"
 
 # @ fbfpi
-#: ../components/admin/settings.php:211
+#: ../components/admin/settings.php:191
 msgid "same window"
 msgstr "gleichem Fenster"
 
 # @ fbfpi
-#: ../components/admin/settings.php:215
+#: ../components/admin/settings.php:195
 msgid "new window"
 msgstr "neuem Fenster"
 
 # @ fbfpi
-#: ../components/admin/settings.php:219
+#: ../components/admin/settings.php:199
 msgid "Open Links in"
 msgstr "Öffne Links in"
 
-#: ../components/admin/settings.php:233
+#: ../components/admin/settings.php:215
 msgid "-- None --"
 msgstr "-- Keins ---"
 
-#: ../components/admin/settings.php:242
+#: ../components/admin/settings.php:225
 msgid "Post format"
 msgstr "Beitrags-Format"
 
 # @ fbfpi
-#: ../components/admin/settings.php:246
+#: ../components/admin/settings.php:229
 msgid "Deactivate Plugin CSS"
 msgstr "Plugin CSS deaktivieren"
 
 # @ fbfpi
-#: ../components/admin/settings.php:253
+#: ../components/admin/settings.php:236
 msgid "Save"
 msgstr "Speichern"
 
 # @ fbfpi
-#: ../components/admin/settings.php:259
+#: ../components/admin/settings.php:243
 msgid "Import Now"
 msgstr "Jetzt importieren"
 
 # @ fbfpi
-#: ../components/import/import-stream.php:58
+#: ../components/import/import-stream.php:64
 #, php-format
 msgid "<a href=\"%s\">Fanpage ID have to be provided.</a>"
 msgstr "<a href=\"%s\">Fanpage ID muss angegeben werden.</a>"
 
-# @ fbfpi
-#: ../components/import/import-stream.php:242
+#: ../components/import/import-stream.php:328
 #, php-format
-msgid "%s entries have been imported."
-msgstr "%s Einträge wurden importiert."
+msgid "%d entries have been found."
+msgstr "% d Einträge wurden gefunden."
+
+#: ../components/import/import-stream.php:329
+#, php-format
+msgid "%d entries have been imported."
+msgstr "% d Einträge wurden importiert."
+
+#: ../components/import/import-stream.php:333
+#, php-format
+msgid "%d skipped because containing no message."
+msgstr "% d übersprungen, da keine Nachricht enthalten ist."
+
+#: ../components/import/import-stream.php:338
+#, php-format
+msgid "%d skipped because already existing."
+msgstr "% d übersprungen, da bereits vorhanden."
+
+#: ../components/import/import-stream.php:343
+#, php-format
+msgid "%d skipped because entry type unknown."
+msgstr "% d übersprungen, da Eintrag Typ unbekannt."
 
 # @ fbfpi
-#: ../components/showdata/shortcodes.php:87
+#: ../components/showdata/shortcodes.php:103
 #, php-format
 msgid "<a href=\"%s\" target=\"%s\">%s</a> shared a link."
 msgstr "<a href=\"%s\" target=\"%s\">%s</a> hat einen Link geteilt."
 
 # @ fbfpi
-#: ../components/showdata/shortcodes.php:90
+#: ../components/showdata/shortcodes.php:106
 #, php-format
 msgid "<a href=\"%s\" target=\"%s\">%s</a> shared a photo."
 msgstr "<a href=\"%s\" target=\"%s\">%s</a> hat ein Foto geteilt."
 
 # @ fbfpi
-#: ../components/showdata/shortcodes.php:94
+#: ../components/showdata/shortcodes.php:113
 #, php-format
 msgid "<a href=\"%s\" target=\"%s\">%s</a> shared a status."
 msgstr "<a href=\"%s\" target=\"%s\">%s</a> hat einen Status geteilt."
 
 # @ fbfpi
-#: ../components/showdata/shortcodes.php:122
+#: ../components/showdata/shortcodes.php:146
 #, php-format
 msgid "Start %s %s."
 msgstr "Am %s %s."
 
 # @ fbfpi
-#: ../components/showdata/shortcodes.php:164
-#: ../components/showdata/shortcodes.php:172
+#: ../components/showdata/shortcodes.php:201
+#: ../components/showdata/shortcodes.php:215
 #, php-format
 msgid "Link to: %s"
 msgstr "Link zu: %s"
 
 # @ fbfpi
-#: ../components/showdata/shortcodes.php:191
+#: ../components/showdata/shortcodes.php:234
 msgid "<span class=\"meta-nav\">&larr;</span>Older entries"
 msgstr "<span class=\"meta-nav\">&larr;</span>Ältere Einträge"
 
 # @ fbfpi
-#: ../components/showdata/shortcodes.php:192
+#: ../components/showdata/shortcodes.php:235
 msgid "Newer entries <span class=\"meta-nav\">&rarr;</span>"
 msgstr "Neuere Einträge<span class=\"meta-nav\">&rarr;</span>"
 
@@ -214,6 +233,10 @@ msgstr "Import-Einstellungen"
 #: ../includes/skip/elements/forms/wp-file.php:22
 msgid "Add Media"
 msgstr "Mediendatei hinzufügen"
+
+# @ fbfpi
+#~ msgid "%s entries have been imported."
+#~ msgstr "%s Einträge wurden importiert."
 
 # @ fbfpi
 #~ msgid "Setup your Facebook API data and provide your fanpage ID."
