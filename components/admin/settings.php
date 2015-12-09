@@ -76,7 +76,7 @@ class FacebookFanpageImportAdminSettings
 	 */
 	public function admin_menu()
 	{
-		add_submenu_page( 'options-general.php', __( 'Facebook Fanpage Import Settings', 'fbfpi' ), __( 'Fanpage Import', 'fbfpi' ), 'activate_plugins', 'Component' . $this->name, array(
+		add_submenu_page( 'tools.php', __( 'Facebook Fanpage Import Settings', 'fbfpi' ), __( 'Fanpage Import', 'fbfpi' ), 'activate_plugins', 'Component' . $this->name, array(
 			$this,
 			'admin_page'
 		) );
