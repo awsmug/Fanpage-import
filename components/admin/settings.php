@@ -34,6 +34,7 @@ use skip\v1_0_0 as skip;
 class FacebookFanpageImportAdminSettings{
 	var $name;
 	var $errors = array();
+	var $notices = array();
 	
 	/**
 	 * Initializes the Component.
@@ -61,58 +62,10 @@ class FacebookFanpageImportAdminSettings{
 	public function admin_menu(){
 		add_submenu_page( 'options-general.php', __( 'Facebook Fanpage Import Settings', 'fbfpi' ), __( 'Fanpage Import', 'fbfpi' ), 'activate_plugins', 'Component' . $this->name, array( $this, 'admin_page' ) );
 	}
-	
+
 	public function test_con(){
-		// init app with app id (APPID) and secret (SECRET)
-		
-		/*
-		echo '<br /><br />Trying:';
-		 
-		try {
-		  $session = $helper->getSessionFromRedirect();
-		} catch( FacebookRequestException $ex ) {
-		  	print_r( $ex );
-		} catch( Exception $ex ) {
-		  // When validation fails or other local issues
-		  	print_r( $ex );
-		}
-		
-		// see if we have a session
-		if ( isset( $session ) ) {
-		  // graph api request for user data
-		  $request = new FacebookRequest( $session, 'GET', '/me' );
-		  $response = $request->execute();
-		  // get response
-		  $graphObject = $response->getGraphObject();
-		   
-		  // print data
-		  echo  print_r( $graphObject, 1 );
-		} else {
-		  // show login url
-		  echo '<a href="' . $helper->getLoginUrl() . '">Login</a>';
-		}
-		
-		
-		/*
-		$app_id = skip_value( 'fbfpi_settings', 'app_id' );
-		$app_secret = skip_value( 'fbfpi_settings', 'app_secret' );
-		$page_id = skip_value( 'fbfpi_settings', 'page_id' );
-		
-		$fb_args = array(
-			'appId'  => $app_id,
-			'secret' => $app_secret
-		);
-		
-		$fb = new Facebook( $fb_args );
-		
-		try{
-            $fb->api( '/' . $page_id . '?fields=name,link' );
-        }catch( Exception $e ){
-            $this->errors[] = sprintf( __( '<a href="%s">Data incorrect. Please check your Facebook App ID, App Secret and your Fanpage ID.</a>', 'fbfpi' ), get_bloginfo( 'wpurl' ) . '/wp-admin/options-general.php?page=ComponentFacebookFanpageImportAdminSettings' );
-		}
-		 */
 	}
-	
+
 	/**
 	 * Content of the admin page.
 	 * @since 1.0.0
