@@ -249,7 +249,7 @@ class FacebookFanpageImportFacebookStream{
 	private function get_link_content( $entry, $attach_id ){
 		$attach_url = wp_get_attachment_url( $attach_id );
 		
-		$copyright = '&copy; ' . $entry->caption . ' - ' . $entry->name;
+		$copyright = '&copy; ' . property_exists( $entry, 'caption' ) ? $entry->caption . ' - '  . $entry->name : $entry->name;
 		
 		$content = $entry->message;
 		$content.= '<div class="fbfpi_link">';
