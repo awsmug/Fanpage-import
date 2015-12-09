@@ -11,9 +11,10 @@ Easy import Facebook Fanpage messages to your WordPress.
 
 ## Installation
 1. Download the plugin
-2. Upload to wp-content/plugins/
-3. Activate in the backend
-4. Done!
+2. Upload to wp-content/plugins/ or upload ZIP file via Plugins > Add New > Upload Plugin
+3. Activate in Plugin menu
+4. Go to Settings > Fanpage import to setup your Fanpage ID
+5. Done!
 
 ## Languages
 - English

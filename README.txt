@@ -19,15 +19,20 @@ Only Fanpage ID is needed!
 
 This section describes how to install the plugin and get it working.
 
-1. Upload `Facebook-Fanpage-import` to the `/wp-content/plugins/` directory
-2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Go to "Settings/Fanpage import" to setup your Fanpage ID.
+1. Download the plugin
+2. Upload to wp-content/plugins/ or upload ZIP file via Plugins > Add New > Upload Plugin
+3. Activate in Plugin menu
+4. Go to Settings > Fanpage import to setup your Fanpage ID
+5. Done!
 
 == Screenshots ==
 1. **Settings**
 2. **An imported Link**
 
 == Changelog ==
+
+= 1.0.0 beta 3 =
+* Fixed allow_url_fopen problem
 
 = 1.0.0 beta 2 =
 * Fixed problems with double import of drafted posts
