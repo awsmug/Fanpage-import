@@ -91,6 +91,7 @@ class FacebookFanpageConnect
 	 * @param $url
 	 *
 	 * @return mixed|string
+	 *
 	 */
 	private function fetch_data( $url )
 	{
@@ -132,13 +133,17 @@ class FacebookFanpageConnect
 	 *
 	 * @return mixed
 	 */
-	function get_posts( $limit = 10 )
+	function get_posts( $limit = FALSE )
 	{
 		$url = 'https://graph.facebook.com/v2.1/';
 		$url .= $this->page_id . '/';
 		$url .= 'posts/';
 		$url .= '?access_token=' . $this->access_token;
-		$url .= '&limit=' . $limit;
+
+		if( FALSE !== $limit )
+		{
+			$url .= '&limit=' . $limit;
+		}
 
 		$data = $this->fetch_data( $url );
 

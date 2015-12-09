@@ -133,7 +133,7 @@ class FacebookFanpageImportAdminSettings
 		/**
 		 * Num of entries to import
 		 */
-		skip\select( 'update_num', '5,10,25,50,100,200,500,1000', __( 'Entries to import', 'fbfpi' ) );
+		skip\select( 'update_num', '5,10,25,50,100,200,unlimited', __( 'Entries to import', 'fbfpi' ) );
 
 		/**
 		 * Select where to import, as posts or as own post type
