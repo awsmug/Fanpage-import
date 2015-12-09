@@ -74,9 +74,9 @@ class FacebookFanpageImportFacebookStream
 			$this->update_interval = 'hourly';
 		}
 
-		if( '' == $this->update_num )
+		if( '' == $this->update_num || 'unlimited' == $this->update_num )
 		{
-			$this->update_num = 10;
+			$this->update_num = FALSE;
 		}
 
 		// Scheduling import
@@ -461,18 +461,31 @@ class FacebookFanpageImportFacebookStream
 	{
 		$attach_url = wp_get_attachment_url( $attach_id );
 
-		$copyright = '&copy; ' . property_exists( $entry, 'caption' ) ? $entry->caption . ' - ' . $entry->name : $entry->name;
+		if( property_exists( $entry, 'caption' ) )
+		{
+			$copyright = '&copy; ' . $entry->caption . ' - ' . $entry->name;
+		}
+		else
+		{
+			$copyright = '&copy; ' . $entry->name;
+		}
 
 		$content = $entry->message;
 		$content .= '<div class="fbfpi_link">';
-		if( '' != $attach_url ):
+		if( '' != $attach_url )
+		{
 			$content .= '<div class="fbfpi_image">';
 			$content .= '<a href="' . $entry->link . '" target="' . $this->link_target . '" title="' . $copyright . '"><img src="' . $attach_url . '" title="' . $copyright . '"></a>';
 			$content .= '</div>';
-		endif;
+		}
 		$content .= '<div class="fbfpi_text">';
 		$content .= '<h4><a href="' . $entry->link . '" target="' . $this->link_target . '" title="' . $copyright . '">' . $entry->name . '</a></h4>';
-		$content .= '<p><small>' . $entry->caption . '</small><br /></p>';
+
+		if( property_exists( $entry, 'caption' ) )
+		{
+			$content .= '<p><small>' . $entry->caption . '</small><br /></p>';
+		}
+		
 		if( property_exists( $entry, 'description' ) )
 		{
 			$content .= '<p>' . $entry->description . '</p>';
