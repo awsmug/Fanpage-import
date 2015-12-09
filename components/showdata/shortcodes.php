@@ -29,6 +29,8 @@
 if( !defined( 'ABSPATH' ) )
 	exit;
 
+use skip\v1_0_0 as skip;
+
 class FacebookFanpageImportShowdataShortcodes
 {
 	var $name;
@@ -93,7 +95,7 @@ class FacebookFanpageImportShowdataShortcodes
 				$permalink = get_post_meta( $post_id, 'permalink', TRUE );
 				$type = get_post_meta( $post_id, 'type', TRUE );
 
-				$link_target = skip_value( 'fbfpi_settings', 'link_target' );
+				$link_target = skip\value( 'fbfpi_settings', 'link_target' );
 
 				switch ( $type )
 				{
@@ -206,7 +208,7 @@ class FacebookFanpageImportShowdataShortcodes
 						if( '' != $attachment_description )
 						{
 							$content .= '<p>' . $attachment_description . ' ...</p>';
-						}#
+						}
 
 						if( '' != $attachment_caption && $attachment_href && '' != $attachment_name )
 						{
