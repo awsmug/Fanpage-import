@@ -92,6 +92,16 @@ class FacebookFanpageImportFacebookStream
 			add_action( 'init', array( $this, 'import' ), 12 );
 		}
 
+		if( array_key_exists( 'bfpi-next', $_POST ) && '' != $_POST[ 'bfpi-next' ] )
+		{
+			add_action( 'init', array( $this, 'import' ), 12 );
+		}
+
+		if( array_key_exists( 'bfpi-stop', $_POST ) && '' != $_POST[ 'bfpi-stop' ] )
+		{
+			delete_option( '_facebook_fanpage_import_next' );
+		}
+
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 	}
 
