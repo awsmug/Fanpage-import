@@ -569,7 +569,13 @@ class FacebookFanpageImportFacebookStream
 		$content = $entry->message . "\n\n";
 
 		$content .= '<div class="fbfpi_video">';
-		$content .= '[embed]' . $entry->link . '[/embed]';
+
+		// support JetPack's "facebook" shortcode for Facebook videos
+		if ( shortcode_exists( 'facebook' ) && false !== strpos( $entry->link, 'www.facebook.com' ) ) {
+			$content .= '[facebook url="' . $entry->link . '"]';
+		} else {
+			$content .= '[embed]' . $entry->link . '[/embed]';
+		}
 		$content .= '<div class="fbfpi_text">';
 
 		// set a default title if none exists
