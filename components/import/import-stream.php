@@ -82,7 +82,7 @@ class FacebookFanpageImportFacebookStream
 		// Scheduling import
 		if( !wp_next_scheduled( 'fanpage_import' ) )
 		{
-			//wp_schedule_event( time(), $this->update_interval, 'fanpage_import' );
+			wp_schedule_event( time(), $this->update_interval, 'fanpage_import' );
 		}
 
 		add_action( 'fanpage_import', array( $this, 'import' ) );
