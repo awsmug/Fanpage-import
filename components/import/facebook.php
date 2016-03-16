@@ -44,6 +44,11 @@ class FacebookFanpageConnect
 	var $page_id;
 
 	/**
+	 * @var Facebook Paging Object
+	 */
+	var $paging = null;
+
+	/**
 	 * @var string Locale settings
 	 */
 	var $locale;
@@ -163,7 +168,45 @@ class FacebookFanpageConnect
 
 		$data = json_decode( $data );
 
+		if ( property_exists( $data, 'paging' ) )
+		{
+			$this->paging = $data->paging;
+		}
+
 		return $data->data;
+	}
+
+	/**
+	 * Getting paged posts
+	 *
+	 * @param string $url The "next page" URL returned by Graph API
+	 *
+	 * @return mixed
+	 */
+	function get_posts_paged( $url )
+	{
+
+		$data = $this->fetch_data( $url );
+		$data = json_decode( $data );
+
+		if ( property_exists( $data, 'paging' ) )
+		{
+			$this->paging = $data->paging;
+		}
+
+		return $data->data;
+	}
+
+	/**
+	 * Gets the paging object
+	 *
+	 * @param string $url The "next page" URL returned by Graph API
+	 *
+	 * @return mixed
+	 */
+	function get_paging()
+	{
+		return $this->paging;
 	}
 
 	/**
