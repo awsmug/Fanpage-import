@@ -578,6 +578,43 @@ class FacebookFanpageImportFacebookStream
 		$content = $entry->message;
 		$content .= '<div class="fbfpi_photo">';
 		$content .= '<img src="' . $attach_url . '">';
+
+		// conditionally add descriptive content
+		if (
+			property_exists( $entry, 'name' ) OR
+			property_exists( $entry, 'link' ) OR
+			property_exists( $entry, 'description' )
+		) {
+
+			// wrapper
+			$content .= '<div class="fbfpi_text">';
+
+			// add name if present
+			$title = '';
+			if ( property_exists( $entry, 'name' ) ) {
+				$title = $entry->name;
+			} else {
+				$title = __( 'Untitled photo', 'fbfpi' );
+			}
+
+			// wrap in link if present
+			if ( property_exists( $entry, 'link' ) ) {
+				$title = '<a href="' . $entry->link . '" target="' . $this->link_target . '">' . $title. '</a>';
+			}
+
+			// make heading and add
+			$title = '<h4>' . $title . '</h4>';
+			$content .= $title;
+
+			// add description if present
+			if ( property_exists( $entry, 'description' ) ) {
+				$content .= '<p>' . $entry->description . '</p>';
+			}
+
+			$content .= '</div>';
+
+		}
+
 		$content .= '</div>';
 
 		return $content;
