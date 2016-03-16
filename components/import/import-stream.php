@@ -330,23 +330,23 @@ class FacebookFanpageImportFacebookStream
 
 				if( property_exists( $entry, 'id' ) )
 				{
-					update_post_meta( $post_id, 'entry_id', $entry->id );
+					update_post_meta( $post_id, '_fbfpi_entry_id', $entry->id );
 				}
 				if( property_exists( $entry, 'message' ) )
 				{
-					update_post_meta( $post_id, 'message', $entry->message );
+					update_post_meta( $post_id, '_fbfpi_message', $entry->message );
 				}
 				if( property_exists( $entry, 'description' ) )
 				{
-					update_post_meta( $post_id, 'description', $entry->description );
+					update_post_meta( $post_id, '_fbfpi_description', $entry->description );
 				}
 
-				update_post_meta( $post_id, 'image_url', $post_picture );
-				update_post_meta( $post_id, 'fanpage_id', $this->page_id );
-				update_post_meta( $post_id, 'fanpage_name', $page_details->name );
-				update_post_meta( $post_id, 'fanpage_link', $page_details->link );
-				update_post_meta( $post_id, 'entry_url', $entry_url );
-				update_post_meta( $post_id, 'type', $entry->type );
+				update_post_meta( $post_id, '_fbfpi_image_url', $post_picture );
+				update_post_meta( $post_id, '_fbfpi_fanpage_id', $this->page_id );
+				update_post_meta( $post_id, '_fbfpi_fanpage_name', $page_details->name );
+				update_post_meta( $post_id, '_fbfpi_fanpage_link', $page_details->link );
+				update_post_meta( $post_id, '_fbfpi_entry_url', $entry_url );
+				update_post_meta( $post_id, '_fbfpi_type', $entry->type );
 
 				if( 'none' != $post_format )
 				{
