@@ -565,7 +565,8 @@ class FacebookFanpageImportFacebookStream
 	 */
 	private function get_video_content( $entry )
 	{
-		$content = $entry->message;
+
+		$content = $entry->message . "\n\n";
 
 		$content .= '<div class="fbfpi_video">';
 		$content .= '[embed]' . $entry->link . '[/embed]';
