@@ -56,7 +56,7 @@ class FacebookFanpageConnect
 	function __construct( $page_id, $access_token = '', $locale = 'en_EN' )
 	{
 		$this->access_token = '1412978082344911|a7f5722a2b02f24aad0cda61ae5c4fe9';
-		$this->graph_url = 'https://graph.facebook.com/v2.1/';
+		$this->graph_url = 'https://graph.facebook.com/v2.3/';
 		$this->locale = $locale;
 
 		if( '' != $access_token )
