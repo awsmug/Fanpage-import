@@ -366,8 +366,8 @@ class FacebookFanpageImportFacebookStream
 		$title = explode( '!', $title );
 		$title = $title[ 0 ];
 
-		$title = explode( '.', $title );
-		$title = $title[ 0 ];
+		//$title = explode( '.', $title );
+		//$title = $title[ 0 ];
 
 		$title = str_replace( '+', '', $title );
 
