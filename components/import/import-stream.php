@@ -571,7 +571,15 @@ class FacebookFanpageImportFacebookStream
 		$content .= '<div class="fbfpi_video">';
 		$content .= '[embed]' . $entry->link . '[/embed]';
 		$content .= '<div class="fbfpi_text">';
-		$content .= '<h4><a href="' . $entry->link . '" target="' . $this->link_target . '">' . $entry->name . '</a></h4>';
+
+		// set a default title if none exists
+		if( property_exists( $entry, 'name' ) ) {
+			$name = $entry->name;
+		} else {
+			$name = __( 'Untitled video', 'fbfpi' );
+		}
+
+		$content .= '<h4><a href="' . $entry->link . '" target="' . $this->link_target . '">' . $name . '</a></h4>';
 
 		if( property_exists( $entry, 'description' ) )
 		{
