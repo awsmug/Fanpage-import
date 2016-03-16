@@ -240,7 +240,12 @@ class FacebookFanpageImportAdminSettings
 		 */
 		if( '' != skip\value( 'fbfpi_settings', 'page_id' ) )
 		{
-			echo ' <input type="submit" name="bfpi-now" value="' . __( 'Import Now', 'fbfpi' ) . '" class="button" style="margin-left:10px;" /> ';
+			if ( 'dddddddd' == get_option( '_facebook_fanpage_import_next', 'dddddddd' ) )
+			{
+				echo ' <input type="submit" name="bfpi-now" value="' . __( 'Import Now', 'fbfpi' ) . '" class="button" style="margin-left:10px;" /> ';
+			} else {
+				echo ' <input type="submit" name="bfpi-next" value="' . __( 'Import Next', 'fbfpi' ) . '" class="button" style="margin-left:10px;" /> <input type="submit" name="bfpi-stop" value="' . __( 'Stop', 'fbfpi' ) . '" class="button" style="margin-left:10px;" /> ';
+			}
 		}
 
 		skip\form_end();

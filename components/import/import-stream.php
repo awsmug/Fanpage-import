@@ -82,7 +82,7 @@ class FacebookFanpageImportFacebookStream
 		// Scheduling import
 		if( !wp_next_scheduled( 'fanpage_import' ) )
 		{
-			wp_schedule_event( time(), $this->update_interval, 'fanpage_import' );
+			//wp_schedule_event( time(), $this->update_interval, 'fanpage_import' );
 		}
 
 		add_action( 'fanpage_import', array( $this, 'import' ) );
@@ -108,7 +108,34 @@ class FacebookFanpageImportFacebookStream
 
 		$ffbc = new FacebookFanpageConnect( $this->page_id, '', get_locale() );
 		$page_details = $ffbc->get_page();
-		$entries = $ffbc->get_posts( $this->update_num );
+
+		// get initial posts on first run or via schedule
+		if (
+			( isset( $_POST ) && array_key_exists( 'bfpi-now', $_POST ) && '' != $_POST[ 'bfpi-now' ] ) OR
+			doing_action( 'fanpage_import' )
+		) {
+
+			$entries = $ffbc->get_posts( $this->update_num );
+
+		}
+
+		// get paged posts when selecting "next"
+		if ( isset( $_POST ) && array_key_exists( 'bfpi-next', $_POST ) && '' != $_POST[ 'bfpi-next' ] ) {
+
+			$url = get_option( '_facebook_fanpage_import_next', '' );
+			if ( ! empty( $url ) ) {
+				$entries = $ffbc->get_posts_paged( $url );
+			}
+
+		}
+
+		// save the "next" page URL
+		$paging = $ffbc->get_paging();
+		if ( is_object( $paging ) && property_exists( $paging, 'next' ) ) {
+			update_option( '_facebook_fanpage_import_next', $paging->next );
+		} else {
+			delete_option( '_facebook_fanpage_import_next' );
+		}
 
 		if( 'status' == skip\value( 'fbfpi_settings', 'insert_post_type' ) )
 		{
