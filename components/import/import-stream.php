@@ -167,9 +167,15 @@ class FacebookFanpageImportFacebookStream
 
 				if( !property_exists( $entry, 'message' ) )
 				{
-					$post_title = $entry->story;
-					$skip_without_message++;
-					continue;
+
+					if( property_exists( $entry, 'story' ) && '' != $entry->story ) {
+						$post_title = $entry->story;
+						$entry->message = '';
+					} else {
+						$post_title = __( 'Untitled post', 'fbfpi' );
+						$entry->message = '';
+					}
+
 				}
 				elseif( property_exists( $entry, 'message' ) && '' != $entry->message )
 				{
