@@ -183,7 +183,7 @@ class FacebookFanpageImportFacebookStream
 			foreach( $entries AS $entry )
 			{
 
-				$sql = $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->posts AS p, $wpdb->postmeta AS m WHERE p.ID = m.post_id  AND p.post_type='%s' AND p.post_status <> 'trash' AND m.meta_key = 'entry_id'  AND m.meta_value = '%s'", $post_type, $entry->id );
+				$sql = $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->posts AS p, $wpdb->postmeta AS m WHERE p.ID = m.post_id  AND p.post_type='%s' AND p.post_status <> 'trash' AND m.meta_key = '_fbfpi_entry_id'  AND m.meta_value = '%s'", $post_type, $entry->id );
 				$post_count = $wpdb->get_var( $sql );
 
 				if( $post_count > 0 ) // If entry already exists
