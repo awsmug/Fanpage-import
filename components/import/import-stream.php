@@ -380,6 +380,14 @@ class FacebookFanpageImportFacebookStream
 					set_post_format( $post_id, $post_format );
 				}
 
+				/**
+				 * Allow plugins to do additional processing.
+				 *
+				 * @param WP_Post $post The post object
+				 * @param object $entry The Facebook entry object
+				 */
+				do_action( 'fbfpi_entry_created', $post, $entry );
+
 				$i++;
 			}
 
@@ -440,7 +448,14 @@ class FacebookFanpageImportFacebookStream
 			$title = $title . ' ...';
 		}
 
-		return $title;
+		/**
+		 * Allow overrides.
+		 *
+		 * @param string $title The filtered title
+		 * @param string $string The unfiltered title
+		 * @return string $title The filtered title
+		 */
+		return apply_filters( 'fbfpi_entry_title', $title, $string );
 	}
 
 	/**
@@ -587,7 +602,15 @@ class FacebookFanpageImportFacebookStream
 		$content .= '</div>';
 		$content .= '</div>';
 
-		return $content;
+		/**
+		 * Allow overrides.
+		 *
+		 * @param string $content The constructed content
+		 * @param object $entry The entry object
+		 * @param integer $attach_id The numeric ID of the attachment
+		 * @return string $content The constructed content
+		 */
+		return apply_filters( 'fbfpi_entry_link', $content, $entry, $attach_id );
 	}
 
 	/**
@@ -644,7 +667,15 @@ class FacebookFanpageImportFacebookStream
 
 		$content .= '</div>';
 
-		return $content;
+		/**
+		 * Allow overrides.
+		 *
+		 * @param string $content The constructed content
+		 * @param object $entry The entry object
+		 * @param integer $attach_id The numeric ID of the attachment
+		 * @return string $content The constructed content
+		 */
+		return apply_filters( 'fbfpi_entry_photo', $content, $entry, $attach_id );
 	}
 
 	/**
@@ -685,7 +716,14 @@ class FacebookFanpageImportFacebookStream
 		$content .= '</div>';
 		$content .= '</div>';
 
-		return $content;
+		/**
+		 * Allow overrides.
+		 *
+		 * @param string $content The constructed content
+		 * @param object $entry The entry object
+		 * @return string $content The constructed content
+		 */
+		return apply_filters( 'fbfpi_entry_video', $content, $entry );
 	}
 
 	/**
