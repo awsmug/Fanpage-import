@@ -348,6 +348,21 @@ class FacebookFanpageImportFacebookStream
 				}
 				wp_update_post( $post );
 
+				// assign term if one is set
+				$term_id = skip\value( 'fbfpi_settings', 'insert_term_id' );
+				if ( $term_id != 'none' ) {
+					$cat_ids = array( intval( $term_id ) );
+					$term_taxonomy_ids = wp_set_object_terms( $post->ID, $cat_ids, 'category' );
+					if ( is_wp_error( $term_taxonomy_ids ) ) {
+						// term could not be set
+						error_log( print_r( array(
+							'method' => __METHOD__,
+							'term could not be set' => $term_id,
+							'entry' => $entry,
+						), true ) );
+					}
+				}
+
 				// skip\p($entry);
 
 				// Updating post meta

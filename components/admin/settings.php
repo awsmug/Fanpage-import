@@ -152,6 +152,25 @@ class FacebookFanpageImportAdminSettings
 		skip\select( 'insert_post_type', $args, __( 'Insert Messages as', 'fbfpi' ) );
 
 		/**
+		 * Select a category to apply to imported entries
+		 */
+		$args = array(
+			array(
+				'value' => 'none',
+				'label' => __( 'No category', 'fbfpi' ),
+			)
+		);
+		$terms = get_terms( 'category' );
+		foreach( $terms AS $term ) {
+			$args[] = array(
+				'value' => $term->term_id,
+				'label' => $term->name,
+			);
+		}
+
+		skip\select( 'insert_term_id', $args, __( 'Categorise Messages as', 'fbfpi' ) );
+
+		/**
 		 * Select importing User
 		 */
 		$users = get_users( array( 'fields' => array( 'ID', 'display_name' ) ) );
