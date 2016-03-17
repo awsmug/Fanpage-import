@@ -122,6 +122,7 @@ class FacebookFanpageImportAdminSettings
 		/**
 		 * Import WP Cron settings
 		 */
+		$select_schedules = array( array( 'label' => __( 'Never', 'fbfpi' ), 'value' => 'never' ) );
 		$schedules = wp_get_schedules(); // Getting WordPress schedules
 		foreach( $schedules AS $key => $schedule )
 		{

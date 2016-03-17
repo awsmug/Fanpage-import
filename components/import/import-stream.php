@@ -79,10 +79,27 @@ class FacebookFanpageImportFacebookStream
 			$this->update_num = FALSE;
 		}
 
-		// Scheduling import
-		if( !wp_next_scheduled( 'fanpage_import' ) )
+		// Schedule import if interval set
+		if ( $this->update_interval != 'never' )
 		{
-			wp_schedule_event( time(), $this->update_interval, 'fanpage_import' );
+			if( !wp_next_scheduled( 'fanpage_import' ) )
+			{
+				wp_schedule_event( time(), $this->update_interval, 'fanpage_import' );
+			}
+		}
+		else
+		{
+			// get next scheduled event
+			$timestamp = wp_next_scheduled( 'fanpage_import' );
+
+			// unschedule it if there is one
+			if ( $timestamp !== false ) {
+				wp_unschedule_event( $timestamp, 'fanpage_import' );
+			}
+
+			// it's not clear whether wp_unschedule_event() clears everything,
+			// so remove existing scheduled hook as well
+			wp_clear_scheduled_hook( 'fanpage_import' );
 		}
 
 		add_action( 'fanpage_import', array( $this, 'import' ) );
