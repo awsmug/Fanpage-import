@@ -76,7 +76,7 @@ class FacebookFanpageImportAdminSettings
 	 */
 	public function admin_menu()
 	{
-		add_submenu_page( 'tools.php', __( 'Facebook Fanpage Import Settings', 'fbfpi' ), __( 'Fanpage Import', 'fbfpi' ), 'activate_plugins', 'Component' . $this->name, array(
+		add_submenu_page( 'tools.php', __( 'Facebook Fanpage Import Settings', 'facebook-fanpage-import' ), __( 'Fanpage Import', 'facebook-fanpage-import' ), 'activate_plugins', 'Component' . $this->name, array(
 			$this,
 			'admin_page'
 		) );
@@ -92,15 +92,15 @@ class FacebookFanpageImportAdminSettings
 		echo '<div class="wrap">';
 
 		echo '<div id="icon-options-general" class="icon32 icon32-posts-post"></div>';
-		echo '<h2>' . __( 'Facebook Fanpage Import', 'fbfpi' ) . '</h2>';
-		echo '<p>' . __( 'Just put in your Fanpage ID and start importing.', 'fbfpi' ) . '</p>';
+		echo '<h2>' . __( 'Facebook Fanpage Import', 'facebook-fanpage-import' ) . '</h2>';
+		echo '<p>' . __( 'Just put in your Fanpage ID and start importing.', 'facebook-fanpage-import' ) . '</p>';
 
 		skip\form_start( 'fbfpi_settings' );
 
 		/**
 		 * Fanpage ID
 		 */
-		skip\textfield( 'page_id', __( 'Page ID', 'fbfpi' ) );
+		skip\textfield( 'page_id', __( 'Page ID', 'facebook-fanpage-import' ) );
 
 		/**
 		 * Select stream languages
@@ -117,24 +117,24 @@ class FacebookFanpageImportAdminSettings
 			$select_languages[] = array( 'value' => $language );
 		}
 
-		skip\select( 'stream_language', $select_languages, __( 'Facebook Language', 'fbfpi' ) );
+		skip\select( 'stream_language', $select_languages, __( 'Facebook Language', 'facebook-fanpage-import' ) );
 
 		/**
 		 * Import WP Cron settings
 		 */
-		$select_schedules = array( array( 'label' => __( 'Never', 'fbfpi' ), 'value' => 'never' ) );
+		$select_schedules = array( array( 'label' => __( 'Never', 'facebook-fanpage-import' ), 'value' => 'never' ) );
 		$schedules = wp_get_schedules(); // Getting WordPress schedules
 		foreach( $schedules AS $key => $schedule )
 		{
 			$select_schedules[] = array( 'label' => $schedule[ 'display' ], 'value' => $key );
 		}
 
-		skip\select( 'update_interval', $select_schedules, __( 'Import Interval', 'fbfpi' ) );
+		skip\select( 'update_interval', $select_schedules, __( 'Import Interval', 'facebook-fanpage-import' ) );
 
 		/**
 		 * Num of entries to import
 		 */
-		skip\select( 'update_num', '5,10,25,50,100,250', __( 'Entries to import', 'fbfpi' ) );
+		skip\select( 'update_num', '5,10,25,50,100,250', __( 'Entries to import', 'facebook-fanpage-import' ) );
 
 		/**
 		 * Select where to import, as posts or as own post type
@@ -146,10 +146,10 @@ class FacebookFanpageImportAdminSettings
 			),
 			array(
 				'value' => 'status',
-				'label' => __( 'Status message (own post type)', 'fbfpi' )
+				'label' => __( 'Status message (own post type)', 'facebook-fanpage-import' )
 			)
 		);
-		skip\select( 'insert_post_type', $args, __( 'Insert Messages as', 'fbfpi' ) );
+		skip\select( 'insert_post_type', $args, __( 'Insert Messages as', 'facebook-fanpage-import' ) );
 
 		/**
 		 * Select a category to apply to imported entries
@@ -157,7 +157,7 @@ class FacebookFanpageImportAdminSettings
 		$args = array(
 			array(
 				'value' => 'none',
-				'label' => __( 'No category', 'fbfpi' ),
+				'label' => __( 'No category', 'facebook-fanpage-import' ),
 			)
 		);
 		$terms = get_terms( 'category' );
@@ -168,7 +168,7 @@ class FacebookFanpageImportAdminSettings
 			);
 		}
 
-		skip\select( 'insert_term_id', $args, __( 'Categorise Messages as', 'fbfpi' ) );
+		skip\select( 'insert_term_id', $args, __( 'Categorise Messages as', 'facebook-fanpage-import' ) );
 
 		/**
 		 * Select importing User
@@ -184,7 +184,7 @@ class FacebookFanpageImportAdminSettings
 			);
 		}
 
-		skip\select( 'insert_user_id', $user_list, __( 'Inserting User', 'fbfpi' ) );
+		skip\select( 'insert_user_id', $user_list, __( 'Inserting User', 'facebook-fanpage-import' ) );
 
 		/**
 		 * Post status
@@ -200,7 +200,7 @@ class FacebookFanpageImportAdminSettings
 			),
 		);
 
-		skip\select( 'insert_post_status', $post_status_values, __( 'Post status', 'fbfpi' ) );
+		skip\select( 'insert_post_status', $post_status_values, __( 'Post status', 'facebook-fanpage-import' ) );
 
 		/**
 		 * Link target for imported links
@@ -208,15 +208,15 @@ class FacebookFanpageImportAdminSettings
 		$link_select_values = array(
 			array(
 				'value' => '_self',
-				'label' => __( 'same window', 'fbfpi' )
+				'label' => __( 'same window', 'facebook-fanpage-import' )
 			),
 			array(
 				'value' => '_blank',
-				'label' => __( 'new window', 'fbfpi' )
+				'label' => __( 'new window', 'facebook-fanpage-import' )
 			),
 		);
 
-		skip\select( 'link_target', $link_select_values, __( 'Open Links in', 'fbfpi' ) );
+		skip\select( 'link_target', $link_select_values, __( 'Open Links in', 'facebook-fanpage-import' ) );
 
 		/**
 		 * Selecting post formats if existing
@@ -232,7 +232,7 @@ class FacebookFanpageImportAdminSettings
 
 				$post_format_list[] = array(
 						'value' => 'none',
-						'label' => __( '-- None --', 'fbfpi' )
+						'label' => __( '-- None --', 'facebook-fanpage-import' )
 				);
 
 				foreach( $post_formats as $post_format )
@@ -242,18 +242,18 @@ class FacebookFanpageImportAdminSettings
 							'label' => $post_format
 					);
 				}
-				skip\select( 'insert_post_format', $post_format_list, __( 'Post format', 'fbfpi' ) );
+				skip\select( 'insert_post_format', $post_format_list, __( 'Post format', 'facebook-fanpage-import' ) );
 			}
 		}
 
-		skip\checkbox( 'own_css', 'yes', __( 'Deactivate Plugin CSS', 'fbfpi' ) );
+		skip\checkbox( 'own_css', 'yes', __( 'Deactivate Plugin CSS', 'facebook-fanpage-import' ) );
 
 		do_action( 'fbfpi_settings_form' );
 
 		/**
 		 * Save Button
 		 */
-		skip\button( __( 'Save', 'fbfpi' ) );
+		skip\button( __( 'Save', 'facebook-fanpage-import' ) );
 
 		/**
 		 * Import button
@@ -262,9 +262,9 @@ class FacebookFanpageImportAdminSettings
 		{
 			if ( ! get_option( '_facebook_fanpage_import_next', false ) )
 			{
-				echo ' <input type="submit" name="bfpi-now" value="' . __( 'Import Now', 'fbfpi' ) . '" class="button" style="margin-left:10px;" /> ';
+				echo ' <input type="submit" name="bfpi-now" value="' . __( 'Import Now', 'facebook-fanpage-import' ) . '" class="button" style="margin-left:10px;" /> ';
 			} else {
-				echo ' <input type="submit" name="bfpi-next" value="' . __( 'Import Next', 'fbfpi' ) . '" class="button" style="margin-left:10px;" /> <input type="submit" name="bfpi-stop" value="' . __( 'Stop', 'fbfpi' ) . '" class="button" style="margin-left:10px;" /> ';
+				echo ' <input type="submit" name="bfpi-next" value="' . __( 'Import Next', 'facebook-fanpage-import' ) . '" class="button" style="margin-left:10px;" /> <input type="submit" name="bfpi-stop" value="' . __( 'Stop', 'facebook-fanpage-import' ) . '" class="button" style="margin-left:10px;" /> ';
 			}
 		}
 
@@ -278,14 +278,14 @@ class FacebookFanpageImportAdminSettings
 		if( count( $this->errors ) > 0 )
 		{
 			foreach( $this->errors AS $error )
-				echo '<div class="updated"><p>' . __( 'Facebook Fanpage Import', 'fbfpi' ) . ': ' . $error . '</p></div>';
+				echo '<div class="updated"><p>' . __( 'Facebook Fanpage Import', 'facebook-fanpage-import' ) . ': ' . $error . '</p></div>';
 		}
 
 		if( count( $this->notices ) > 0 )
 		{
 			foreach( $this->notices AS $notice )
 			{
-				echo '<div class="updated"><p>' . __( 'Facebook Fanpage Import', 'fbfpi' ) . ': ' . $notice . '</p></div>';
+				echo '<div class="updated"><p>' . __( 'Facebook Fanpage Import', 'facebook-fanpage-import' ) . ': ' . $notice . '</p></div>';
 			}
 		}
 	}

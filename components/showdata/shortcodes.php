@@ -100,17 +100,17 @@ class FacebookFanpageImportShowdataShortcodes
 				switch ( $type )
 				{
 					case 'link':
-						$action = sprintf( __( '<a href="%s" target="%s">%s</a> shared a link.', 'fbfpi' ), $fanpage_link, $link_target, $fanpage_name );
+						$action = sprintf( __( '<a href="%s" target="%s">%s</a> shared a link.', 'facebook-fanpage-import' ), $fanpage_link, $link_target, $fanpage_name );
 						break;
 					case 'photo':
-						$action = sprintf( __( '<a href="%s" target="%s">%s</a> shared a photo.', 'fbfpi' ), $fanpage_link, $link_target, $fanpage_name );
+						$action = sprintf( __( '<a href="%s" target="%s">%s</a> shared a photo.', 'facebook-fanpage-import' ), $fanpage_link, $link_target, $fanpage_name );
 						break;
 					default:
 						if( '' != $description )
 						{
 							$action = $description;
 						}
-						else $action = sprintf( __( '<a href="%s" target="%s">%s</a> shared a status.', 'fbfpi' ), $fanpage_link, $link_target, $fanpage_name );
+						else $action = sprintf( __( '<a href="%s" target="%s">%s</a> shared a status.', 'facebook-fanpage-import' ), $fanpage_link, $link_target, $fanpage_name );
 						break;
 				}
 
@@ -143,7 +143,7 @@ class FacebookFanpageImportShowdataShortcodes
 					{
 						$start_time = get_post_meta( $post_id, 'attachment_start_time', TRUE );
 						$location = get_post_meta( $post_id, 'attachment_location', TRUE );
-						$attachment_caption = sprintf( __( 'Start %s %s.', 'fbfpi' ), date_i18n( get_option( 'date_format' ), strtotime( $start_time ) ), date_i18n( get_option( 'time_format' ), strtotime( $start_time ) ) );
+						$attachment_caption = sprintf( __( 'Start %s %s.', 'facebook-fanpage-import' ), date_i18n( get_option( 'date_format' ), strtotime( $start_time ) ), date_i18n( get_option( 'time_format' ), strtotime( $start_time ) ) );
 						$attachment_caption .= '<br />' . $location;
 					}
 
@@ -198,7 +198,7 @@ class FacebookFanpageImportShowdataShortcodes
 
 						if( $attachment_href && '' != $attachment_name )
 						{
-							$content .= '<h4><a href="' . $permalink . '" title="' . sprintf( __( 'Link to: %s', 'fbfpi' ), $attachment_name ) . '" target="' . $link_target . '">' . $attachment_name . '</a></h4>';
+							$content .= '<h4><a href="' . $permalink . '" title="' . sprintf( __( 'Link to: %s', 'facebook-fanpage-import' ), $attachment_name ) . '" target="' . $link_target . '">' . $attachment_name . '</a></h4>';
 						}
 						elseif( '' != $attachment_name )
 						{
@@ -212,7 +212,7 @@ class FacebookFanpageImportShowdataShortcodes
 
 						if( '' != $attachment_caption && $attachment_href && '' != $attachment_name )
 						{
-							$content .= '<small><a href="' . $permalink . '" title="' . sprintf( __( 'Link to: %s', 'fbfpi' ), $attachment_name ) . '" target="' . $link_target . '">' . $attachment_caption . '</a></small>';
+							$content .= '<small><a href="' . $permalink . '" title="' . sprintf( __( 'Link to: %s', 'facebook-fanpage-import' ), $attachment_name ) . '" target="' . $link_target . '">' . $attachment_caption . '</a></small>';
 						}
 						elseif( '' != $attachment_caption )
 						{
@@ -231,8 +231,8 @@ class FacebookFanpageImportShowdataShortcodes
 			}
 
 			$content .= '<div id="nav-below" class="navigation">';
-			$content .= '<div class="nav-previous">' . get_next_posts_link( __( '<span class="meta-nav">&larr;</span>Older entries', 'fbfpi' ) ) . '</div>';
-			$content .= '<div class="nav-next">' . get_previous_posts_link( __( 'Newer entries <span class="meta-nav">&rarr;</span>', 'fbfpi' ) ) . '</div>';
+			$content .= '<div class="nav-previous">' . get_next_posts_link( __( '<span class="meta-nav">&larr;</span>Older entries', 'facebook-fanpage-import' ) ) . '</div>';
+			$content .= '<div class="nav-next">' . get_previous_posts_link( __( 'Newer entries <span class="meta-nav">&rarr;</span>', 'facebook-fanpage-import' ) ) . '</div>';
 			$content .= '<div class="fbfpi_clear"></div></div>';
 
 			$content .= '</div>';

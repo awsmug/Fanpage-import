@@ -61,7 +61,7 @@ class FacebookFanpageImportFacebookStream
 
 		if( '' == $this->page_id )
 		{
-			$this->errors[] = sprintf( __( '<a href="%s">Fanpage ID have to be provided.</a>', 'fbfpi' ), admin_url( 'tools.php?page=ComponentFacebookFanpageImportAdminSettings' ) );
+			$this->errors[] = sprintf( __( '<a href="%s">Fanpage ID have to be provided.</a>', 'facebook-fanpage-import' ), admin_url( 'tools.php?page=ComponentFacebookFanpageImportAdminSettings' ) );
 		}
 
 		if( '' == $this->stream_language )
@@ -230,7 +230,7 @@ class FacebookFanpageImportFacebookStream
 						$post_title = $entry->story;
 						$entry->message = '';
 					} else {
-						$post_title = __( 'Untitled post', 'fbfpi' );
+						$post_title = __( 'Untitled post', 'facebook-fanpage-import' );
 						$entry->message = '';
 					}
 
@@ -410,22 +410,22 @@ class FacebookFanpageImportFacebookStream
 				$i++;
 			}
 
-			$notice = '<br /><br />' . sprintf( __( '%d entries have been found.', 'fbfpi' ), $found_entries );
-			$notice .= '<br />' . sprintf( __( '%d entries have been imported.', 'fbfpi' ), $i ) . '<br />';
+			$notice = '<br /><br />' . sprintf( __( '%d entries have been found.', 'facebook-fanpage-import' ), $found_entries );
+			$notice .= '<br />' . sprintf( __( '%d entries have been imported.', 'facebook-fanpage-import' ), $i ) . '<br />';
 
 			if( $skip_without_message > 0 )
 			{
-				$notice .= '<br />' . sprintf( __( '%d skipped because containing no message.', 'fbfpi' ), $skip_without_message );
+				$notice .= '<br />' . sprintf( __( '%d skipped because containing no message.', 'facebook-fanpage-import' ), $skip_without_message );
 			}
 
 			if( $skip_existing_count > 0 )
 			{
-				$notice .= '<br />' . sprintf( __( '%d skipped because already existing.', 'fbfpi' ), $skip_existing_count );
+				$notice .= '<br />' . sprintf( __( '%d skipped because already existing.', 'facebook-fanpage-import' ), $skip_existing_count );
 			}
 
 			if( $skip_unknown_count > 0 )
 			{
-				$notice .= '<br />' . sprintf( __( '%d skipped because entry type unknown.', 'fbfpi' ), $skip_unknown_count );
+				$notice .= '<br />' . sprintf( __( '%d skipped because entry type unknown.', 'facebook-fanpage-import' ), $skip_unknown_count );
 			}
 
 			$this->notices[] = $notice;
@@ -663,7 +663,7 @@ class FacebookFanpageImportFacebookStream
 			if ( property_exists( $entry, 'name' ) ) {
 				$title = $entry->name;
 			} else {
-				$title = __( 'Untitled photo', 'fbfpi' );
+				$title = __( 'Untitled photo', 'facebook-fanpage-import' );
 			}
 
 			// wrap in link if present
@@ -723,7 +723,7 @@ class FacebookFanpageImportFacebookStream
 		if( property_exists( $entry, 'name' ) ) {
 			$name = $entry->name;
 		} else {
-			$name = __( 'Untitled video', 'fbfpi' );
+			$name = __( 'Untitled video', 'facebook-fanpage-import' );
 		}
 
 		$content .= '<h4><a href="' . $entry->link . '" target="' . $this->link_target . '">' . $name . '</a></h4>';
@@ -752,12 +752,12 @@ class FacebookFanpageImportFacebookStream
 	{
 		if( count( $this->errors ) > 0 ):
 			foreach( $this->errors AS $error )
-				echo '<div class="updated"><p>' . __( 'Facebook Fanpage Import', 'fbfpi' ) . ': ' . $error . '</p></div>';
+				echo '<div class="updated"><p>' . __( 'Facebook Fanpage Import', 'facebook-fanpage-import' ) . ': ' . $error . '</p></div>';
 		endif;
 
 		if( count( $this->notices ) > 0 ):
 			foreach( $this->notices AS $notice )
-				echo '<div class="updated"><p>' . __( 'Facebook Fanpage Import', 'fbfpi' ) . ': ' . $notice . '</p></div>';
+				echo '<div class="updated"><p>' . __( 'Facebook Fanpage Import', 'facebook-fanpage-import' ) . ': ' . $notice . '</p></div>';
 		endif;
 	}
 }

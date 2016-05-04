@@ -145,8 +145,7 @@ class FacebookFanpageImport
 	 */
 	public function load_textdomain()
 	{
-		// TODO: replace "plugin-name-locale" with a unique value for your plugin
-		load_plugin_textdomain( 'fbfpi', FALSE, FBFPI_RELATIVE_FOLDER . '/languages' );
+		load_plugin_textdomain( 'facebook-fanpage-import', FALSE, FBFPI_RELATIVE_FOLDER . '/languages' );
 	}
 
 	/**
@@ -156,7 +155,6 @@ class FacebookFanpageImport
 	 */
 	public function register_admin_styles()
 	{
-		// TODO:	Change 'plugin-name' to the name of your plugin
 		wp_enqueue_style( 'fbfpi-admin-styles', FBFPI_URLPATH . '/includes/css/admin.css' );
 	}
 
