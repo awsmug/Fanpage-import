@@ -61,7 +61,7 @@ class FacebookFanpageImportFacebookStream
 
 		if( '' == $this->page_id )
 		{
-			$this->errors[] = sprintf( __( '<a href="%s">Fanpage ID have to be provided.</a>', 'fbfpi' ), get_bloginfo( 'wpurl' ) . '/wp-admin/options-general.php?page=ComponentFacebookFanpageImportAdminSettings' );
+			$this->errors[] = sprintf( __( '<a href="%s">Fanpage ID have to be provided.</a>', 'fbfpi' ), admin_url( 'tools.php?page=ComponentFacebookFanpageImportAdminSettings' ) );
 		}
 
 		if( '' == $this->stream_language )
