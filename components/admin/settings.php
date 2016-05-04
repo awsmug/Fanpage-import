@@ -260,7 +260,7 @@ class FacebookFanpageImportAdminSettings
 		 */
 		if( '' != skip\value( 'fbfpi_settings', 'page_id' ) )
 		{
-			if ( 'dddddddd' == get_option( '_facebook_fanpage_import_next', 'dddddddd' ) )
+			if ( ! get_option( '_facebook_fanpage_import_next', false ) )
 			{
 				echo ' <input type="submit" name="bfpi-now" value="' . __( 'Import Now', 'fbfpi' ) . '" class="button" style="margin-left:10px;" /> ';
 			} else {
