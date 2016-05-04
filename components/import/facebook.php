@@ -44,6 +44,11 @@ class FacebookFanpageConnect
 	var $page_id;
 
 	/**
+	 * @var Facebook Paging Object
+	 */
+	var $paging = null;
+
+	/**
 	 * @var string Locale settings
 	 */
 	var $locale;
@@ -56,7 +61,7 @@ class FacebookFanpageConnect
 	function __construct( $page_id, $access_token = '', $locale = 'en_EN' )
 	{
 		$this->access_token = '1412978082344911|a7f5722a2b02f24aad0cda61ae5c4fe9';
-		$this->graph_url = 'https://graph.facebook.com/v2.1/';
+		$this->graph_url = 'https://graph.facebook.com/v2.3/';
 		$this->locale = $locale;
 
 		if( '' != $access_token )
@@ -163,7 +168,45 @@ class FacebookFanpageConnect
 
 		$data = json_decode( $data );
 
+		if ( property_exists( $data, 'paging' ) )
+		{
+			$this->paging = $data->paging;
+		}
+
 		return $data->data;
+	}
+
+	/**
+	 * Getting paged posts
+	 *
+	 * @param string $url The "next page" URL returned by Graph API
+	 *
+	 * @return mixed
+	 */
+	function get_posts_paged( $url )
+	{
+
+		$data = $this->fetch_data( $url );
+		$data = json_decode( $data );
+
+		if ( property_exists( $data, 'paging' ) )
+		{
+			$this->paging = $data->paging;
+		}
+
+		return $data->data;
+	}
+
+	/**
+	 * Gets the paging object
+	 *
+	 * @param string $url The "next page" URL returned by Graph API
+	 *
+	 * @return mixed
+	 */
+	function get_paging()
+	{
+		return $this->paging;
 	}
 
 	/**

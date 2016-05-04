@@ -84,16 +84,16 @@ class FacebookFanpageImportShowdataShortcodes
 				// setup_postdata( $post );
 				$post_id = $wp_query->post->ID;
 
-				$fanpage_id = get_post_meta( $post_id, 'fanpage_id', TRUE );
-				$fanpage_name = get_post_meta( $post_id, 'fanpage_name', TRUE );
-				$fanpage_link = get_post_meta( $post_id, 'fanpage_link', TRUE );
+				$fanpage_id = get_post_meta( $post_id, '_fbfpi_fanpage_id', TRUE );
+				$fanpage_name = get_post_meta( $post_id, '_fbfpi_fanpage_name', TRUE );
+				$fanpage_link = get_post_meta( $post_id, '_fbfpi_fanpage_link', TRUE );
 
-				$id = get_post_meta( $post_id, 'post_id', TRUE );
-				$entry_id = get_post_meta( $post_id, 'entry_id', TRUE );
-				$message = nl2br( get_post_meta( $post_id, 'message', TRUE ) );
-				$description = get_post_meta( $post_id, 'description', TRUE );
-				$permalink = get_post_meta( $post_id, 'permalink', TRUE );
-				$type = get_post_meta( $post_id, 'type', TRUE );
+				$id = get_post_meta( $post_id, '_fbfpi_post_id', TRUE );
+				$entry_id = get_post_meta( $post_id, '_fbfpi_entry_id', TRUE );
+				$message = nl2br( get_post_meta( $post_id, '_fbfpi_message', TRUE ) );
+				$description = get_post_meta( $post_id, '_fbfpi_description', TRUE );
+				$permalink = get_post_meta( $post_id, '_fbfpi_permalink', TRUE );
+				$type = get_post_meta( $post_id, '_fbfpi_type', TRUE );
 
 				$link_target = skip\value( 'fbfpi_settings', 'link_target' );
 

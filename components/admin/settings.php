@@ -122,6 +122,7 @@ class FacebookFanpageImportAdminSettings
 		/**
 		 * Import WP Cron settings
 		 */
+		$select_schedules = array( array( 'label' => __( 'Never', 'fbfpi' ), 'value' => 'never' ) );
 		$schedules = wp_get_schedules(); // Getting WordPress schedules
 		foreach( $schedules AS $key => $schedule )
 		{
@@ -133,7 +134,7 @@ class FacebookFanpageImportAdminSettings
 		/**
 		 * Num of entries to import
 		 */
-		skip\select( 'update_num', '5,10,25,50,100,250,500,1000', __( 'Entries to import', 'fbfpi' ) );
+		skip\select( 'update_num', '5,10,25,50,100,250', __( 'Entries to import', 'fbfpi' ) );
 
 		/**
 		 * Select where to import, as posts or as own post type
@@ -149,6 +150,25 @@ class FacebookFanpageImportAdminSettings
 			)
 		);
 		skip\select( 'insert_post_type', $args, __( 'Insert Messages as', 'fbfpi' ) );
+
+		/**
+		 * Select a category to apply to imported entries
+		 */
+		$args = array(
+			array(
+				'value' => 'none',
+				'label' => __( 'No category', 'fbfpi' ),
+			)
+		);
+		$terms = get_terms( 'category' );
+		foreach( $terms AS $term ) {
+			$args[] = array(
+				'value' => $term->term_id,
+				'label' => $term->name,
+			);
+		}
+
+		skip\select( 'insert_term_id', $args, __( 'Categorise Messages as', 'fbfpi' ) );
 
 		/**
 		 * Select importing User
@@ -240,7 +260,12 @@ class FacebookFanpageImportAdminSettings
 		 */
 		if( '' != skip\value( 'fbfpi_settings', 'page_id' ) )
 		{
-			echo ' <input type="submit" name="bfpi-now" value="' . __( 'Import Now', 'fbfpi' ) . '" class="button" style="margin-left:10px;" /> ';
+			if ( 'dddddddd' == get_option( '_facebook_fanpage_import_next', 'dddddddd' ) )
+			{
+				echo ' <input type="submit" name="bfpi-now" value="' . __( 'Import Now', 'fbfpi' ) . '" class="button" style="margin-left:10px;" /> ';
+			} else {
+				echo ' <input type="submit" name="bfpi-next" value="' . __( 'Import Next', 'fbfpi' ) . '" class="button" style="margin-left:10px;" /> <input type="submit" name="bfpi-stop" value="' . __( 'Stop', 'fbfpi' ) . '" class="button" style="margin-left:10px;" /> ';
+			}
 		}
 
 		skip\form_end();
