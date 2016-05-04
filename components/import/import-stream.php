@@ -155,8 +155,9 @@ class FacebookFanpageImportFacebookStream
 					continue;
 				}
 
-				// init picture URL
+				// init picture URL and attach ID
 				$picture_url = '';
+				$attach_id = '';
 
 				// Get post picture URL (Made here, because needed twice)
 				$post_picture = $ffbc->get_post_picture( $entry->id );
