@@ -45,7 +45,6 @@ class FacebookFanpageImport
 	{
 		$this->constants();
 		$this->includes();
-		$this->framework();
 
 		add_action( 'init', array( $this, 'load_components' ) );
 		add_action( 'init', array( $this, 'load_textdomain' ) );
@@ -87,18 +86,6 @@ class FacebookFanpageImport
 	public function includes()
 	{
 		require_once( FBFPI_FOLDER . '/functions.php' );
-	}
-
-	/**
-	 * Defining Constants for Use in Plugin
-	 *
-	 * @since 1.0.0
-	 */
-	public function framework()
-	{
-		// Loading Skip
-		include( FBFPI_FOLDER . '/includes/skip/loader.php' );
-		skip\start();
 	}
 
 	/**
