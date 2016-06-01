@@ -31,8 +31,6 @@ if( !defined( 'ABSPATH' ) )
 	exit;
 }
 
-use skip\v1_0_0 as skip;
-
 class FacebookFanpageImportFacebookStream
 {
 	var $name;
@@ -40,7 +38,9 @@ class FacebookFanpageImportFacebookStream
 	var $app_id;
 	var $app_secret;
 	var $page_id;
+	var $stream_language;
 	var $update_interval;
+	var $update_num;
 	var $errors = array();
 	var $notices = array();
 
@@ -53,11 +53,15 @@ class FacebookFanpageImportFacebookStream
 	{
 		$this->name = get_class( $this );
 
+		$settings                   = get_option( 'fbfpi-options' );
+
+		/*
 		$this->page_id = skip\value( 'fbfpi_settings', 'page_id' );
 		$this->stream_language = skip\value( 'fbfpi_settings', 'stream_language' );
 		$this->update_interval = skip\value( 'fbfpi_settings', 'update_interval' );
 		$this->update_num = skip\value( 'fbfpi_settings', 'update_num' );
 		$this->link_target = skip\value( 'fbfpi_settings', 'link_target' );
+		*/
 
 		if( '' == $this->page_id )
 		{

@@ -29,8 +29,6 @@
 if( !defined( 'ABSPATH' ) )
 	exit;
 
-use skip\v1_0_0 as skip;
-
 class FacebookFanpageImportAdmin
 {
 	var $name;
@@ -45,10 +43,10 @@ class FacebookFanpageImportAdmin
 		$this->name = get_class( $this );
 		$this->includes();
 
-		if( 'status' == skip\value( 'fbfpi_settings', 'insert_post_type' ) )
-		{
+		//if( 'status' == skip\value( 'fbfpi_settings', 'insert_post_type' ) )
+		//{
 			add_action( 'init', array( $this, 'custom_post_types' ), 11 );
-		}
+		//}
 	}
 
 	/**
