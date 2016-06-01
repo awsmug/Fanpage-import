@@ -48,13 +48,6 @@ class FacebookFanpageImportAdminSettings
 
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
-
-		/*if( '' != skip\value( 'fbfpi_settings', 'app_id' ) && '' != skip\value( 'fbfpi_settings', 'app_secret' ) && '' != skip\value( 'fbfpi_settings', 'page_id' ) )
-		{
-			$this->test_con();
-			add_action( 'admin_notices', array( $this, 'admin_notices' ) );
-		}*/
-
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 	}
 

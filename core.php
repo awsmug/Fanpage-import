@@ -31,8 +31,6 @@ if( !defined( 'ABSPATH' ) )
 	exit;
 }
 
-use skip\v1_0_0 as skip;
-
 class FacebookFanpageImport
 {
 
@@ -162,7 +160,7 @@ class FacebookFanpageImport
 	 */
 	public function register_plugin_styles()
 	{
-		if( '' == skip\value( 'fbfpi_settings', 'own_css' ) )
+		if( 'yes' !== get_option( 'fbfpi_deactivate_css' ) )
 		{
 			wp_enqueue_style( 'fbfpi-plugin-styles', FBFPI_URLPATH . '/includes/css/display.css' );
 		}

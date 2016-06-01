@@ -29,8 +29,6 @@
 if( !defined( 'ABSPATH' ) )
 	exit;
 
-use skip\v1_0_0 as skip;
-
 class FacebookFanpageImportShowdataShortcodes
 {
 	var $name;
@@ -95,7 +93,7 @@ class FacebookFanpageImportShowdataShortcodes
 				$permalink = get_post_meta( $post_id, '_fbfpi_permalink', TRUE );
 				$type = get_post_meta( $post_id, '_fbfpi_type', TRUE );
 
-				$link_target = skip\value( 'fbfpi_settings', 'link_target' );
+				$link_target = get_option( 'fbfpi_insert_link_target' );
 
 				switch ( $type )
 				{

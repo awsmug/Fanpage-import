@@ -43,10 +43,10 @@ class FacebookFanpageImportAdmin
 		$this->name = get_class( $this );
 		$this->includes();
 
-		//if( 'status' == skip\value( 'fbfpi_settings', 'insert_post_type' ) )
-		//{
+		if( 'status' == get_option( 'fbfpi_insert_post_type' ) )
+		{
 			add_action( 'init', array( $this, 'custom_post_types' ), 11 );
-		//}
+		}
 	}
 
 	/**

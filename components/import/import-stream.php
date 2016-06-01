@@ -53,15 +53,11 @@ class FacebookFanpageImportFacebookStream
 	{
 		$this->name = get_class( $this );
 
-		$settings                   = get_option( 'fbfpi-options' );
-
-		/*
-		$this->page_id = skip\value( 'fbfpi_settings', 'page_id' );
-		$this->stream_language = skip\value( 'fbfpi_settings', 'stream_language' );
-		$this->update_interval = skip\value( 'fbfpi_settings', 'update_interval' );
-		$this->update_num = skip\value( 'fbfpi_settings', 'update_num' );
-		$this->link_target = skip\value( 'fbfpi_settings', 'link_target' );
-		*/
+		$this->page_id = get_option( 'fbfpi_fanpage_id' );
+		$this->stream_language = get_option( 'fbfpi_fanpage_stream_language' );
+		$this->update_interval = get_option( 'fbfpi_import_interval' );
+		$this->update_num = get_option( 'fbfpi_import_num' );
+		$this->link_target = get_option( 'fbfpi_insert_link_target' );
 
 		if( '' == $this->page_id )
 		{
@@ -168,7 +164,7 @@ class FacebookFanpageImportFacebookStream
 			delete_option( '_facebook_fanpage_import_next' );
 		}
 
-		if( 'status' == skip\value( 'fbfpi_settings', 'insert_post_type' ) )
+		if( 'status' == get_option( 'fbfpi_insert_post_type' ) )
 		{
 			$post_type = 'status-message';
 		}
@@ -177,15 +173,15 @@ class FacebookFanpageImportFacebookStream
 			$post_type = 'post';
 		}
 
-		$post_status = skip\value( 'fbfpi_settings', 'insert_post_status' );
+		$post_status = get_option( 'fbfpi_insert_post_status' );
 		if( '' == $post_status )
 		{
 			$post_status = 'draft';
 		}
 
-		$author_id = skip\value( 'fbfpi_settings', 'insert_user_id' );
+		$author_id = get_option( 'fbfpi_insert_user_id' );
 
-		$post_format = skip\value( 'fbfpi_settings', 'insert_post_format' );
+		$post_format = get_option( 'fbfpi_insert_post_format' );
 		if( '' == $post_format )
 		{
 			$post_format = 'none';
@@ -357,7 +353,7 @@ class FacebookFanpageImportFacebookStream
 				wp_update_post( $post );
 
 				// assign term if one is set
-				$term_id = skip\value( 'fbfpi_settings', 'insert_term_id' );
+				$term_id = get_option( 'fbfpi_insert_term_id' );
 				if ( $term_id != 'none' ) {
 					$cat_ids = array( intval( $term_id ) );
 					$term_taxonomy_ids = wp_set_object_terms( $post->ID, $cat_ids, 'category' );
@@ -370,8 +366,6 @@ class FacebookFanpageImportFacebookStream
 						), true ) );
 					}
 				}
-
-				// skip\p($entry);
 
 				// Updating post meta
 				$ids = explode( '_', $entry->id );
