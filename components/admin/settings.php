@@ -85,6 +85,8 @@ class FacebookFanpageImportAdminSettings
 		register_setting( 'fbfpi_options', 'fbfpi_insert_link_target' );
 		register_setting( 'fbfpi_options', 'fbfpi_insert_post_format' );
 		register_setting( 'fbfpi_options', 'fbfpi_deactivate_css' );
+		register_setting( 'fbfpi_options', 'fbfpi_now' );
+		register_setting( 'fbfpi_options', 'fbfpi_next' );
 	}
 
 	/**
@@ -407,9 +409,9 @@ class FacebookFanpageImportAdminSettings
 		{
 			if ( ! get_option( '_facebook_fanpage_import_next', false ) )
 			{
-				echo ' <input type="submit" name="bfpi_now" value="' . __( 'Import Now', 'facebook-fanpage-import' ) . '" class="button" style="margin-left:10px;" /> ';
+				echo ' <input type="submit" name="fbfpi_now" value="' . __( 'Import Now', 'facebook-fanpage-import' ) . '" class="button" /> ';
 			} else {
-				echo ' <input type="submit" name="bfpi_next" value="' . __( 'Import Next', 'facebook-fanpage-import' ) . '" class="button" style="margin-left:10px;" /> <input type="submit" name="bfpi-stop" value="' . __( 'Stop', 'facebook-fanpage-import' ) . '" class="button" style="margin-left:10px;" /> ';
+				echo ' <input type="submit" name="fbfpi_next" value="' . __( 'Import Next', 'facebook-fanpage-import' ) . '" class="button" /> <input type="submit" name="fbfpi_stop" value="' . __( 'Stop', 'facebook-fanpage-import' ) . '" class="button" style="margin-left:10px;" /> ';
 			}
 		}
 		echo '</form>';
