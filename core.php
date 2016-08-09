@@ -46,7 +46,7 @@ class FacebookFanpageImport
 
 		add_action( 'init', array( $this, 'load_components' ) );
 		add_action( 'init', array( $this, 'load_textdomain' ) );
-		
+
 		register_activation_hook( __FILE__, array( $this, 'activate' ) );
 		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
 		// register_uninstall_hook( __FILE__, array( $this, 'uninstall' ) );
@@ -96,7 +96,6 @@ class FacebookFanpageImport
             require_once( 'updates/to_1.1.php' );
             fbfbi_db_to_1_1();
             update_option( 'fbfpi_db_version', '1.1' );
-            FB::log( 'Bumped to 1.1');
         }
     }
 

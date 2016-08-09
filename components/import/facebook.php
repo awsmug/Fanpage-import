@@ -61,7 +61,7 @@ class FacebookFanpageConnect
 	function __construct( $page_id, $access_token = '', $locale = 'en_EN' )
 	{
 		$this->access_token = '1412978082344911|a7f5722a2b02f24aad0cda61ae5c4fe9';
-		$this->graph_url = 'https://graph.facebook.com/v2.3/';
+		$this->graph_url = 'https://graph.facebook.com/v2.7/';
 		$this->locale = $locale;
 
 		if( '' != $access_token )
@@ -114,7 +114,7 @@ class FacebookFanpageConnect
 	 */
 	private function fetch_data( $url )
 	{
-		if( is_callable( 'curl_init' ) )
+        if( is_callable( 'curl_init' ) )
 		{
 			$con = curl_init();
 
@@ -157,7 +157,7 @@ class FacebookFanpageConnect
 		$url = $this->graph_url;
 		$url .= $this->page_id . '/';
 		$url .= 'posts/';
-		$url .= '?access_token=' . $this->access_token . '&locale=' . $this->locale;;
+		$url .= '?access_token=' . $this->access_token . '&locale=' . $this->locale;
 
 		if( FALSE !== $limit )
 		{
@@ -175,6 +175,21 @@ class FacebookFanpageConnect
 
 		return $data->data;
 	}
+
+	function get_id( $id, $fields = array() ) {
+        $url = $this->graph_url;
+        $url .= $id . '/';
+        $url .= '?access_token=' . $this->access_token . '&locale=' . $this->locale;
+
+        if( is_array( $fields ) && count( $fields ) > 0 ) {
+            $url = add_query_arg( 'fields', implode( ',', $fields ), $url );
+        }
+
+        $data = $this->fetch_data( $url );
+        $data = json_decode( $data );
+
+        return $data;
+    }
 
 	/**
 	 * Getting paged posts
