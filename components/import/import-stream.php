@@ -38,11 +38,20 @@ class FacebookFanpageImportFacebookStream {
     var $notices = array();
 
     /**
+     * instance
+     *
+     * Statische Variable, um die aktuelle (einzige!) Instanz dieser Klasse zu halten
+     *
+     * @var Singleton
+     */
+    protected static $_instance = null;
+
+    /**
      * Initializes the Component.
      *
      * @since 1.0.0
      */
-    function __construct() {
+    private function __construct() {
         $this->name = get_class( $this );
 
         $this->page_id         = get_option( 'fbfpi_fanpage_id' );
@@ -87,20 +96,23 @@ class FacebookFanpageImportFacebookStream {
         }
 
         add_action( 'fanpage_import', array( $this, 'import' ) );
-
-        if ( array_key_exists( 'bfpi-now', $_POST ) && '' != $_POST[ 'bfpi-now' ] ) {
-            add_action( 'init', array( $this, 'import' ), 12 );
-        }
-
-        if ( array_key_exists( 'bfpi-next', $_POST ) && '' != $_POST[ 'bfpi-next' ] ) {
-            add_action( 'init', array( $this, 'import' ), 12 );
-        }
-
-        if ( array_key_exists( 'bfpi-stop', $_POST ) && '' != $_POST[ 'bfpi-stop' ] ) {
-            delete_option( '_facebook_fanpage_import_next' );
-        }
-
         add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+    }
+
+    /**
+     * Instance
+     *
+     * @return FacebookFanpageImportFacebookStream|Singleton
+     *
+     * @since 1.1.0
+     */
+    public static function instance()
+    {
+        if (null === self::$_instance)
+        {
+            self::$_instance = new self;
+        }
+        return self::$_instance;
     }
 
     /**
@@ -108,7 +120,7 @@ class FacebookFanpageImportFacebookStream {
      *
      * @since 1.0.0
      */
-    public function import() {
+    public function import( $param = '' ) {
         global $wpdb;
 
         set_time_limit( 240 );
@@ -117,12 +129,12 @@ class FacebookFanpageImportFacebookStream {
         $page_details = $ffbc->get_page();
 
         // get initial posts on first run or via schedule
-        if ( ( isset( $_POST ) && array_key_exists( 'bfpi-now', $_POST ) && '' != $_POST[ 'bfpi-now' ] ) || doing_action( 'fanpage_import' ) ) {
+        if ( ( isset( $_POST ) && array_key_exists( 'fbfpi_now', $_POST ) && '' != $_POST[ 'fbfpi_now' ] ) || doing_action( 'fanpage_import' ) ) {
             $entries = $ffbc->get_posts( $this->update_num );
         }
 
         // get paged posts when selecting "next"
-        if ( isset( $_POST ) && array_key_exists( 'bfpi-next', $_POST ) && '' != $_POST[ 'bfpi-next' ] ) {
+        if ( isset( $_POST ) && array_key_exists( 'fbfpi_next', $_POST ) && '' != $_POST[ 'fbfpi_next' ] ) {
             $url = get_option( '_facebook_fanpage_import_next', '' );
             if ( ! empty( $url ) ) {
                 $entries = $ffbc->get_posts_paged( $url );
@@ -131,6 +143,7 @@ class FacebookFanpageImportFacebookStream {
 
         // save the "next" page URL
         $paging = $ffbc->get_paging();
+
         if ( is_object( $paging ) && property_exists( $paging, 'next' ) ) {
             update_option( '_facebook_fanpage_import_next', $paging->next );
         } else {
@@ -370,6 +383,20 @@ class FacebookFanpageImportFacebookStream {
 
             $this->notices[] = $notice;
         }
+    }
+
+    /**
+     * Stopping import
+     *
+     * @param $value
+     *
+     * @return mixed
+     *
+     * @since 1.1.0
+     */
+    public function stop_import( $value ) {
+        delete_option( '_facebook_fanpage_import_next' );
+        return $value;
     }
 
     /**
@@ -678,4 +705,4 @@ class FacebookFanpageImportFacebookStream {
     }
 }
 
-$FacebookFanpageImportFacebookStream = new FacebookFanpageImportFacebookStream();
+FacebookFanpageImportFacebookStream::instance();

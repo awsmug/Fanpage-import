@@ -74,6 +74,8 @@ class FacebookFanpageImportAdminSettings
 	 * Register Settings
 	 */
 	public function register_settings() {
+	    $fbfpi_import = FacebookFanpageImportFacebookStream::instance();
+
 		register_setting( 'fbfpi_options', 'fbfpi_fanpage_id' );
 		register_setting( 'fbfpi_options', 'fbfpi_fanpage_stream_language' );
 		register_setting( 'fbfpi_options', 'fbfpi_import_interval' );
@@ -85,8 +87,9 @@ class FacebookFanpageImportAdminSettings
 		register_setting( 'fbfpi_options', 'fbfpi_insert_link_target' );
 		register_setting( 'fbfpi_options', 'fbfpi_insert_post_format' );
 		register_setting( 'fbfpi_options', 'fbfpi_deactivate_css' );
-		register_setting( 'fbfpi_options', 'fbfpi_now' );
-		register_setting( 'fbfpi_options', 'fbfpi_next' );
+		register_setting( 'fbfpi_options', 'fbfpi_now', array( $fbfpi_import, 'import' ) );
+		register_setting( 'fbfpi_options', 'fbfpi_next', array( $fbfpi_import, 'import' ) );
+		register_setting( 'fbfpi_options', 'fbfpi_stop', array( $fbfpi_import, 'stop_import' ) );
 	}
 
 	/**
@@ -96,18 +99,6 @@ class FacebookFanpageImportAdminSettings
 	 */
 	public function admin_page()
 	{
-		$fanpage_id                 = get_option( 'fbfpi_fanpage_id' );
-		$fanpage_stream_language    = get_option( 'fbfpi_fanpage_stream_language' );
-		$import_interval            = get_option( 'fbfpi_import_interval' );
-		$import_num                 = get_option( 'fbfpi_import_num' );
-		$insert_post_type           = get_option( 'fbfpi_insert_post_type' );
-		$insert_term_id             = get_option( 'fbfpi_insert_term_id' );
-		$insert_user_id             = get_option( 'fbfpi_insert_user_id' );
-		$insert_post_status         = get_option( 'fbfpi_insert_post_status' );
-		$insert_link_target         = get_option( 'fbfpi_insert_link_target' );
-		$insert_post_format         = get_option( 'fbfpi_insert_post_format' );
-		$deactivate_css             = get_option( 'fbfpi_deactivate_css' );
-
 		echo '<div class="wrap">';
 
 		echo '<div id="icon-options-general" class="icon32 icon32-posts-post"></div>';
@@ -117,7 +108,19 @@ class FacebookFanpageImportAdminSettings
 		echo '<div class="fbfpi-form">';
 		echo '<form method="post" action="options.php">';
 		settings_fields( 'fbfpi_options' );
-		do_settings_sections( 'fbfpi' );
+		do_settings_sections( 'fbfpi_options' );
+
+        $fanpage_id                 = get_option( 'fbfpi_fanpage_id' );
+        $fanpage_stream_language    = get_option( 'fbfpi_fanpage_stream_language' );
+        $import_interval            = get_option( 'fbfpi_import_interval' );
+        $import_num                 = get_option( 'fbfpi_import_num' );
+        $insert_post_type           = get_option( 'fbfpi_insert_post_type' );
+        $insert_term_id             = get_option( 'fbfpi_insert_term_id' );
+        $insert_user_id             = get_option( 'fbfpi_insert_user_id' );
+        $insert_post_status         = get_option( 'fbfpi_insert_post_status' );
+        $insert_link_target         = get_option( 'fbfpi_insert_link_target' );
+        $insert_post_format         = get_option( 'fbfpi_insert_post_format' );
+        $deactivate_css             = get_option( 'fbfpi_deactivate_css' );
 
 		/**
 		 * Fanpage ID
