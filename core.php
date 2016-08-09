@@ -51,7 +51,9 @@ class FacebookFanpageImport
 		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
 		// register_uninstall_hook( __FILE__, array( $this, 'uninstall' ) );
 
-		if( is_admin() )
+        add_action ( 'init', array( $this, 'updates' ) );
+
+        if( is_admin() )
 		{
 			add_action( 'admin_print_styles', array( $this, 'register_admin_styles' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'register_admin_scripts' ) );
@@ -75,6 +77,28 @@ class FacebookFanpageImport
 		define( 'FBFPI_URLPATH', plugin_dir_url( __FILE__ ) );
 		define( 'FBFPI_COMPONENTFOLDER', FBFPI_FOLDER . '/components' );
 	}
+
+	/**
+	 * Running updates
+     *
+     * @since 1.1.0
+     */
+	public function updates()
+    {
+        $script_db_version = '1.1';
+        $current_db_version = get_option( 'fbfpi_db_version', '1.0' );
+
+        if( false === version_compare( $current_db_version, $script_db_version, '<' ) ) {
+            return;
+        }
+
+        if ( true === version_compare( $current_db_version, '1.1', '<' ) ) {
+            require_once( 'updates/to_1.1.php' );
+            fbfbi_db_to_1_1();
+            update_option( 'fbfpi_db_version', '1.1' );
+            FB::log( 'Bumped to 1.1');
+        }
+    }
 
 	/**
 	 * Getting include files

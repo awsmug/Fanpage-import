@@ -383,8 +383,6 @@ class FacebookFanpageImportAdminSettings
 			}
 		}
 
-		p( $deactivate_css );
-
 		$checked = '';
 		if( 'yes' === $deactivate_css ) {
 			$checked = ' checked="checked"';
