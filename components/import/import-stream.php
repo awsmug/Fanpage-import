@@ -155,10 +155,6 @@ class FacebookFanpageImportFacebookStream {
 
         $i = 0;
 
-        $file = fopen( ABSPATH . '/test.log', 'a+' );
-        fputs( $file, print_r( $entries, true) . chr( 13 ) );
-        fclose( $file );
-
         if ( count( $entries ) > 0 ) {
             $skip_existing_count  = 0;
             $skip_unknown_count   = 0;
@@ -175,8 +171,6 @@ class FacebookFanpageImportFacebookStream {
                 }
 
                 $entry = $this->fpc->get_id( $entry->id, array( 'message', 'story', 'caption', 'description', 'full_picture', 'object_id', 'from', 'link', 'created_time', 'type' ) );
-
-                fputs( $file, print_r( $entry, true) . chr( 13 ) );
 
                 $post_title     = $this->get_post_title( $entry );
                 $post_excerpt   = $this->get_post_excerpt( $entry );
@@ -296,8 +290,6 @@ class FacebookFanpageImportFacebookStream {
                 do_action( 'fbfpi_entry_created', $post, $entry );
 
                 $i ++;
-
-                fclose( $file );
             }
 
             $notice = '<br /><br />' . sprintf( __( '%d entries have been found.', 'facebook-fanpage-import' ), count( $entries ) );
