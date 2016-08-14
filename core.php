@@ -135,7 +135,14 @@ class FacebookFanpageImport {
 	 * @since 1.0.0
 	 */
 	public function register_plugin_scripts() {
-		wp_enqueue_script( 'fbfpi-plugin-script', fpfpi_get_asset_url( 'display', 'js' ) );
+		wp_register_script( 'fbfpi-plugin-script', fpfpi_get_asset_url( 'display', 'js' ) );
+
+		$translation_array = array(
+			'locale' => get_locale(),
+		);
+		wp_localize_script( 'fbfpi-plugin-script', 'fbfpi', $translation_array );
+
+		wp_enqueue_script( 'fbfpi-plugin-script' );
 	}
 
 	/**
