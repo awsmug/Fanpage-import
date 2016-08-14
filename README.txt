@@ -1,11 +1,19 @@
 === Facebook Fanpage import ===
-Contributors: mahype, awesome-ug
-Tags: facebook, fanpage, import, facebook connect, facebook fanpage, facebook page
-Requires at least: 4.1.1
-Tested up to: 4.6.0
-Stable tag: 1.0.0-beta.3
 
-Easy import Facebook Fanpage messages to your WordPress. 
+Plugin Name:       Facebook Fanpage import
+Plugin URI:        http://awesome.ug
+Author:            Awesome UG
+Author URI:        http://www.awesome.ug
+Contributors:      mahype, awesome-ug
+Requires at least: 4.1.1
+Tested up to:      4.6.0
+Stable tag:        1.0.0-beta.4
+Version:           1.0.0-beta.4
+License:           GNU General Public License v3
+License URI:       http://www.gnu.org/licenses/gpl-3.0.html
+Tags:              facebook, fanpage, import
+
+Easy import Facebook Fanpage messages to your WordPress.
 
 == Description ==
 
