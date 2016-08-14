@@ -35,6 +35,8 @@ This section describes how to install the plugin and get it working.
 = 1.0.0-beta.4 =
 * Enhanced: Removed Skip framework
 * Enhanced: Added Gulp, composer & co.
+* Enhanced: Minified scripts and added sass files
+* Enhanced: Added deploy script
 
 = 1.0.0 beta 3 =
 * Fixed allow_url_fopen problem
