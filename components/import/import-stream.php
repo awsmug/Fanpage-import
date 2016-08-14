@@ -27,26 +27,93 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class FacebookFanpageImportFacebookStream {
 	/**
-	 * instance
-	 * Statische Variable, um die aktuelle (einzige!) Instanz dieser Klasse zu halten
-	 *
-	 * @var Singleton
+	 * @var FacebookFanpageImportFacebookStream
+	 * @since 1.0.0
 	 */
 	protected static $_instance = null;
+
+	/**
+	 * @var string
+	 * @since 1.0.0
+	 */
 	var $name;
-	var $fb;
+
+	/**
+	 * @var string
+	 * @since 1.0.0
+	 */
 	var $app_id;
+
+	/**
+	 * @var string
+	 * @since 1.0.0
+	 */
 	var $app_secret;
+
+	/**
+	 * @var string
+	 * @since 1.0.0
+	 */
 	var $page_id;
+
+	/**
+	 * @var string
+	 * @since 1.0.0
+	 */
 	var $stream_language;
+
+	/**
+	 * @var string
+	 * @since 1.0.0
+	 */
 	var $update_interval;
+
+	/**
+	 * @var string
+	 * @since 1.0.0
+	 */
 	var $update_num;
+
+	/**
+	 * @var string
+	 * @since 1.0.0
+	 */
 	var $post_type;
+
+	/**
+	 * @var $string
+	 * @since 1.0.0
+	 */
 	var $post_status;
+
+	/**
+	 * @var string
+	 * @since 1.0.0
+	 */
 	var $post_format;
+
+	/**
+	 * @var int
+	 * @since 1.0.0
+	 */
 	var $term_id;
+
+	/**
+	 * @var array
+	 * @since 1.0.0
+	 */
 	var $errors = array();
+
+	/**
+	 * @var array
+	 * @since 1.0.0
+	 */
 	var $notices = array();
+
+	/**
+	 * @var FacebookFanpageConnect
+	 * @since 1.0.0
+	 */
 	var $fpc;
 
 	/**
@@ -55,8 +122,6 @@ class FacebookFanpageImportFacebookStream {
 	 * @since 1.0.0
 	 */
 	private function __construct() {
-		$this->name = get_class( $this );
-
 		$this->page_id         = get_option( 'fbfpi_fanpage_id' );
 		$this->stream_language = get_option( 'fbfpi_fanpage_stream_language' );
 		$this->update_interval = get_option( 'fbfpi_import_interval' );
@@ -140,13 +205,15 @@ class FacebookFanpageImportFacebookStream {
 	/**
 	 * Importing Stream
 	 *
+	 * @param $param
+	 *
 	 * @since 1.0.0
 	 */
 	public function import( $param = '' ) {
 		set_time_limit( 240 );
 
-		$page_details = $this->fpc->get_page();
-		$entries      = $this->get_entries();
+		$fanpage = $this->get_fanpage();
+		$entries = $this->get_entries();
 
 		$i = 0;
 
@@ -156,8 +223,6 @@ class FacebookFanpageImportFacebookStream {
 			$skip_without_message = 0;
 
 			foreach ( $entries AS $entry ) {
-
-				$file = fopen( ABSPATH . '/test.log', 'a+' );
 
 				if ( $this->entry_exists( $entry->id ) ) // If entry already exists
 				{
@@ -175,7 +240,6 @@ class FacebookFanpageImportFacebookStream {
 
 				$entry->message = $this->replace_urls_by_links( $entry->message );
 
-				// Inserting raw post without content
 				$post_id = $this->create_post( $post_title, $post_excerpt, $post_date );
 
 				$post = get_post( $post_id );
@@ -197,7 +261,7 @@ class FacebookFanpageImportFacebookStream {
 						break;
 
 					case 'photo':
-						$picture_url = $ffbc->get_photo_by_object( $entry->object_id );
+						$picture_url = $this->fpc->get_photo_by_object( $entry->object_id );
 
 						if ( ! empty( $picture_url ) ) {
 							$attach_id = $this->fetch_picture( $picture_url, $post_id );
@@ -253,7 +317,7 @@ class FacebookFanpageImportFacebookStream {
 				// Updating post meta
 				$ids           = explode( '_', $entry->id );
 				$pure_entry_id = $ids[ 1 ];
-				$entry_url     = $page_details->link . '/posts/' . $pure_entry_id;
+				$entry_url     = $fanpage->link . '/posts/' . $pure_entry_id;
 
 				if ( property_exists( $entry, 'id' ) ) {
 					update_post_meta( $post_id, '_fbfpi_entry_id', $entry->id );
@@ -267,8 +331,8 @@ class FacebookFanpageImportFacebookStream {
 
 				update_post_meta( $post_id, '_fbfpi_image_url', $picture_url );
 				update_post_meta( $post_id, '_fbfpi_fanpage_id', $this->page_id );
-				update_post_meta( $post_id, '_fbfpi_fanpage_name', $page_details->name );
-				update_post_meta( $post_id, '_fbfpi_fanpage_link', $page_details->link );
+				update_post_meta( $post_id, '_fbfpi_fanpage_name', $fanpage->name );
+				update_post_meta( $post_id, '_fbfpi_fanpage_link', $fanpage->link );
 				update_post_meta( $post_id, '_fbfpi_entry_url', $entry_url );
 				update_post_meta( $post_id, '_fbfpi_type', $entry->type );
 
@@ -306,6 +370,24 @@ class FacebookFanpageImportFacebookStream {
 		}
 	}
 
+	/**
+	 * Getting Fanpage data
+	 *
+	 * @return array|mixed|object|string
+	 *
+	 * @since 1.0.0
+	 */
+	private function get_fanpage(){
+		return $this->fpc->get_page();
+	}
+
+	/**
+	 * Getting Fanpage entries depending on $_POST variables
+	 *
+	 * @return mixed
+	 *
+	 * @since 1.0.0
+	 */
 	private function get_entries() {
 		// get initial posts on first run or via schedule
 		if ( ( isset( $_POST ) && array_key_exists( 'fbfpi_now', $_POST ) && '' != $_POST[ 'fbfpi_now' ] ) || doing_action( 'fanpage_import' ) ) {
@@ -332,6 +414,15 @@ class FacebookFanpageImportFacebookStream {
 		return $entries;
 	}
 
+	/**
+	 * Checks if an entry exists
+	 *
+	 * @param $entry_id
+	 *
+	 * @return bool
+	 *
+	 * @since 1.0.0
+	 */
 	private function entry_exists( $entry_id ) {
 		global $wpdb;
 
@@ -346,11 +437,12 @@ class FacebookFanpageImportFacebookStream {
 	}
 
 	/**
-	 * Creating post title
+	 * Getting post title
 	 *
 	 * @param $entry
 	 *
 	 * @return array|mixed|string|void
+	 *
 	 * @since 1.1.0
 	 */
 	private function get_post_title( $entry ) {
@@ -370,6 +462,17 @@ class FacebookFanpageImportFacebookStream {
 		}
 
 		$post_title = $this->filter_title( $post_title );
+
+		/**
+		 * Allow overrides.
+		 *
+		 * @param string $post_title  The unfiltered title
+		 * @param string $entry The entry
+		 *
+		 * @return string $title The filtered title
+		 * @since 1.0.0
+		 */
+		$post_title = apply_filters( 'fbfpi_import_post_title', $post_title, $entry );
 
 		return $post_title;
 	}
@@ -410,32 +513,100 @@ class FacebookFanpageImportFacebookStream {
 		 * @param string $string The unfiltered title
 		 *
 		 * @return string $title The filtered title
+		 * @since 1.0.0
 		 */
 		return apply_filters( 'fbfpi_entry_title', $title, $string );
 	}
 
+	/**
+	 * Getting post excerpt
+	 *
+	 * @param $entry
+	 *
+	 * @return string
+	 * @since 1.0.0
+	 */
 	private function get_post_excerpt( $entry ) {
 		$post_excerpt = '';
 		if ( property_exists( $entry, 'message' ) ) {
 			$post_excerpt = $entry->message;
 		}
 
+		/**
+		 * Allow overrides.
+		 *
+		 * @param string $post_excerpt  The unfiltered Excerpt
+		 * @param string $entry The entry
+		 *
+		 * @return string $title The filtered title
+		 * @since 1.0.0
+		 */
+		$post_excerpt = apply_filters( 'fbfpi_import_post_excerpt', $post_excerpt, $entry );
+
 		return $post_excerpt;
 	}
 
+	/**
+	 * Getting post picture URL
+	 *
+	 * @param $entry
+	 *
+	 * @return string
+	 * @since 1.0.0
+	 */
 	private function get_post_picture_url( $entry ) {
 		$picture_url = '';
 		if ( property_exists( $entry, 'full_picture' ) ) {
 			$picture_url = $entry->full_picture;
 		}
 
+		/**
+		 * Allow overrides.
+		 *
+		 * @param string $picture_url  The unfiltered picture URL
+		 * @param string $entry The entry
+		 *
+		 * @return string $title The filtered picture URL
+		 * @since 1.0.0
+		 */
+		$picture_url = apply_filters( 'fbfpi_import_post_picture_url', $picture_url, $entry );
+
 		return $picture_url;
 	}
 
+	/**
+	 * Getting post date
+	 *
+	 * @param $entry
+	 *
+	 * @return bool|mixed|string|void
+	 * @since 1.0.0
+	 */
 	private function get_post_date( $entry ) {
-		return date( 'Y-m-d H:i:s', strtotime( $entry->created_time ) );
+		$date = date( 'Y-m-d H:i:s', strtotime( $entry->created_time ) );
+
+		/**
+		 * Allow overrides.
+		 *
+		 * @param array $date  The unfiltered post date
+		 * @param string $entry The entry
+		 *
+		 * @return string $title The filtered post date
+		 * @since 1.0.0
+		 */
+		$date = apply_filters( 'fbfpi_import_post_date', $date, $entry );
+
+		return $date;
 	}
 
+	/**
+	 * Getting post tags
+	 *
+	 * @param $entry
+	 *
+	 * @return array|mixed|void
+	 * @since 1.0.0
+	 */
 	private function get_post_tags( $entry ) {
 		preg_match_all( "/(#\w+)/", $entry->message, $found_hash_tags );
 		$found_hash_tags = $found_hash_tags[ 1 ];
@@ -444,6 +615,17 @@ class FacebookFanpageImportFacebookStream {
 		foreach ( $found_hash_tags AS $hash_tag ) {
 			$tags[] = substr( $hash_tag, 1, strlen( $hash_tag ) );
 		}
+
+		/**
+		 * Allow overrides.
+		 *
+		 * @param array $tags  The unfiltered post tags
+		 * @param string $entry The entry
+		 *
+		 * @return string $tags The filtered post tags
+		 * @since 1.0.0
+		 */
+		$tags = apply_filters( 'fbfpi_import_post_tags', $tags, $entry );
 
 		return $tags;
 	}
@@ -454,6 +636,7 @@ class FacebookFanpageImportFacebookStream {
 	 * @param $content
 	 *
 	 * @return mixed
+	 * @since 1.0.0
 	 */
 	private function replace_urls_by_links( $content ) {
 		$content = preg_replace( '@(https?://([-\w.]+[-\w])+(:\d+)?(/([\w-.~:/?#\[\]\@!$&\'()*+,;=%]*)?)?)@', '<a href="$1" target="_blank">$1</a>', $content );
@@ -461,6 +644,16 @@ class FacebookFanpageImportFacebookStream {
 		return $content;
 	}
 
+	/**
+	 * Inserting raw post without content
+	 *
+	 * @param $post_title
+	 * @param $post_excerpt
+	 * @param $post_date
+	 *
+	 * @return int|WP_Error
+	 * @since 1.0.0
+	 */
 	private function create_post( $post_title, $post_excerpt, $post_date ) {
 		$post = array(
 			'comment_status' => 'closed', // 'closed' means no comments.
@@ -483,6 +676,7 @@ class FacebookFanpageImportFacebookStream {
 	 * @param $post_id
 	 *
 	 * @return int
+	 * @since 1.0.0
 	 */
 	private function fetch_picture( $picture_url ) {
 		$picture = wp_remote_get( $picture_url );
@@ -506,6 +700,7 @@ class FacebookFanpageImportFacebookStream {
 	 * @param $attach_id
 	 *
 	 * @return string
+	 * @since 1.0.0
 	 */
 	private function get_link_content( $entry, $attach_id ) {
 		$attach_url = wp_get_attachment_url( $attach_id );
@@ -544,6 +739,8 @@ class FacebookFanpageImportFacebookStream {
 		 * @param integer $attach_id The numeric ID of the attachment
 		 *
 		 * @return string $content The constructed content
+		 *
+		 * @since 1.0.0
 		 */
 		return apply_filters( 'fbfpi_entry_link', $content, $entry, $attach_id );
 	}
@@ -555,6 +752,7 @@ class FacebookFanpageImportFacebookStream {
 	 * @param $attach_id
 	 *
 	 * @return string
+	 * @since 1.0.0
 	 */
 	private function get_photo_content( $entry, $attach_id ) {
 		$attach_url = wp_get_attachment_url( $attach_id );
@@ -604,6 +802,7 @@ class FacebookFanpageImportFacebookStream {
 		 * @param integer $attach_id The numeric ID of the attachment
 		 *
 		 * @return string $content The constructed content
+		 * @since 1.0.0
 		 */
 		return apply_filters( 'fbfpi_entry_photo', $content, $entry, $attach_id );
 	}
@@ -614,6 +813,7 @@ class FacebookFanpageImportFacebookStream {
 	 * @param $entry
 	 *
 	 * @return string
+	 * @since 1.0.0
 	 */
 	private function get_video_content( $entry ) {
 
@@ -651,6 +851,7 @@ class FacebookFanpageImportFacebookStream {
 		 * @param object $entry   The entry object
 		 *
 		 * @return string $content The constructed content
+		 * @since 1.1.0
 		 */
 		return apply_filters( 'fbfpi_entry_video', $content, $entry );
 	}
@@ -671,6 +872,8 @@ class FacebookFanpageImportFacebookStream {
 
 	/**
 	 * Admin notices
+	 *
+	 * @since 1.0.0
 	 */
 	public function admin_notices() {
 		if ( count( $this->errors ) > 0 ):
