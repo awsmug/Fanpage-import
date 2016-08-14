@@ -18,7 +18,7 @@ Easy import Facebook Fanpage messages to your WordPress.
 
 ## Languages
 - English
-- German
+- German (de_DE)
 
 ## Disclaimer
 

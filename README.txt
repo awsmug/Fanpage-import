@@ -2,7 +2,7 @@
 Contributors: mahype, awesome-ug
 Tags: facebook, fanpage, import, facebook connect, facebook fanpage, facebook page
 Requires at least: 4.1.1
-Tested up to: 4.1.1
+Tested up to: 4.6.0
 Stable tag: 1.0.0-beta.3
 
 Easy import Facebook Fanpage messages to your WordPress. 
