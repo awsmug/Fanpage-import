@@ -1,7 +1,6 @@
 <?php
 /**
  * Facebook Fanpage Import Core Class
- *
  * This class initializes the Plugin.
  *
  * @author  mahype, awesome.ug <very@awesome.ug>
@@ -9,38 +8,31 @@
  * @version 1.0.0-beta.3
  * @since   1.0.0
  * @license GPL 2
- *
- * Copyright 2016 Awesome UG (very@awesome.ug)
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *          Copyright 2016 Awesome UG (very@awesome.ug)
+ *          This program is free software; you can redistribute it and/or modify
+ *          it under the terms of the GNU General Public License, version 2, as
+ *          published by the Free Software Foundation.
+ *          This program is distributed in the hope that it will be useful,
+ *          but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *          MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *          GNU General Public License for more details.
+ *          You should have received a copy of the GNU General Public License
+ *          along with this program; if not, write to the Free Software
+ *          Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-if( !defined( 'ABSPATH' ) )
-{
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class FacebookFanpageImport
-{
+class FacebookFanpageImport {
 
 	/**
 	 * Initializes the plugin.
 	 *
 	 * @since 1.0.0
 	 */
-	function __construct()
-	{
+	function __construct() {
 		$this->constants();
 		$this->includes();
 
@@ -51,15 +43,12 @@ class FacebookFanpageImport
 		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
 		// register_uninstall_hook( __FILE__, array( $this, 'uninstall' ) );
 
-        add_action ( 'init', array( $this, 'updates' ) );
+		add_action( 'init', array( $this, 'updates' ) );
 
-        if( is_admin() )
-		{
+		if ( is_admin() ) {
 			add_action( 'admin_print_styles', array( $this, 'register_admin_styles' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'register_admin_scripts' ) );
-		}
-		else
-		{
+		} else {
 			add_action( 'wp_enqueue_scripts', array( $this, 'register_plugin_styles' ) );
 			add_action( 'wp_enqueue_scripts', array( $this, 'register_plugin_scripts' ) );
 		}
@@ -70,8 +59,7 @@ class FacebookFanpageImport
 	 *
 	 * @since 1.0.0
 	 */
-	public function constants()
-	{
+	public function constants() {
 		define( 'FBFPI_FOLDER', plugin_dir_path( __FILE__ ) );
 		define( 'FBFPI_RELATIVE_FOLDER', substr( FBFPI_FOLDER, strlen( WP_PLUGIN_DIR ), strlen( FBFPI_FOLDER ) ) );
 		define( 'FBFPI_URLPATH', plugin_dir_url( __FILE__ ) );
@@ -79,34 +67,32 @@ class FacebookFanpageImport
 	}
 
 	/**
-	 * Running updates
-     *
-     * @since 1.1.0
-     */
-	public function updates()
-    {
-        $script_db_version = '1.1';
-        $current_db_version = get_option( 'fbfpi_db_version', '1.0' );
-
-        if( false === version_compare( $current_db_version, $script_db_version, '<' ) ) {
-            return;
-        }
-
-        if ( true === version_compare( $current_db_version, '1.1', '<' ) ) {
-            require_once( 'updates/to_1.1.php' );
-            fbfbi_db_to_1_1();
-            update_option( 'fbfpi_db_version', '1.1' );
-        }
-    }
-
-	/**
 	 * Getting include files
 	 *
 	 * @since 1.0.0
 	 */
-	public function includes()
-	{
+	public function includes() {
 		require_once( FBFPI_FOLDER . '/functions.php' );
+	}
+
+	/**
+	 * Running updates
+	 *
+	 * @since 1.1.0
+	 */
+	public function updates() {
+		$script_db_version  = '1.1';
+		$current_db_version = get_option( 'fbfpi_db_version', '1.0' );
+
+		if ( false === version_compare( $current_db_version, $script_db_version, '<' ) ) {
+			return;
+		}
+
+		if ( true === version_compare( $current_db_version, '1.1', '<' ) ) {
+			require_once( 'updates/to_1.1.php' );
+			fbfbi_db_to_1_1();
+			update_option( 'fbfpi_db_version', '1.1' );
+		}
 	}
 
 	/**
@@ -117,8 +103,7 @@ class FacebookFanpageImport
 	 *
 	 * @since 1.0.0
 	 */
-	public function activate( $network_wide )
-	{
+	public function activate( $network_wide ) {
 		// TODO:	Define activation functionality here
 	}
 
@@ -128,8 +113,7 @@ class FacebookFanpageImport
 	 * @param    boolean $network_wide True if WPMU superadmin uses "Network Activate" action, false if WPMU is
 	 *                                 disabled or plugin is activated on an individual blog
 	 */
-	public function deactivate( $network_wide )
-	{
+	public function deactivate( $network_wide ) {
 		// TODO:	Define deactivation functionality here
 	}
 
@@ -141,8 +125,7 @@ class FacebookFanpageImport
 	 *
 	 * @since 1.0.0
 	 */
-	public function uninstall( $network_wide )
-	{
+	public function uninstall( $network_wide ) {
 		// TODO:	Define uninstall functionality here
 	}
 
@@ -151,9 +134,8 @@ class FacebookFanpageImport
 	 *
 	 * @since 1.0.0
 	 */
-	public function load_textdomain()
-	{
-		load_plugin_textdomain( 'facebook-fanpage-import', FALSE, FBFPI_RELATIVE_FOLDER . '/languages' );
+	public function load_textdomain() {
+		load_plugin_textdomain( 'facebook-fanpage-import', false, FBFPI_RELATIVE_FOLDER . '/languages' );
 	}
 
 	/**
@@ -161,8 +143,7 @@ class FacebookFanpageImport
 	 *
 	 * @since 1.0.0
 	 */
-	public function register_admin_styles()
-	{
+	public function register_admin_styles() {
 		wp_enqueue_style( 'fbfpi-admin-styles', fpfpi_get_asset_url( 'admin', 'css' ) );
 	}
 
@@ -171,8 +152,7 @@ class FacebookFanpageImport
 	 *
 	 * @since 1.0.0
 	 */
-	public function register_admin_scripts()
-	{
+	public function register_admin_scripts() {
 		wp_enqueue_script( 'fbfpi-admin-script', fpfpi_get_asset_url( 'admin', 'js' ) );
 	}
 
@@ -181,10 +161,8 @@ class FacebookFanpageImport
 	 *
 	 * @since 1.0.0
 	 */
-	public function register_plugin_styles()
-	{
-		if( 'yes' !== get_option( 'fbfpi_deactivate_css' ) )
-		{
+	public function register_plugin_styles() {
+		if ( 'yes' !== get_option( 'fbfpi_deactivate_css' ) ) {
 			wp_enqueue_style( 'fbfpi-plugin-styles', fpfpi_get_asset_url( 'display', 'css' ) );
 		}
 	}
@@ -194,8 +172,7 @@ class FacebookFanpageImport
 	 *
 	 * @since 1.0.0
 	 */
-	public function register_plugin_scripts()
-	{
+	public function register_plugin_scripts() {
 		wp_enqueue_script( 'fbfpi-plugin-script', fpfpi_get_asset_url( 'display', 'js' ) );
 	}
 
@@ -204,16 +181,13 @@ class FacebookFanpageImport
 	 *
 	 * @since 1.0.0
 	 */
-	function load_components()
-	{
+	function load_components() {
 		$handle = opendir( FBFPI_COMPONENTFOLDER );
 
-		while ( FALSE !== ( $file = readdir( $handle ) ) ):
+		while ( false !== ( $file = readdir( $handle ) ) ):
 			$entry = FBFPI_COMPONENTFOLDER . '/' . $file;
-			if( is_dir( $entry ) && '.' != $file && '..' != $file )
-			{
-				if( file_exists( $entry . '/component.php' ) )
-				{
+			if ( is_dir( $entry ) && '.' != $file && '..' != $file ) {
+				if ( file_exists( $entry . '/component.php' ) ) {
 					include( $entry . '/component.php' );
 				}
 			}
