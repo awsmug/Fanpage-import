@@ -209,7 +209,7 @@ class FacebookFanpageImportFacebookStream {
 	 *
 	 * @since 1.0.0
 	 */
-	public function import( $param = '' ) {
+	public function import() {
 		set_time_limit( 240 );
 
 		$fanpage = $this->get_fanpage();
@@ -402,10 +402,9 @@ class FacebookFanpageImportFacebookStream {
 			}
 		}
 
-		// save the "next" page URL
 		$paging = $this->fpc->get_paging();
 
-		if ( is_object( $paging ) && property_exists( $paging, 'next' ) ) {
+		if ( is_object( $paging ) && property_exists( $paging, 'next' ) && ! empty( $paging->next ) ) {
 			update_option( '_facebook_fanpage_import_next', $paging->next );
 		} else {
 			delete_option( '_facebook_fanpage_import_next' );
@@ -681,10 +680,28 @@ class FacebookFanpageImportFacebookStream {
 	private function fetch_picture( $picture_url ) {
 		$picture = wp_remote_get( $picture_url );
 		$type    = wp_remote_retrieve_header( $picture, 'content-type' );
-		$mirror  = wp_upload_bits( basename( $picture_url ), '', wp_remote_retrieve_body( $picture ) );
+
+		switch( $type ) {
+			case 'image/jpeg':
+				$suffix = '.jpg';
+				break;
+			case 'image/png':
+				$suffix = '.png';
+				break;
+			case 'image/gif':
+				$suffix = '.gif';
+				break;
+			default:
+				$suffix = '';
+				break;
+		}
+
+		$filename = sanitize_file_name( substr( md5( mt_rand() ), 0, 8 ) . $suffix );
+
+		$mirror  = wp_upload_bits( $filename, '', wp_remote_retrieve_body( $picture ) );
 
 		$attachment = array(
-			'post_title'     => basename( $picture_url ),
+			'post_title'     => $filename,
 			'post_mime_type' => $type
 		);
 
@@ -864,9 +881,8 @@ class FacebookFanpageImportFacebookStream {
 	 * @return mixed
 	 * @since 1.1.0
 	 */
-	public function stop_import( $value ) {
-		delete_option( '_facebook_fanpage_import_next' );
-
+	public function stop_import() {
+		$value = delete_option( '_facebook_fanpage_import_next' );
 		return $value;
 	}
 

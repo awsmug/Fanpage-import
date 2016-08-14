@@ -112,8 +112,6 @@ function fpfpi_get_asset_url( $name, $mode = '', $force = false ) {
 
 	$file = FBFPI_URLPATH.$urlpath;
 
-	FB::log( $file );
-
 	return FBFPI_URLPATH.$urlpath;
 }
 

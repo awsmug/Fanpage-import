@@ -40,7 +40,20 @@ class FacebookFanpageImportAdminSettings {
 
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
+		add_action( 'admin_init', array( $this, 'import' ) );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+	}
+
+	public function import() {
+		if ( array_key_exists( 'fbfpi_now', $_POST ) || array_key_exists( 'fbfpi_next', $_POST ) ) {
+			$fbfpi_import = FacebookFanpageImportFacebookStream::instance();
+			$fbfpi_import->import();
+		}
+
+		if ( array_key_exists( 'fbfpi_stop', $_POST  ) ) {
+			$fbfpi_import = FacebookFanpageImportFacebookStream::instance();
+			$fbfpi_import->stop_import();
+		}
 	}
 
 	/**
@@ -64,8 +77,6 @@ class FacebookFanpageImportAdminSettings {
 	 * Register Settings
 	 */
 	public function register_settings() {
-		$fbfpi_import = FacebookFanpageImportFacebookStream::instance();
-
 		register_setting( 'fbfpi_options', 'fbfpi_fanpage_id' );
 		register_setting( 'fbfpi_options', 'fbfpi_fanpage_stream_language' );
 		register_setting( 'fbfpi_options', 'fbfpi_import_interval' );
@@ -77,9 +88,6 @@ class FacebookFanpageImportAdminSettings {
 		register_setting( 'fbfpi_options', 'fbfpi_insert_link_target' );
 		register_setting( 'fbfpi_options', 'fbfpi_insert_post_format' );
 		register_setting( 'fbfpi_options', 'fbfpi_deactivate_css' );
-		register_setting( 'fbfpi_options', 'fbfpi_now', array( $fbfpi_import, 'import' ) );
-		register_setting( 'fbfpi_options', 'fbfpi_next', array( $fbfpi_import, 'import' ) );
-		register_setting( 'fbfpi_options', 'fbfpi_stop', array( $fbfpi_import, 'stop_import' ) );
 	}
 
 	/**
@@ -109,6 +117,12 @@ class FacebookFanpageImportAdminSettings {
 		$insert_link_target      = get_option( 'fbfpi_insert_link_target' );
 		$insert_post_format      = get_option( 'fbfpi_insert_post_format' );
 		$deactivate_css          = get_option( 'fbfpi_deactivate_css' );
+
+		$imported_until = '';
+		parse_str( get_option( '_facebook_fanpage_import_next', false ), $opt );
+		if( ! empty( $opt['until'] ) ) {
+			$imported_until = date_i18n( get_option( 'date_format' ) . ' - ' . get_option( 'time_format' ), $opt[ 'until' ] );
+		}
 
 		/**
 		 * Fanpage ID
@@ -177,7 +191,7 @@ class FacebookFanpageImportAdminSettings {
 		/**
 		 * Num of entries to import
 		 */
-		$import_num_values = apply_filters( 'fbfpi_num_values', array( 5, 10, 25, 50, 100, 250 ) );
+		$import_num_values = apply_filters( 'fbfpi_num_values', array( 5, 10, 25, 50, 100 ) );
 
 		echo '<div class="fbfpi-form-field">';
 		echo '<label for="fbfpi_import_num">' . __( 'Entries to import', 'facebook-fanpage-import' ) . '</label>';
@@ -402,20 +416,26 @@ class FacebookFanpageImportAdminSettings {
 		do_action( 'fbfpi_settings_form' );
 
 		/**
-		 * Save Button
-		 */
-		submit_button();
-
-		/**
 		 * Import button
 		 */
 		if ( ! empty( $fanpage_id ) ) {
 			if ( ! get_option( '_facebook_fanpage_import_next', false ) ) {
 				echo ' <input type="submit" name="fbfpi_now" value="' . __( 'Import Now', 'facebook-fanpage-import' ) . '" class="button" /> ';
 			} else {
-				echo ' <input type="submit" name="fbfpi_next" value="' . __( 'Import Next', 'facebook-fanpage-import' ) . '" class="button" /> <input type="submit" name="fbfpi_stop" value="' . __( 'Stop', 'facebook-fanpage-import' ) . '" class="button" style="margin-left:10px;" /> ';
+				echo ' <input type="submit" name="fbfpi_next" value="' . __( 'Import Next', 'facebook-fanpage-import' ) . '" class="button" /> <input type="submit" name="fbfpi_stop" value="' . __( 'Reset Import', 'facebook-fanpage-import' ) . '" class="button" style="margin-left:10px;" /> ';
+			}
+			if( ! empty( $imported_until ) ) {
+				echo '<div class="fbfpi-form-infotext">';
+				echo sprintf( __( 'Imported entries until %s', 'facebook-fanpage-import' ), $imported_until );
+				echo '</div>';
 			}
 		}
+
+		/**
+		 * Save Button
+		 */
+		submit_button();
+
 		echo '</form>';
 		echo '</div>';
 		echo '</div>';

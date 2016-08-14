@@ -28,21 +28,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 class FacebookFanpageConnect {
 	/**
 	 * @var string Access token for facebook
+	 * @since   1.0.0
 	 */
 	var $access_token;
 
 	/**
-	 * @var Facebook Fanpage ID
+	 * @var int Facebook Fanpage ID
+	 * @since   1.0.0
 	 */
 	var $page_id;
 
 	/**
 	 * @var Facebook Paging Object
+	 * @since   1.0.0
 	 */
 	var $paging = null;
 
 	/**
 	 * @var string Locale settings
+	 * @since   1.0.0
 	 */
 	var $locale;
 
@@ -70,6 +74,7 @@ class FacebookFanpageConnect {
 	 * @param $app_secret
 	 *
 	 * @return mixed
+	 * @since   1.0.0
 	 */
 	function create_access_token( $app_id, $app_secret ) {
 		$access_token = $app_id . '|' . $app_secret;
@@ -81,6 +86,7 @@ class FacebookFanpageConnect {
 	 * Getting Page Data
 	 *
 	 * @return array|mixed|object|string
+	 * @since   1.0.0
 	 */
 	function get_page() {
 		$url = $this->graph_url;
@@ -99,6 +105,7 @@ class FacebookFanpageConnect {
 	 * @param $url
 	 *
 	 * @return mixed|string
+	 * @since   1.0.0
 	 */
 	private function fetch_data( $url ) {
 		if ( is_callable( 'curl_init' ) ) {
@@ -127,33 +134,14 @@ class FacebookFanpageConnect {
 	}
 
 	/**
-	 * Getting posts
+	 * Getting data of an Facebook graph ID
 	 *
-	 * @param int $limit
+	 * @param string $id
+	 * @param array $fields
 	 *
-	 * @return mixed
+	 * @return array|mixed|object|string
+	 * @since   1.0.0
 	 */
-	function get_posts( $limit = false ) {
-		$url = $this->graph_url;
-		$url .= $this->page_id . '/';
-		$url .= 'posts/';
-		$url .= '?access_token=' . $this->access_token . '&locale=' . $this->locale;
-
-		if ( false !== $limit ) {
-			$url .= '&limit=' . $limit;
-		}
-
-		$data = $this->fetch_data( $url );
-
-		$data = json_decode( $data );
-
-		if ( property_exists( $data, 'paging' ) ) {
-			$this->paging = $data->paging;
-		}
-
-		return $data->data;
-	}
-
 	function get_id( $id, $fields = array() ) {
 		$url = $this->graph_url;
 		$url .= $id . '/';
@@ -170,14 +158,42 @@ class FacebookFanpageConnect {
 	}
 
 	/**
+	 * Getting posts
+	 *
+	 * @param int $limit
+	 *
+	 * @return mixed
+	 * @since   1.0.0
+	 */
+	function get_posts( $limit = false ) {
+		$url = $this->graph_url;
+		$url .= $this->page_id . '/';
+		$url .= 'posts/';
+		$url .= '?access_token=' . $this->access_token . '&locale=' . $this->locale;
+
+		if ( false !== $limit ) {
+			$url .= '&limit=' . $limit;
+		}
+
+		$data = $this->fetch_data( $url );
+		$data = json_decode( $data );
+
+		if ( property_exists( $data, 'paging' ) ) {
+			$this->paging = $data->paging;
+		}
+
+		return $data->data;
+	}
+
+	/**
 	 * Getting paged posts
 	 *
 	 * @param string $url The "next page" URL returned by Graph API
 	 *
 	 * @return mixed
+	 * @since   1.0.0
 	 */
 	function get_posts_paged( $url ) {
-
 		$data = $this->fetch_data( $url );
 		$data = json_decode( $data );
 
@@ -194,6 +210,7 @@ class FacebookFanpageConnect {
 	 * @param string $url The "next page" URL returned by Graph API
 	 *
 	 * @return mixed
+	 * @since   1.0.0
 	 */
 	function get_paging() {
 		return $this->paging;
@@ -205,6 +222,7 @@ class FacebookFanpageConnect {
 	 * @param $post_id
 	 *
 	 * @return array|mixed|object|string
+	 * @since   1.0.0
 	 */
 	function get_post_picture( $post_id ) {
 		$url = $this->graph_url;
@@ -224,6 +242,7 @@ class FacebookFanpageConnect {
 	 * @param $object_id
 	 *
 	 * @return array|mixed|object|string
+	 * @since   1.0.0
 	 */
 	function get_photo_by_object( $object_id ) {
 		$url = $this->graph_url;
