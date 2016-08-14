@@ -2,15 +2,18 @@
  * Facebook Fanpage import Version 1.0.0-beta.3 (http://awesome.ug)
  * Licensed under GNU General Public License v3 (http://www.gnu.org/licenses/gpl-3.0.html)
  */
-.skip_form input,
-.skip_form select
+.tools_page_fanpage-import-components-admin-settings .fbfpi-form .fbfpi-form-field
 {
-    float: left;
-
-    margin-right: 10px;
+    display: flex;
 }
-
-.skip_form .skip_field_row
+.tools_page_fanpage-import-components-admin-settings .fbfpi-form .fbfpi-form-field label
 {
-    line-height: 28px;
+    font-weight: bold;
+
+    width: 200px;
+    padding: 20px 10px 20px 0;
+}
+.tools_page_fanpage-import-components-admin-settings .fbfpi-form .fbfpi-form-field .input
+{
+    padding: 13px 0 0 10px;
 }

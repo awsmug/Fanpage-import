@@ -103,7 +103,6 @@ class FacebookFanpageImportAdminSettings
 
 		echo '<div id="icon-options-general" class="icon32 icon32-posts-post"></div>';
 		echo '<h2>' . __( 'Facebook Fanpage Import', 'facebook-fanpage-import' ) . '</h2>';
-		echo '<p>' . __( 'Just put in your Fanpage ID and start importing.', 'facebook-fanpage-import' ) . '</p>';
 
 		echo '<div class="fbfpi-form">';
 		echo '<form method="post" action="options.php">';
@@ -127,7 +126,9 @@ class FacebookFanpageImportAdminSettings
 		 */
 		echo '<div class="fbfpi-form-field">';
 		echo '<label for="fbfpi_fanpage_id">' . __( 'Page ID', 'facebook-fanpage-import' ) . '</label>';
-		echo '<input type="text" name="fbfpi_fanpage_id" id="fbfpi_fanpage_id" value="' . $fanpage_id . '" />';
+		echo '<div class="input">';
+		echo '<input type="text" name="fbfpi_fanpage_id" id="fbfpi_fanpage_id" value="' . $fanpage_id . '" /><br /><small>' . __( 'Copy the fanpage ID from your Facebook fanpage info page.', 'facebook-fanpage-import' ) . '</small>';
+		echo '</div>';
 		echo '</div>';
 
 		/**
@@ -147,6 +148,7 @@ class FacebookFanpageImportAdminSettings
 
 		echo '<div class="fbfpi-form-field">';
 		echo '<label for="fbfpi_fanpage_stream_language">' . __( 'Facebook Language', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
 		echo '<select name="fbfpi_fanpage_stream_language" id="fbfpi_fanpage_stream_language">';
 		foreach( $select_languages AS $language )
 		{
@@ -157,6 +159,7 @@ class FacebookFanpageImportAdminSettings
 			echo '<option value="' . $language[ 'value' ]. '"' . $selected . '>' . $language[ 'value' ] . '</option>';
 		}
 		echo '</select>';
+		echo '</div>';
 		echo '</div>';
 
 		/**
@@ -171,6 +174,7 @@ class FacebookFanpageImportAdminSettings
 
 		echo '<div class="fbfpi-form-field">';
 		echo '<label for="fbfpi_import_interval">' . __( 'Import Interval', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
 		echo '<select name="fbfpi_import_interval" id="fbfpi_import_interval">';
 		foreach( $select_schedules AS $schedule )
 		{
@@ -182,6 +186,7 @@ class FacebookFanpageImportAdminSettings
 		}
 		echo '</select>';
 		echo '</div>';
+		echo '</div>';
 
 		/**
 		 * Num of entries to import
@@ -190,6 +195,7 @@ class FacebookFanpageImportAdminSettings
 
 		echo '<div class="fbfpi-form-field">';
 		echo '<label for="fbfpi_import_num">' . __( 'Entries to import', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
 		echo '<select name="fbfpi_import_num" id="fbfpi_import_num">';
 		foreach( $import_num_values AS $num )
 		{
@@ -200,6 +206,7 @@ class FacebookFanpageImportAdminSettings
 			echo '<option value="' . $num. '"' . $selected . '>' . $num . '</option>';
 		}
 		echo '</select>';
+		echo '</div>';
 		echo '</div>';
 
 		/**
@@ -218,6 +225,7 @@ class FacebookFanpageImportAdminSettings
 
 		echo '<div class="fbfpi-form-field">';
 		echo '<label for="fbfpi_insert_post_type">' . __( 'Insert Messages as', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
 		echo '<select name="fbfpi_insert_post_type" id="fbfpi_insert_post_type">';
 		foreach( $insert_post_types AS $post_type )
 		{
@@ -228,6 +236,7 @@ class FacebookFanpageImportAdminSettings
 			echo '<option value="' . $post_type[ 'value' ] . '"' . $selected . '>' . $post_type[ 'label' ] . '</option>';
 		}
 		echo '</select>';
+		echo '</div>';
 		echo '</div>';
 
 		/**
@@ -250,6 +259,7 @@ class FacebookFanpageImportAdminSettings
 
 		echo '<div class="fbfpi-form-field">';
 		echo '<label for="fbfpi_insert_term_id">' . __( 'Categorise Messages as', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
 		echo '<select name="fbfpi_insert_term_id" id="fbfpi_insert_term_id">';
 		foreach( $insert_post_terms AS $term )
 		{
@@ -260,6 +270,7 @@ class FacebookFanpageImportAdminSettings
 			echo '<option value="' . $term[ 'value' ] . '"' . $selected . '>' . $term[ 'label' ] . '</option>';
 		}
 		echo '</select>';
+		echo '</div>';
 		echo '</div>';
 
 		/**
@@ -278,6 +289,7 @@ class FacebookFanpageImportAdminSettings
 
 		echo '<div class="fbfpi-form-field">';
 		echo '<label for="fbfpi_insert_user_id">' . __( 'Inserting User', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
 		echo '<select name="fbfpi_insert_user_id" id="fbfpi_insert_user_id">';
 		foreach( $user_list AS $user )
 		{
@@ -288,6 +300,7 @@ class FacebookFanpageImportAdminSettings
 			echo '<option value="' . $user[ 'value' ] . '"' . $selected . '>' . $user[ 'label' ] . '</option>';
 		}
 		echo '</select>';
+		echo '</div>';
 		echo '</div>';
 
 		/**
@@ -306,6 +319,7 @@ class FacebookFanpageImportAdminSettings
 
 		echo '<div class="fbfpi-form-field">';
 		echo '<label for="fbfpi_insert_post_status">' . __( 'Post status', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
 		echo '<select name="fbfpi_insert_post_status" id="fbfpi_insert_post_status">';
 		foreach( $post_status_values AS $post_status_value )
 		{
@@ -316,6 +330,7 @@ class FacebookFanpageImportAdminSettings
 			echo '<option value="' . $post_status_value[ 'value' ] . '"' . $selected . '>' . $post_status_value[ 'label' ] . '</option>';
 		}
 		echo '</select>';
+		echo '</div>';
 		echo '</div>';
 
 		/**
@@ -334,6 +349,7 @@ class FacebookFanpageImportAdminSettings
 
 		echo '<div class="fbfpi-form-field">';
 		echo '<label for="fbfpi_insert_link_target">' . __( 'Open Links in', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
 		echo '<select name="fbfpi_insert_link_target" id="fbfpi_insert_link_target">';
 		foreach( $insert_link_target_values AS $insert_link_target_value )
 		{
@@ -344,6 +360,7 @@ class FacebookFanpageImportAdminSettings
 			echo '<option value="' . $insert_link_target_value[ 'value' ] . '"' . $selected . '>' . $insert_link_target_value[ 'label' ] . '</option>';
 		}
 		echo '</select>';
+		echo '</div>';
 		echo '</div>';
 
 		/**
@@ -372,6 +389,7 @@ class FacebookFanpageImportAdminSettings
 
 				echo '<div class="fbfpi-form-field">';
 				echo '<label for="fbfpi_insert_post_format">' . __( 'Post format', 'facebook-fanpage-import' ) . '</label>';
+				echo '<div class="input">';
 				echo '<select name="fbfpi_insert_post_format" id="fbfpi_insert_post_format">';
 				foreach( $insert_post_format_values AS $insert_post_format_value )
 				{
@@ -383,6 +401,7 @@ class FacebookFanpageImportAdminSettings
 				}
 				echo '</select>';
 				echo '</div>';
+				echo '</div>';
 			}
 		}
 
@@ -393,7 +412,9 @@ class FacebookFanpageImportAdminSettings
 
 		echo '<div class="fbfpi-form-field">';
 		echo '<label for="fbfpi_deactivate_css">' . __( 'Deactivate Plugin CSS', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
 		echo '<input type="checkbox" value="yes" name="fbfpi_deactivate_css" id="fbfpi_deactivate_css"' . $checked . ' />';
+		echo '</div>';
 		echo '</div>';
 
 		do_action( 'fbfpi_settings_form' );

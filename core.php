@@ -163,7 +163,7 @@ class FacebookFanpageImport
 	 */
 	public function register_admin_styles()
 	{
-		wp_enqueue_style( 'fbfpi-admin-styles', fpfpi_get_asset_url( 'admin', 'js' ) );
+		wp_enqueue_style( 'fbfpi-admin-styles', fpfpi_get_asset_url( 'admin', 'css' ) );
 	}
 
 	/**

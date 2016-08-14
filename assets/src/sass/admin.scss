@@ -1,12 +1,19 @@
-.skip_form{
-	input,
-	select{
-		float:left;
-		margin-right:10px;
-	}
+.tools_page_fanpage-import-components-admin-settings{
 
-	.skip_field_row{
-		line-height:28px;
+	.fbfpi-form{
+
+		.fbfpi-form-field{
+			display: flex;
+
+			label{
+				font-weight: bold;
+				width:200px;
+				padding: 20px 10px 20px 0;
+			}
+
+			.input{
+				padding: 13px 0px 0px 10px;
+			}
+		}
 	}
 }
-
