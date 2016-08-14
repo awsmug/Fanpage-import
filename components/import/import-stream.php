@@ -779,26 +779,42 @@ class FacebookFanpageImportFacebookStream {
 	 * @since 1.0.0
 	 */
 	private function get_photo_content( $entry, $attach_id ) {
-		$post_title = '';
-		$link_taqrget = $this->link_target;
+		$post[ 'title' ] = '';
 
-		$text = $entry->message;
-		$photo_src = wp_get_attachment_url( $attach_id );
-		$photo_url = $entry->link;
+		$template_vars['link_target'] = $this->link_target;
 
-		$photo_title = '';
-		$photo_text  = '';
+		$template_vars['text'] = $entry->message;
+
+		$template_vars['photo_src'] = wp_get_attachment_url( $attach_id );
+		$template_vars['photo_url'] = $entry->link;
+		$template_vars['photo_title'] = '';
+		$template_vars['photo_text']  = '';
 
 		if( ! empty( $entry->title ) && ! empty( $entry->description ) ){
-			$photo_title = $entry->title;
-			$photo_text  = $entry->description;
+			$template_vars['photo_title'] = $entry->title;
+			$template_vars['photo_text']  = $entry->description;
 		}
+
+		/**
+		 * Filter for adding own variables
+		 *
+		 * @param array   $template_vars Template variables unfiltered
+		 * @param stdObject $entry Facebook Entry object
+		 *
+		 * @return array $template_vars Template variables filtered
+		 * @since 1.0.0
+		 */
+		$template_vars = apply_filters( 'fbfpi_entry_photo_vars', $template_vars, $entry );
+
+		extract( $template_vars );
 
 		$template_file = locate_fbfpi_template( 'photo.php' );
 
 		ob_start();
 		include ( $template_file );
 		$content = ob_get_clean();
+
+		$post[ 'content' ] = $content;
 
 		/**
 		 * Allow overrides.
