@@ -331,8 +331,10 @@ class FacebookFanpageImportFacebookStream {
 				update_post_meta( $post_id, '_fbfpi_entry_url', $entry_url );
 				update_post_meta( $post_id, '_fbfpi_type', $entry->type );
 
-				if ( 'none' != $this->post_format ) {
-					set_post_format( $post_id, $this->post_format );
+				if( 'posts' ===  $this->post_type ) {
+					if ( 'none' != $this->post_format ) {
+						set_post_format( $post_id, $this->post_format );
+					}
 				}
 
 				/**

@@ -366,7 +366,7 @@ class FacebookFanpageImportAdminSettings {
 		/**
 		 * Selecting post formats if existing
 		 */
-		if ( current_theme_supports( 'post-formats' ) ) {
+		if ( current_theme_supports( 'post-formats' ) && 'posts' === $insert_post_type ) {
 			$post_formats = get_theme_support( 'post-formats' );
 
 			if ( false != $post_formats ) {
