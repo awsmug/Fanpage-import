@@ -219,6 +219,13 @@ class FacebookFanpageImportFacebookStream {
 
 				$entry = $this->fpc->get_id( $entry->id, array( 'message', 'story', 'caption', 'description', 'full_picture', 'object_id', 'from', 'link', 'created_time', 'type' ) );
 
+				if( ! in_array( $entry->type, array( 'link', 'photo', 'video', 'status' ) ) ) {
+					$skip_unknown_count ++;
+					continue;
+				}
+
+				$i ++;
+
 				$post_title   = $this->get_post_title( $entry );
 				$post_excerpt = $this->get_post_excerpt( $entry );
 				$picture_url  = $this->get_post_picture_url( $entry );
@@ -245,7 +252,6 @@ class FacebookFanpageImportFacebookStream {
 
 					case 'link':
 						$post->post_content = $this->get_link_content( $entry, $attach_id );
-						$i++:
 						break;
 
 					case 'photo':
@@ -261,7 +267,6 @@ class FacebookFanpageImportFacebookStream {
 							set_post_thumbnail( $post_id, $attach_id );
 						}
 
-						$i++:
 						break;
 
 					case 'video':
@@ -271,7 +276,6 @@ class FacebookFanpageImportFacebookStream {
 							set_post_thumbnail( $post_id, $attach_id );
 						}
 
-						$i++:
 						break;
 
 					case 'status':
@@ -281,12 +285,9 @@ class FacebookFanpageImportFacebookStream {
 							set_post_thumbnail( $post_id, $attach_id );
 						}
 
-						$i++:
 						break;
 
 					default:
-						$skip_unknown_count ++;
-
 						break;
 				}
 				wp_update_post( $post );
