@@ -238,39 +238,41 @@ class FacebookFanpageImportAdminSettings {
 		echo '</div>';
 		echo '</div>';
 
-		/**
-		 * Select a category to apply to imported entries
-		 */
-		$insert_post_terms = array(
-			array(
-				'value' => 'none',
-				'label' => __( 'No category', 'facebook-fanpage-import' ),
-			)
-		);
-
-		$terms = get_terms( array( 'taxonomy' => 'category', 'hide_empty' => false ) );
-		foreach ( $terms AS $term ) {
-			$insert_post_terms[] = array(
-				'value' => $term->term_id,
-				'label' => $term->name,
+		if( 'posts' === $insert_post_type ) {
+			/**
+			 * Select a category to apply to imported entries
+			 */
+			$insert_post_terms = array(
+				array(
+					'value' => 'none',
+					'label' => __( 'No category', 'facebook-fanpage-import' ),
+				)
 			);
-		}
 
-		echo '<div class="fbfpi-form-field">';
-		echo '<label for="fbfpi_insert_term_id">' . __( 'Categorise Messages as', 'facebook-fanpage-import' ) . '</label>';
-		echo '<div class="input">';
-		echo '<select name="fbfpi_insert_term_id" id="fbfpi_insert_term_id">';
-		foreach ( $insert_post_terms AS $term ) {
-			$selected = '';
-			if ( (int) $insert_term_id === (int) $term[ 'value' ] ) {
-				$selected = ' selected="selected"';
+			$terms = get_terms( array( 'taxonomy' => 'category', 'hide_empty' => false ) );
+			foreach ( $terms AS $term ) {
+				$insert_post_terms[] = array(
+					'value' => $term->term_id,
+					'label' => $term->name,
+				);
 			}
 
-			echo '<option value="' . $term[ 'value' ] . '"' . $selected . '>' . $term[ 'label' ] . '</option>';
+			echo '<div class="fbfpi-form-field">';
+			echo '<label for="fbfpi_insert_term_id">' . __( 'Categorise Messages as', 'facebook-fanpage-import' ) . '</label>';
+			echo '<div class="input">';
+			echo '<select name="fbfpi_insert_term_id" id="fbfpi_insert_term_id">';
+			foreach ( $insert_post_terms AS $term ) {
+				$selected = '';
+				if ( (int) $insert_term_id === (int) $term[ 'value' ] ) {
+					$selected = ' selected="selected"';
+				}
+
+				echo '<option value="' . $term[ 'value' ] . '"' . $selected . '>' . $term[ 'label' ] . '</option>';
+			}
+			echo '</select>';
+			echo '</div>';
+			echo '</div>';
 		}
-		echo '</select>';
-		echo '</div>';
-		echo '</div>';
 
 		/**
 		 * Select importing User

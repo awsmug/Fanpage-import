@@ -245,6 +245,7 @@ class FacebookFanpageImportFacebookStream {
 
 					case 'link':
 						$post->post_content = $this->get_link_content( $entry, $attach_id );
+						$i++:
 						break;
 
 					case 'photo':
@@ -260,6 +261,7 @@ class FacebookFanpageImportFacebookStream {
 							set_post_thumbnail( $post_id, $attach_id );
 						}
 
+						$i++:
 						break;
 
 					case 'video':
@@ -269,6 +271,7 @@ class FacebookFanpageImportFacebookStream {
 							set_post_thumbnail( $post_id, $attach_id );
 						}
 
+						$i++:
 						break;
 
 					case 'status':
@@ -278,6 +281,7 @@ class FacebookFanpageImportFacebookStream {
 							set_post_thumbnail( $post_id, $attach_id );
 						}
 
+						$i++:
 						break;
 
 					default:
@@ -288,16 +292,19 @@ class FacebookFanpageImportFacebookStream {
 				wp_update_post( $post );
 
 				// assign term if one is set
-				if ( $this->term_id != 'none' ) {
-					$cat_ids           = array( intval( $this->term_id ) );
-					$term_taxonomy_ids = wp_set_object_terms( $post->ID, $cat_ids, 'category' );
-					if ( is_wp_error( $term_taxonomy_ids ) ) {
-						// term could not be set
-						error_log( print_r( array(
-							                    'method'                => __METHOD__,
-							                    'term could not be set' => $this->term_id,
-							                    'entry'                 => $entry,
-						                    ), true ) );
+
+				if( 'posts' ===  $this->post_type ) {
+					if ( $this->term_id != 'none' ) {
+						$cat_ids           = array( intval( $this->term_id ) );
+						$term_taxonomy_ids = wp_set_object_terms( $post->ID, $cat_ids, 'category' );
+						if ( is_wp_error( $term_taxonomy_ids ) ) {
+							// term could not be set
+							error_log( print_r( array(
+								                    'method'                => __METHOD__,
+								                    'term could not be set' => $this->term_id,
+								                    'entry'                 => $entry,
+							                    ), true ) );
+						}
 					}
 				}
 
@@ -334,8 +341,6 @@ class FacebookFanpageImportFacebookStream {
 				 * @param object  $entry The Facebook entry object
 				 */
 				do_action( 'fbfpi_entry_created', $post, $entry );
-
-				$i ++;
 			}
 
 			FacebookFanpageImport::notice( sprintf( __( '%d entries have been found.', 'facebook-fanpage-import' ), count( $entries ) ) );
