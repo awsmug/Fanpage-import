@@ -26,10 +26,15 @@ This section describes how to install the plugin and get it working.
 5. Done!
 
 == Screenshots ==
+
 1. **Settings**
 2. **An imported Link**
 
 == Changelog ==
+
+= 1.0.0-beta.4 =
+* Enhanced: Removed Skip framework
+* Enhanced: Added Gulp, composer & co.
 
 = 1.0.0 beta 3 =
 * Fixed allow_url_fopen problem
