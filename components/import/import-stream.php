@@ -836,14 +836,8 @@ class FacebookFanpageImportFacebookStream {
 		}
 		$content .= '<div class="fbfpi_text">';
 
-		// set a default title if none exists
 		if ( property_exists( $entry, 'message' ) ) {
-			$name = $entry->message;
-			$content .= '<h4><a href="' . $entry->link . '" target="' . $this->link_target . '">' . $name . '</a></h4>';
-		}
-
-		if ( property_exists( $entry, 'description' ) ) {
-			$content .= '<p>' . $entry->description . '</p>';
+			$content .= '<p>' . $entry->message . '</p>';
 		}
 		$content .= '</div>';
 		$content .= '</div>';
