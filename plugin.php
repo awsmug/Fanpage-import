@@ -3,7 +3,7 @@
  * Plugin Name: Facebook Fanpage Import
  * Plugin URI: http://www.awesome.ug
  * Description: Easy import Facebook Fanpage messages to your WordPress.
- * Version: 1.0.0
+ * Version: 1.0.0-beta.3
  * Author: Sven Wagener, Awesome UG
  * Author URI: http://www.awesome.ug
  * Author Email: very@awesome.ug

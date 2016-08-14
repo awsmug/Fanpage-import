@@ -6,7 +6,7 @@
  *
  * @author  mahype, awesome.ug <very@awesome.ug>
  * @package Facebook Fanpage Import
- * @version 1.0.0
+ * @version 1.0.0-beta.3
  * @since   1.0.0
  * @license GPL 2
  *
