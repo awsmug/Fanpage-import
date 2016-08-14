@@ -217,7 +217,7 @@ class FacebookFanpageImportFacebookStream {
 					continue;
 				}
 
-				$entry = $this->fpc->get_id( $entry->id, array( 'message', 'story', 'caption', 'description', 'full_picture', 'object_id', 'from', 'link', 'created_time', 'type' ) );
+				$entry = $this->fpc->get_id( $entry->id, array( 'name', 'message', 'story', 'caption', 'description', 'full_picture', 'object_id', 'from', 'link', 'created_time', 'type' ) );
 
 				if( ! in_array( $entry->type, array( 'link', 'photo', 'video', 'status' ) ) ) {
 					$skip_unknown_count ++;
