@@ -37,6 +37,7 @@ class FacebookFanpageImportShowdataShortcodes {
 		$this->name = get_class( $this );
 
 		add_shortcode( 'fanpagestream', array( $this, 'show_stream' ) );
+		add_shortcode( 'facebook_video', array( $this, 'facebook_video' ) );
 	}
 
 	/**
@@ -49,9 +50,7 @@ class FacebookFanpageImportShowdataShortcodes {
 	public function show_stream( $atts ) {
 		global $paged, $wp_query;
 
-		extract( shortcode_atts( array(
-			                         'entries' => (int) get_option( 'posts_per_page' ),
-		                         ), $atts ) );
+		extract( shortcode_atts( array( 'entries' => (int) get_option( 'posts_per_page' ), ), $atts ) );
 
 		$args = array(
 			'posts_per_page' => $entries,
@@ -208,6 +207,15 @@ class FacebookFanpageImportShowdataShortcodes {
 		}
 		$paged = $paged_old;
 		wp_reset_query();
+
+		return $content;
+	}
+
+	public function facebook_video( $atts ) {
+		if ( empty( $atts['url'] ) )
+			return;
+
+		$content = sprintf( '<div class="fb-video" data-allowfullscreen="true" data-href="%s"></div>', esc_url( $atts['url'] ) );
 
 		return $content;
 	}

@@ -826,27 +826,21 @@ class FacebookFanpageImportFacebookStream {
 	 * @since 1.0.0
 	 */
 	private function get_video_content( $entry ) {
-
-		$content = $entry->message . "\n\n";
-
-		$content .= '<div class="fbfpi_video">';
+		$content = '<div class="fbfpi_video">';
 
 		// support JetPack's "facebook" shortcode for Facebook videos
-		if ( shortcode_exists( 'facebook' ) && false !== strpos( $entry->link, 'www.facebook.com' ) ) {
-			$content .= '[facebook url="' . $entry->link . '"]';
+		if( false !== strpos( $entry->link, 'www.facebook.com' ) ) {
+			$content .= '[facebook_video url ="' . $entry->link . '"]';
 		} else {
 			$content .= '[embed]' . $entry->link . '[/embed]';
 		}
 		$content .= '<div class="fbfpi_text">';
 
 		// set a default title if none exists
-		if ( property_exists( $entry, 'name' ) ) {
-			$name = $entry->name;
-		} else {
-			$name = __( 'Untitled video', 'facebook-fanpage-import' );
+		if ( property_exists( $entry, 'message' ) ) {
+			$name = $entry->message;
+			$content .= '<h4><a href="' . $entry->link . '" target="' . $this->link_target . '">' . $name . '</a></h4>';
 		}
-
-		$content .= '<h4><a href="' . $entry->link . '" target="' . $this->link_target . '">' . $name . '</a></h4>';
 
 		if ( property_exists( $entry, 'description' ) ) {
 			$content .= '<p>' . $entry->description . '</p>';
