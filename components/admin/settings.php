@@ -270,6 +270,7 @@ class FacebookFanpageImportAdminSettings {
 				echo '<option value="' . $term[ 'value' ] . '"' . $selected . '>' . $term[ 'label' ] . '</option>';
 			}
 			echo '</select>';
+			echo '<br /><small>' . sprintf( __( 'Add new categories in the <a href="%s">posts section</a>.', 'facebook-fanpage-import' ), admin_url( 'edit-tags.php?taxonomy=category' ) ) . '</small>';
 			echo '</div>';
 			echo '</div>';
 		}
