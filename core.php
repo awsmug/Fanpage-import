@@ -38,12 +38,7 @@ class FacebookFanpageImport {
 
 		add_action( 'init', array( $this, 'load_components' ) );
 		add_action( 'init', array( $this, 'load_textdomain' ) );
-
-		register_activation_hook( __FILE__, array( $this, 'activate' ) );
-		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
-		// register_uninstall_hook( __FILE__, array( $this, 'uninstall' ) );
-
-		add_action( 'init', array( $this, 'updates' ) );
+4		add_action( 'init', array( $this, 'updates' ) );
 
 		if ( is_admin() ) {
 			add_action( 'admin_print_styles', array( $this, 'register_admin_styles' ) );
@@ -94,40 +89,6 @@ class FacebookFanpageImport {
 			fbfbi_db_to_1_1();
 			update_option( 'fbfpi_db_version', '1.1' );
 		}
-	}
-
-	/**
-	 * Fired when the plugin is activated.
-	 *
-	 * @param    boolean $network_wide True if WPMU superadmin uses "Network Activate" action, false if WPMU is
-	 *                                 disabled or plugin is activated on an individual blog
-	 *
-	 * @since 1.0.0
-	 */
-	public function activate( $network_wide ) {
-		// TODO:	Define activation functionality here
-	}
-
-	/**
-	 * Fired when the plugin is deactivated.
-	 *
-	 * @param    boolean $network_wide True if WPMU superadmin uses "Network Activate" action, false if WPMU is
-	 *                                 disabled or plugin is activated on an individual blog
-	 */
-	public function deactivate( $network_wide ) {
-		// TODO:	Define deactivation functionality here
-	}
-
-	/**
-	 * Fired when the plugin is uninstalled.
-	 *
-	 * @param    boolean $network_wide True if WPMU superadmin uses "Network Activate" action, false if WPMU is
-	 *                                 disabled or plugin is activated on an individual blog
-	 *
-	 * @since 1.0.0
-	 */
-	public function uninstall( $network_wide ) {
-		// TODO:	Define uninstall functionality here
 	}
 
 	/**
