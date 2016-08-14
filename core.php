@@ -38,7 +38,7 @@ class FacebookFanpageImport {
 
 		add_action( 'init', array( $this, 'load_components' ) );
 		add_action( 'init', array( $this, 'load_textdomain' ) );
-4		add_action( 'init', array( $this, 'updates' ) );
+		add_action( 'init', array( $this, 'updates' ) );
 
 		if ( is_admin() ) {
 			add_action( 'admin_print_styles', array( $this, 'register_admin_styles' ) );
