@@ -40,11 +40,17 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 1.0.0-beta.5 =
+* Enhanced: Added events for import
+
 = 1.0.0-beta.4 =
 * Enhanced: Removed Skip framework
 * Enhanced: Added Gulp, composer & co.
 * Enhanced: Minified scripts and added sass files
 * Enhanced: Added deploy script
+* Enhnaced: Added log function
+* Enhanced: Bettered up admin notices
+* Enhanced: Added Facebook video embedding
 
 = 1.0.0 beta 3 =
 * Fixed allow_url_fopen problem

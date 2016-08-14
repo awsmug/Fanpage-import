@@ -219,8 +219,9 @@ class FacebookFanpageImportFacebookStream {
 
 				$entry = $this->fpc->get_id( $entry->id, array( 'name', 'message', 'story', 'caption', 'description', 'full_picture', 'object_id', 'from', 'link', 'created_time', 'type' ) );
 
-				if( ! in_array( $entry->type, array( 'link', 'photo', 'video', 'status' ) ) ) {
+				if( ! in_array( $entry->type, array( 'link', 'photo', 'video', 'status', 'event' ) ) ) {
 					$skip_unknown_count ++;
+					FacebookFanpageImport::log( 'Skipped:' .chr(13) . print_r( $entry, true ) );
 					continue;
 				}
 
@@ -247,11 +248,22 @@ class FacebookFanpageImportFacebookStream {
 					$attach_id = $this->fetch_picture( $picture_url, $post_id );
 				}
 
+				FacebookFanpageImport::log( print_r( $entry, true ) );
+
 				// Post content
 				switch ( $entry->type ) {
 
 					case 'link':
 						$post->post_content = $this->get_link_content( $entry, $attach_id );
+						break;
+
+					case 'status':
+						$post->post_content = $entry->message;
+
+						if ( ! empty( $attach_id ) ) {
+							set_post_thumbnail( $post_id, $attach_id );
+						}
+
 						break;
 
 					case 'photo':
@@ -278,8 +290,8 @@ class FacebookFanpageImportFacebookStream {
 
 						break;
 
-					case 'status':
-						$post->post_content = $entry->message;
+					case 'event':
+						$post->post_content = $this->get_event_content( $entry, $attach_id );
 
 						if ( ! empty( $attach_id ) ) {
 							set_post_thumbnail( $post_id, $attach_id );
@@ -290,6 +302,8 @@ class FacebookFanpageImportFacebookStream {
 					default:
 						break;
 				}
+
+				// $post->post_content = $entry->type . ': ' . $post->post_content;
 				wp_update_post( $post );
 
 				// assign term if one is set
@@ -852,6 +866,59 @@ class FacebookFanpageImportFacebookStream {
 		 * @since 1.1.0
 		 */
 		return apply_filters( 'fbfpi_entry_video', $content, $entry );
+	}
+
+	/**
+	 * Get link content
+	 *
+	 * @param $entry
+	 * @param $attach_id
+	 *
+	 * @return string
+	 * @since 1.0.0
+	 */
+	private function get_event_content( $entry, $attach_id ) {
+		$attach_url = wp_get_attachment_url( $attach_id );
+
+		if ( property_exists( $entry, 'caption' ) ) {
+			$copyright = '&copy; ' . $entry->caption;
+		} else {
+			$copyright = '&copy; ' . $entry->name;
+		}
+
+		$content  = $entry->story;
+
+		$content .= '<div class="fbfpi_link">';
+		if ( '' != $attach_url ) {
+			$content .= '<div class="fbfpi_image">';
+			$content .= '<a href="' . $entry->link . '" target="' . $this->link_target . '" title="' . $copyright . '"><img src="' . $attach_url . '" title="' . $copyright . '"></a>';
+			$content .= '</div>';
+		}
+		$content .= '<div class="fbfpi_text">';
+		$content .= '<h4><a href="' . $entry->link . '" target="' . $this->link_target . '" title="' . $copyright . '">' . $entry->name . '</a></h4>';
+
+		if ( property_exists( $entry, 'caption' ) ) {
+			$content .= '<p><small>' . $entry->caption . '</small><br /></p>';
+		}
+
+		if ( property_exists( $entry, 'description' ) ) {
+			$content .= '<p>' . $entry->description . '</p>';
+		}
+		$content .= '</div>';
+		$content .= '</div>';
+
+		/**
+		 * Allow overrides.
+		 *
+		 * @param string  $content   The constructed content
+		 * @param object  $entry     The entry object
+		 * @param integer $attach_id The numeric ID of the attachment
+		 *
+		 * @return string $content The constructed content
+		 *
+		 * @since 1.0.0
+		 */
+		return apply_filters( 'fbfpi_entry_link', $content, $entry, $attach_id );
 	}
 
 	/**
