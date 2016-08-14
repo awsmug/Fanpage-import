@@ -1,11 +1,19 @@
 === Facebook Fanpage import ===
-Contributors: mahype, awesome-ug
-Tags: facebook, fanpage, import, facebook connect, facebook fanpage, facebook page
-Requires at least: 4.1.1
-Tested up to: 4.1.1
-Stable tag: 1.0.0 beta 3
 
-Easy import Facebook Fanpage messages to your WordPress. 
+Plugin Name:       Facebook Fanpage import
+Plugin URI:        http://awesome.ug
+Author:            Awesome UG
+Author URI:        http://www.awesome.ug
+Contributors:      mahype, awesome-ug
+Requires at least: 4.1.1
+Tested up to:      4.6.0
+Stable tag:        1.0.0-beta.4
+Version:           1.0.0-beta.4
+License:           GNU General Public License v3
+License URI:       http://www.gnu.org/licenses/gpl-3.0.html
+Tags:              facebook, fanpage, import
+
+Easy import Facebook Fanpage messages to your WordPress.
 
 == Description ==
 
@@ -26,10 +34,17 @@ This section describes how to install the plugin and get it working.
 5. Done!
 
 == Screenshots ==
+
 1. **Settings**
 2. **An imported Link**
 
 == Changelog ==
+
+= 1.0.0-beta.4 =
+* Enhanced: Removed Skip framework
+* Enhanced: Added Gulp, composer & co.
+* Enhanced: Minified scripts and added sass files
+* Enhanced: Added deploy script
 
 = 1.0.0 beta 3 =
 * Fixed allow_url_fopen problem

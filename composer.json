@@ -1,0 +1,38 @@
+{
+  "name": "awsmug/fanpage-import",
+  "description": "Easy import Facebook Fanpage messages to your WordPress.",
+  "version": "1.0.0-beta.4",
+  "license": "GPL-3.0",
+  "type": "wordpress-plugin",
+  "keywords": [
+    "facebook",
+    "fanpage",
+    "import"
+  ],
+  "homepage": "http://awesome.ug",
+  "authors": [
+    {
+      "name": "Sven Wagener",
+      "email": "support@awesome.ug",
+      "homepage": "http://awesome.ug",
+      "role": "Lead Developer"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/awsmug/Fanpage-import/issues"
+  },
+  "repositories": [
+  ],
+  "config": {
+    "preferred-install": "dist"
+  },
+  "require": {
+    "composer/installers": "~1.0",
+    "phpoffice/phpexcel": "1.8.1",
+    "easydigitaldownloads/EDD-License-handler": "1.6.3"
+  },
+  "require-dev": {
+    "codeclimate/php-test-reporter": "dev-master",
+    "codeception/codeception": "^2.1"
+  }
+}

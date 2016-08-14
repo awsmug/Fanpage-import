@@ -77,3 +77,41 @@ if( !function_exists( 'p' ) ){
 	}
 }
 
+function fpfpi_get_asset_url( $name, $mode = '', $force = false ) {
+	$urlpath = 'assets/';
+	$can_min = true;
+	switch ( $mode ) {
+		case 'css':
+			$urlpath .= 'dist/css/' . $name . '.css';
+			break;
+		case 'js':
+			$urlpath .= 'dist/js/' . $name . '.js';
+			break;
+		case 'png':
+		case 'gif':
+		case 'svg':
+			$urlpath .= 'dist/img/' . $name . '.' . $mode;
+			$can_min = false;
+			break;
+		case 'vendor-css':
+			$urlpath .= 'vendor/' . $name . '.css';
+			break;
+		case 'vendor-js':
+			$urlpath .= 'vendor/' . $name . '.js';
+			break;
+		default:
+			return '';
+	}
+	if ( $can_min && ! $force ) {
+		if ( ! defined( 'SCRIPT_DEBUG' ) || ! SCRIPT_DEBUG ) {
+			$urlpath = explode( '.', $urlpath );
+			array_splice( $urlpath, count( $urlpath ) - 1, 0, 'min' );
+			$urlpath = implode( '.', $urlpath );
+		}
+	}
+
+	$file = FBFPI_URLPATH.$urlpath;
+
+	return FBFPI_URLPATH.$urlpath;
+}
+

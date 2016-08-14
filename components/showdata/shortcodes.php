@@ -1,38 +1,31 @@
 <?php
 /**
  * Facebook Fanpage Import Showdata Shortcodes Component.
- *
  * This class initializes the component.
  *
  * @author  mahype, awesome.ug <very@awesome.ug>
  * @package Facebook Fanpage Import
- * @version 1.0.0
+ * @version 1.0.0-beta.4
  * @since   1.0.0
  * @license GPL 2
- *
- * Copyright 2016 Awesome UG (very@awesome.ug)
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *          Copyright 2016 Awesome UG (very@awesome.ug)
+ *          This program is free software; you can redistribute it and/or modify
+ *          it under the terms of the GNU General Public License, version 2, as
+ *          published by the Free Software Foundation.
+ *          This program is distributed in the hope that it will be useful,
+ *          but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *          MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *          GNU General Public License for more details.
+ *          You should have received a copy of the GNU General Public License
+ *          along with this program; if not, write to the Free Software
+ *          Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-if( !defined( 'ABSPATH' ) )
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
+}
 
-use skip\v1_0_0 as skip;
-
-class FacebookFanpageImportShowdataShortcodes
-{
+class FacebookFanpageImportShowdataShortcodes {
 	var $name;
 
 	/**
@@ -40,11 +33,11 @@ class FacebookFanpageImportShowdataShortcodes
 	 *
 	 * @since 1.0.0
 	 */
-	function __construct()
-	{
+	function __construct() {
 		$this->name = get_class( $this );
 
 		add_shortcode( 'fanpagestream', array( $this, 'show_stream' ) );
+		add_shortcode( 'facebook_video', array( $this, 'facebook_video' ) );
 	}
 
 	/**
@@ -54,13 +47,10 @@ class FacebookFanpageImportShowdataShortcodes
 	 *
 	 * @return string
 	 */
-	public function show_stream( $atts )
-	{
+	public function show_stream( $atts ) {
 		global $paged, $wp_query;
 
-		extract( shortcode_atts( array(
-			                         'entries' => (int) get_option( 'posts_per_page' ),
-		                         ), $atts ) );
+		extract( shortcode_atts( array( 'entries' => (int) get_option( 'posts_per_page' ), ), $atts ) );
 
 		$args = array(
 			'posts_per_page' => $entries,
@@ -72,33 +62,30 @@ class FacebookFanpageImportShowdataShortcodes
 		$wp_query = new WP_Query( $args );
 
 		$paged_old = $paged;
-		$paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
+		$paged     = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
 
 		$content = '<div class="fbfpi_stream">';
-		if( $wp_query->have_posts() )
-		{
-			while ( $wp_query->have_posts() )
-			{
+		if ( $wp_query->have_posts() ) {
+			while ( $wp_query->have_posts() ){
 				$wp_query->the_post();
 
 				// setup_postdata( $post );
 				$post_id = $wp_query->post->ID;
 
-				$fanpage_id = get_post_meta( $post_id, '_fbfpi_fanpage_id', TRUE );
-				$fanpage_name = get_post_meta( $post_id, '_fbfpi_fanpage_name', TRUE );
-				$fanpage_link = get_post_meta( $post_id, '_fbfpi_fanpage_link', TRUE );
+				$fanpage_id   = get_post_meta( $post_id, '_fbfpi_fanpage_id', true );
+				$fanpage_name = get_post_meta( $post_id, '_fbfpi_fanpage_name', true );
+				$fanpage_link = get_post_meta( $post_id, '_fbfpi_fanpage_link', true );
 
-				$id = get_post_meta( $post_id, '_fbfpi_post_id', TRUE );
-				$entry_id = get_post_meta( $post_id, '_fbfpi_entry_id', TRUE );
-				$message = nl2br( get_post_meta( $post_id, '_fbfpi_message', TRUE ) );
-				$description = get_post_meta( $post_id, '_fbfpi_description', TRUE );
-				$permalink = get_post_meta( $post_id, '_fbfpi_permalink', TRUE );
-				$type = get_post_meta( $post_id, '_fbfpi_type', TRUE );
+				$id          = get_post_meta( $post_id, '_fbfpi_post_id', true );
+				$entry_id    = get_post_meta( $post_id, '_fbfpi_entry_id', true );
+				$message     = nl2br( get_post_meta( $post_id, '_fbfpi_message', true ) );
+				$description = get_post_meta( $post_id, '_fbfpi_description', true );
+				$permalink   = get_post_meta( $post_id, '_fbfpi_permalink', true );
+				$type        = get_post_meta( $post_id, '_fbfpi_type', true );
 
-				$link_target = skip\value( 'fbfpi_settings', 'link_target' );
+				$link_target = get_option( 'fbfpi_insert_link_target' );
 
-				switch ( $type )
-				{
+				switch ( $type ) {
 					case 'link':
 						$action = sprintf( __( '<a href="%s" target="%s">%s</a> shared a link.', 'facebook-fanpage-import' ), $fanpage_link, $link_target, $fanpage_name );
 						break;
@@ -106,49 +93,46 @@ class FacebookFanpageImportShowdataShortcodes
 						$action = sprintf( __( '<a href="%s" target="%s">%s</a> shared a photo.', 'facebook-fanpage-import' ), $fanpage_link, $link_target, $fanpage_name );
 						break;
 					default:
-						if( '' != $description )
-						{
+						if ( '' != $description ) {
 							$action = $description;
+						} else {
+							$action = sprintf( __( '<a href="%s" target="%s">%s</a> shared a status.', 'facebook-fanpage-import' ), $fanpage_link, $link_target, $fanpage_name );
 						}
-						else $action = sprintf( __( '<a href="%s" target="%s">%s</a> shared a status.', 'facebook-fanpage-import' ), $fanpage_link, $link_target, $fanpage_name );
 						break;
 				}
 
-				$has_attachment = get_post_meta( $post_id, 'has_attachment', TRUE );
+				$has_attachment = get_post_meta( $post_id, 'has_attachment', true );
 
 				/*
 				 * Writing Entry
 				 */
 				$content .= '<div class="fbfpi_entry">';
 
-				if( $message )
-				{
+				if ( $message ) {
 					$content .= '<p>' . $message . '</p>';
+				} else {
+					$content .= '<p>' . $action . '</p>';
 				}
-				else $content .= '<p>' . $action . '</p>';
 
 				// attachment Data
-				if( $has_attachment )
-				{
+				if ( $has_attachment ) {
 
 					$picture = '';
 
-					$attachment_name = get_post_meta( $post_id, 'attachment_name', TRUE );
-					$attachment_description = nl2br( substr( get_post_meta( $post_id, 'attachment_description', TRUE ), 0, 200 ) );
-					$attachment_caption = get_post_meta( $post_id, 'attachment_caption', TRUE );
-					$attachment_href = get_post_meta( $post_id, 'attachment_href', TRUE );
-					$attachment_src = get_post_meta( $post_id, 'attachment_src', TRUE );
+					$attachment_name        = get_post_meta( $post_id, 'attachment_name', true );
+					$attachment_description = nl2br( substr( get_post_meta( $post_id, 'attachment_description', true ), 0, 200 ) );
+					$attachment_caption     = get_post_meta( $post_id, 'attachment_caption', true );
+					$attachment_href        = get_post_meta( $post_id, 'attachment_href', true );
+					$attachment_src         = get_post_meta( $post_id, 'attachment_src', true );
 
-					if( 'event' == $type )
-					{
-						$start_time = get_post_meta( $post_id, 'attachment_start_time', TRUE );
-						$location = get_post_meta( $post_id, 'attachment_location', TRUE );
+					if ( 'event' == $type ) {
+						$start_time         = get_post_meta( $post_id, 'attachment_start_time', true );
+						$location           = get_post_meta( $post_id, 'attachment_location', true );
 						$attachment_caption = sprintf( __( 'Start %s %s.', 'facebook-fanpage-import' ), date_i18n( get_option( 'date_format' ), strtotime( $start_time ) ), date_i18n( get_option( 'time_format' ), strtotime( $start_time ) ) );
 						$attachment_caption .= '<br />' . $location;
 					}
 
-					if( is_array( $attachment_src ) )
-					{
+					if ( is_array( $attachment_src ) ) {
 						$attachment_src = $attachment_src[ 0 ];
 					}
 
@@ -160,62 +144,46 @@ class FacebookFanpageImportShowdataShortcodes
 
 					$attachment_suffix = strtolower( substr( $attachment_src, strlen( $attachment_src ) - 3, strlen( $attachment_src ) ) );
 
-					if( 'jpg' == $attachment_suffix || 'gif' == $attachment_suffix || 'png' == $attachment_suffix )
-					{
+					if ( 'jpg' == $attachment_suffix || 'gif' == $attachment_suffix || 'png' == $attachment_suffix ) {
 						$picture = str_replace( '_s.' . $attachment_suffix, '_n.' . $attachment_suffix, $attachment_src );
 					}
 
 					$content .= '<div class="fbfpi_content">';
 
 					// Picture
-					if( $picture )
-					{
-						if( '' != $attachment_name || '' != $attachment_description )
-						{
+					if ( $picture ) {
+						if ( '' != $attachment_name || '' != $attachment_description ) {
 							$content .= '<div class="fbfpi_content_picture fbfpi_content_picture_small">';
-						}
-						else
-						{
+						} else {
 							$content .= '<div class="fbfpi_content_picture fbfpi_content_picture_fullsize">';
 						}
 
-						if( $permalink )
-						{
+						if ( $permalink ) {
 							$content .= '<a href="' . $permalink . '" class="fbfp_picture" target="' . $link_target . '"><img src="' . $picture . '" /></a>';
-						}
-						else
-						{
+						} else {
 							$content .= '<img src="' . $picture . '" />';
 						}
 
 						$content .= '</div>';
 					}
 
-					if( '' != $attachment_name || '' != $attachment_description )
-					{
+					if ( '' != $attachment_name || '' != $attachment_description ) {
 						// Content
 						$content .= '<div class="fbfpi_content_text fbfpi_link_content_text">';
 
-						if( $attachment_href && '' != $attachment_name )
-						{
+						if ( $attachment_href && '' != $attachment_name ) {
 							$content .= '<h4><a href="' . $permalink . '" title="' . sprintf( __( 'Link to: %s', 'facebook-fanpage-import' ), $attachment_name ) . '" target="' . $link_target . '">' . $attachment_name . '</a></h4>';
-						}
-						elseif( '' != $attachment_name )
-						{
+						} elseif ( '' != $attachment_name ) {
 							$content .= '<h4>' . $attachment_name . '</h4>';
 						}
 
-						if( '' != $attachment_description )
-						{
+						if ( '' != $attachment_description ) {
 							$content .= '<p>' . $attachment_description . ' ...</p>';
 						}
 
-						if( '' != $attachment_caption && $attachment_href && '' != $attachment_name )
-						{
+						if ( '' != $attachment_caption && $attachment_href && '' != $attachment_name ) {
 							$content .= '<small><a href="' . $permalink . '" title="' . sprintf( __( 'Link to: %s', 'facebook-fanpage-import' ), $attachment_name ) . '" target="' . $link_target . '">' . $attachment_caption . '</a></small>';
-						}
-						elseif( '' != $attachment_caption )
-						{
+						} elseif ( '' != $attachment_caption ) {
 							$content .= '<small>' . $attachment_caption . '</small>';
 						}
 
@@ -239,6 +207,15 @@ class FacebookFanpageImportShowdataShortcodes
 		}
 		$paged = $paged_old;
 		wp_reset_query();
+
+		return $content;
+	}
+
+	public function facebook_video( $atts ) {
+		if ( empty( $atts['url'] ) )
+			return;
+
+		$content = sprintf( '<div class="fb-video" data-allowfullscreen="true" data-href="%s"></div>', esc_url( $atts['url'] ) );
 
 		return $content;
 	}

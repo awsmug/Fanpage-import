@@ -1,6 +1,6 @@
 # Facebook Fanpage import
 
-Stable tag: 1.0.0
+Stable tag: 1.0.0-beta.4
 
 Easy import Facebook Fanpage messages to your WordPress.
 
@@ -18,7 +18,7 @@ Easy import Facebook Fanpage messages to your WordPress.
 
 ## Languages
 - English
-- German
+- German (de_DE)
 
 ## Disclaimer
 

@@ -1,36 +1,31 @@
 <?php
 /**
  * Facebook Fanpage Import Showdata Component.
- *
  * This class initializes the component.
  *
  * @author  mahype, awesome.ug <very@awesome.ug>
  * @package Facebook Fanpage Import
- * @version 1.0.0
+ * @version 1.0.0-beta.4
  * @since   1.0.0
  * @license GPL 2
- *
- * Copyright 2016 Awesome UG (very@awesome.ug)
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *          Copyright 2016 Awesome UG (very@awesome.ug)
+ *          This program is free software; you can redistribute it and/or modify
+ *          it under the terms of the GNU General Public License, version 2, as
+ *          published by the Free Software Foundation.
+ *          This program is distributed in the hope that it will be useful,
+ *          but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *          MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *          GNU General Public License for more details.
+ *          You should have received a copy of the GNU General Public License
+ *          along with this program; if not, write to the Free Software
+ *          Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-if( !defined( 'ABSPATH' ) )
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
+}
 
-class FacebookFanpageImportFacebook
-{
+class FacebookFanpageImportFacebook {
 	var $name;
 
 	/**
@@ -38,11 +33,9 @@ class FacebookFanpageImportFacebook
 	 *
 	 * @since 1.0.0
 	 */
-	function __construct()
-	{
+	function __construct() {
 		$this->name = get_class( $this );
 		$this->includes();
-
 	}
 
 	/**
@@ -50,8 +43,7 @@ class FacebookFanpageImportFacebook
 	 *
 	 * @since 1.0.0
 	 */
-	private function includes()
-	{
+	private function includes() {
 		require_once( dirname( __FILE__ ) . '/facebook.php' );
 		require_once( dirname( __FILE__ ) . '/import-stream.php' );
 	}
