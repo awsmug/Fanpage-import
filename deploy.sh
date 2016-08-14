@@ -3,7 +3,7 @@
 # main config
 PLUGINSLUG="facebook-fanpage-import"
 CURRENTDIR=`pwd`
-MAINFILE="$PLUGINSLUG.php" # This should be the name of your main php file in the WordPress plugin
+MAINFILE="plugin.php" # This should be the name of your main php file in the WordPress plugin
 DEFAULT_EDITOR="/usr/bin/vim"
 
 # git config
