@@ -124,7 +124,7 @@ class FacebookFanpageImportFacebookStream {
 		$this->fpc = new FacebookFanpageConnect( $this->page_id, '', get_locale() );
 
 		if ( '' == $this->page_id ) {
-			FacebookFanpageImport::notice( sprintf( __( '<a href="%s">Fanpage ID have to be provided.</a>', 'facebook-fanpage-import' ), admin_url( 'tools.php?page=ComponentFacebookFanpageImportAdminSettings' ) ), 'error' );
+			FacebookFanpageImport::notice( sprintf( __( '<a href="%s">Fanpage ID have to be provided.</a>', 'facebook-fanpage-import' ), admin_url( 'tools.php?page=fanpage-import/components/admin/settings.php' ) ), 'error' );
 		}
 
 		if ( '' == $this->stream_language ) {
