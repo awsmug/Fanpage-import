@@ -12,7 +12,7 @@ var config = {
 	licenseURI: pkg.license.url,
 	tags: pkg.keywords.join( ', ' ),
 	contributors: [ 'mahype', 'awesome-ug' ].join( ', ' ),
-	minRequired: '4.4',
+	minRequired: '4.1.1',
 	testedUpTo: '4.6.0',
 	translateURI: 'https://translate.wordpress.org/projects/wp-plugins/facebook-fanpage-import'
 };

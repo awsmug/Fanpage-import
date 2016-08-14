@@ -163,7 +163,7 @@ class FacebookFanpageImport
 	 */
 	public function register_admin_styles()
 	{
-		wp_enqueue_style( 'fbfpi-admin-styles', FBFPI_URLPATH . '/includes/css/admin.css' );
+		wp_enqueue_style( 'fbfpi-admin-styles', fpfpi_get_asset_url( 'admin', 'js' ) );
 	}
 
 	/**
@@ -173,7 +173,7 @@ class FacebookFanpageImport
 	 */
 	public function register_admin_scripts()
 	{
-		wp_enqueue_script( 'fbfpi-admin-script', FBFPI_URLPATH . '/includes/js/admin.js' );
+		wp_enqueue_script( 'fbfpi-admin-script', fpfpi_get_asset_url( 'admin', 'js' ) );
 	}
 
 	/**
@@ -185,7 +185,7 @@ class FacebookFanpageImport
 	{
 		if( 'yes' !== get_option( 'fbfpi_deactivate_css' ) )
 		{
-			wp_enqueue_style( 'fbfpi-plugin-styles', FBFPI_URLPATH . '/includes/css/display.css' );
+			wp_enqueue_style( 'fbfpi-plugin-styles', fpfpi_get_asset_url( 'display', 'css' ) );
 		}
 	}
 
@@ -196,7 +196,7 @@ class FacebookFanpageImport
 	 */
 	public function register_plugin_scripts()
 	{
-		wp_enqueue_script( 'fbfpi-plugin-script', FBFPI_URLPATH . '/includes/js/display.js' );
+		wp_enqueue_script( 'fbfpi-plugin-script', fpfpi_get_asset_url( 'display', 'js' ) );
 	}
 
 	/**

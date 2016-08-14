@@ -1,0 +1,67 @@
+/*!
+ * Facebook Fanpage import Version 1.0.0-beta.3 (http://awesome.ug)
+ * Licensed under GNU General Public License v3 (http://www.gnu.org/licenses/gpl-3.0.html)
+ */
+/**
+ * This stylesheet is used to style the public view of the plugin.
+ *
+ * @since 1.0.0
+ */
+/* link wrapper */
+.fbfpi_link
+{
+    border: 1px solid #ccc;
+}
+
+.fbfpi_link a
+{
+    text-decoration: none;
+}
+
+/* text wrapper */
+.fbfpi_text
+{
+    padding: 10px;
+}
+
+.fbfpi_text h4
+{
+    margin: 0;
+}
+
+.fbfpi_text h4 a
+{
+    text-decoration: none;
+}
+
+.fbfpi_text p
+{
+    margin: 5px 0 0 0;
+}
+
+/* image wrapper */
+.fbfpi_image
+{
+    text-align: center; 
+
+    background-color: #efefef;
+}
+
+.fbfpi_image a
+{
+    line-height: 0; 
+
+    display: block;
+}
+
+/* photo wrapper */
+.fbfpi_photo
+{
+    border: 1px solid #ccc;
+}
+
+/* video wrapper */
+.fbfpi_video
+{
+    border: 1px solid #ccc;
+}
