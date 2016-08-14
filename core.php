@@ -213,6 +213,23 @@ class FacebookFanpageImport {
 		unset( $_SESSION[ 'fbfpi_notices' ] );
 	}
 
+	/**
+	 * Adding logs
+	 * @param $string
+	 */
+	public static function log( $string ) {
+		$upload_dir = wp_upload_dir();
+
+		$plugin_log_dirname = $upload_dir['basedir'] . '/facebook-fanpage-import-logs/';
+		if ( ! file_exists( $plugin_log_dirname ) ) {
+			wp_mkdir_p( $plugin_log_dirname );
+		}
+
+		$file = fopen( $plugin_log_dirname . 'fbfpi.log', 'a+');
+		fputs( $file, $string );
+		fclose( $file );
+	}
+
 }
 
 $FacebookFanpageImport = new FacebookFanpageImport();
