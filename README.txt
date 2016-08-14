@@ -42,6 +42,8 @@ This section describes how to install the plugin and get it working.
 
 = 1.0.0-beta.5 =
 * Enhanced: Added events for import
+* Enhanced: Added templates for element types
+* Enhanced: Bettered up CSS for entries
 
 = 1.0.0-beta.4 =
 * Enhanced: Removed Skip framework
