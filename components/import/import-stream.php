@@ -99,18 +99,6 @@ class FacebookFanpageImportFacebookStream {
 	var $term_id;
 
 	/**
-	 * @var array
-	 * @since 1.0.0
-	 */
-	var $errors = array();
-
-	/**
-	 * @var array
-	 * @since 1.0.0
-	 */
-	var $notices = array();
-
-	/**
 	 * @var FacebookFanpageConnect
 	 * @since 1.0.0
 	 */
@@ -136,7 +124,7 @@ class FacebookFanpageImportFacebookStream {
 		$this->fpc = new FacebookFanpageConnect( $this->page_id, '', get_locale() );
 
 		if ( '' == $this->page_id ) {
-			$this->errors[] = sprintf( __( '<a href="%s">Fanpage ID have to be provided.</a>', 'facebook-fanpage-import' ), admin_url( 'tools.php?page=ComponentFacebookFanpageImportAdminSettings' ) );
+			FacebookFanpageImport::notice( sprintf( __( '<a href="%s">Fanpage ID have to be provided.</a>', 'facebook-fanpage-import' ), admin_url( 'tools.php?page=ComponentFacebookFanpageImportAdminSettings' ) ), 'error' );
 		}
 
 		if ( '' == $this->stream_language ) {
@@ -185,7 +173,6 @@ class FacebookFanpageImportFacebookStream {
 		}
 
 		add_action( 'fanpage_import', array( $this, 'import' ) );
-		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 	}
 
 	/**
@@ -351,22 +338,20 @@ class FacebookFanpageImportFacebookStream {
 				$i ++;
 			}
 
-			$notice = '<br /><br />' . sprintf( __( '%d entries have been found.', 'facebook-fanpage-import' ), count( $entries ) );
-			$notice .= '<br />' . sprintf( __( '%d entries have been imported.', 'facebook-fanpage-import' ), $i ) . '<br />';
+			FacebookFanpageImport::notice( sprintf( __( '%d entries have been found.', 'facebook-fanpage-import' ), count( $entries ) ) );
+			FacebookFanpageImport::notice( sprintf( __( '%d entries have been imported.', 'facebook-fanpage-import' ), $i ) );
 
 			if ( $skip_without_message > 0 ) {
-				$notice .= '<br />' . sprintf( __( '%d skipped because containing no message.', 'facebook-fanpage-import' ), $skip_without_message );
+				FacebookFanpageImport::notice( sprintf( __( '%d skipped because containing no message.', 'facebook-fanpage-import' ), $skip_without_message ), 'error' );
 			}
 
 			if ( $skip_existing_count > 0 ) {
-				$notice .= '<br />' . sprintf( __( '%d skipped because already existing.', 'facebook-fanpage-import' ), $skip_existing_count );
+				FacebookFanpageImport::notice( sprintf( __( '%d skipped because already existing.', 'facebook-fanpage-import' ), $skip_existing_count ), 'error' );
 			}
 
 			if ( $skip_unknown_count > 0 ) {
-				$notice .= '<br />' . sprintf( __( '%d skipped because entry type unknown.', 'facebook-fanpage-import' ), $skip_unknown_count );
+				FacebookFanpageImport::notice( sprintf( __( '%d skipped because entry type unknown.', 'facebook-fanpage-import' ), $skip_unknown_count ), 'error' );
 			}
-
-			$this->notices[] = $notice;
 		}
 	}
 
@@ -884,25 +869,6 @@ class FacebookFanpageImportFacebookStream {
 	public function stop_import() {
 		$value = delete_option( '_facebook_fanpage_import_next' );
 		return $value;
-	}
-
-	/**
-	 * Admin notices
-	 *
-	 * @since 1.0.0
-	 */
-	public function admin_notices() {
-		if ( count( $this->errors ) > 0 ):
-			foreach ( $this->errors AS $error ) {
-				echo '<div class="updated"><p>' . __( 'Facebook Fanpage Import', 'facebook-fanpage-import' ) . ': ' . $error . '</p></div>';
-			}
-		endif;
-
-		if ( count( $this->notices ) > 0 ):
-			foreach ( $this->notices AS $notice ) {
-				echo '<div class="updated"><p>' . __( 'Facebook Fanpage Import', 'facebook-fanpage-import' ) . ': ' . $notice . '</p></div>';
-			}
-		endif;
 	}
 }
 

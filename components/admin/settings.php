@@ -41,7 +41,6 @@ class FacebookFanpageImportAdminSettings {
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 		add_action( 'admin_init', array( $this, 'import' ) );
-		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 	}
 
 	public function import() {
@@ -439,20 +438,6 @@ class FacebookFanpageImportAdminSettings {
 		echo '</form>';
 		echo '</div>';
 		echo '</div>';
-	}
-
-	public function admin_notices() {
-		if ( count( $this->errors ) > 0 ) {
-			foreach ( $this->errors AS $error ) {
-				echo '<div class="updated"><p>' . __( 'Facebook Fanpage Import', 'facebook-fanpage-import' ) . ': ' . $error . '</p></div>';
-			}
-		}
-
-		if ( count( $this->notices ) > 0 ) {
-			foreach ( $this->notices AS $notice ) {
-				echo '<div class="updated"><p>' . __( 'Facebook Fanpage Import', 'facebook-fanpage-import' ) . ': ' . $notice . '</p></div>';
-			}
-		}
 	}
 }
 

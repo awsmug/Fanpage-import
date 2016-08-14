@@ -48,6 +48,7 @@ class FacebookFanpageImport {
 		if ( is_admin() ) {
 			add_action( 'admin_print_styles', array( $this, 'register_admin_styles' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'register_admin_scripts' ) );
+			add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 		} else {
 			add_action( 'wp_enqueue_scripts', array( $this, 'register_plugin_styles' ) );
 			add_action( 'wp_enqueue_scripts', array( $this, 'register_plugin_scripts' ) );
@@ -194,6 +195,61 @@ class FacebookFanpageImport {
 		endwhile;
 
 		closedir( $handle );
+	}
+
+	/**
+	 * Adds a notice to diaplay in admin notices
+	 *
+	 * @param string $string
+	 * @param string $type
+	 *
+	 * @since 1.0.0
+	 */
+	public static function notice( $string, $type = 'notice' ) {
+		if( '' === session_id() || ! isset( $_SESSION ) ) {
+			session_start();
+		}
+
+		$notices = array();
+
+		if ( array_key_exists( 'fbfpi_notices', $_SESSION ) ) {
+			$notices = $_SESSION[ 'fbfpi_notices' ];
+		}
+
+		$notices[ $type ][] = $string;
+
+		$_SESSION[ 'fbfpi_notices' ] = $notices;
+	}
+
+	/**
+	 * Printing errors in admin notices
+	 *
+	 * @since 1.0.0
+	 */
+	public static function admin_notices() {
+		if( '' === session_id() || ! isset( $_SESSION ) ) {
+			session_start();
+		}
+
+		if( ! array_key_exists( 'fbfpi_notices', $_SESSION ) ) {
+			return;
+		}
+
+		$notices = $_SESSION[ 'fbfpi_notices' ];
+
+		if ( array_key_exists( 'notice', $notices ) ) {
+			foreach ( $notices['notice'] AS $notice ) {
+				echo '<div class="updated"><p>' . __( 'Facebook Fanpage Import', 'facebook-fanpage-import' ) . ': ' . $notice . '</p></div>';
+			}
+		}
+
+		if ( array_key_exists( 'error', $notices ) ) {
+			foreach ( $notices['error'] AS $error ) {
+				echo '<div class="error"><p>' . __( 'Facebook Fanpage Import', 'facebook-fanpage-import' ) . ': ' . $error . '</p></div>';
+			}
+		}
+
+		unset( $_SESSION[ 'fbfpi_notices' ] );
 	}
 
 }
