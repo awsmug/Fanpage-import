@@ -779,44 +779,26 @@ class FacebookFanpageImportFacebookStream {
 	 * @since 1.0.0
 	 */
 	private function get_photo_content( $entry, $attach_id ) {
-		$attach_url = wp_get_attachment_url( $attach_id );
+		$post_title = '';
+		$link_taqrget = $this->link_target;
 
-		$content = $entry->message;
-		$content .= '<div class="fbfpi_photo">';
-		$content .= '<img src="' . $attach_url . '">';
+		$text = $entry->message;
+		$photo_src = wp_get_attachment_url( $attach_id );
+		$photo_url = $entry->link;
 
-		// conditionally add descriptive content
-		if ( property_exists( $entry, 'name' ) OR property_exists( $entry, 'link' ) OR property_exists( $entry, 'description' ) ) {
+		$photo_title = '';
+		$photo_text  = '';
 
-			// wrapper
-			$content .= '<div class="fbfpi_text">';
-
-			// add name if present
-			$title = '';
-			if ( property_exists( $entry, 'name' ) ) {
-				$title = $entry->name;
-			} else {
-				$title = __( 'Untitled photo', 'facebook-fanpage-import' );
-			}
-
-			// wrap in link if present
-			if ( property_exists( $entry, 'link' ) ) {
-				$title = '<a href="' . $entry->link . '" target="' . $this->link_target . '">' . $title . '</a>';
-			}
-
-			// make heading and add
-			$title = '<h4>' . $title . '</h4>';
-			$content .= $title;
-
-			// add description if present
-			if ( property_exists( $entry, 'description' ) ) {
-				$content .= '<p>' . $entry->description . '</p>';
-			}
-
-			$content .= '</div>';
+		if( ! empty( $entry->title ) && ! empty( $entry->description ) ){
+			$photo_title = $entry->title;
+			$photo_text  = $entry->description;
 		}
 
-		$content .= '</div>';
+		$template_file = locate_fbfpi_template( 'photo.php' );
+
+		ob_start();
+		include ( $template_file );
+		$content = ob_get_clean();
 
 		/**
 		 * Allow overrides.
