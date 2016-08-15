@@ -7,8 +7,8 @@ Author URI:        http://www.awesome.ug
 Contributors:      mahype, awesome-ug
 Requires at least: 4.1.1
 Tested up to:      4.6.0
-Stable tag:        1.0.0-beta.4
-Version:           1.0.0-beta.4
+Stable tag:        1.0.0-beta.5
+Version:           1.0.0-beta.5
 License:           GNU General Public License v3
 License URI:       http://www.gnu.org/licenses/gpl-3.0.html
 Tags:              facebook, fanpage, import
@@ -40,10 +40,15 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
-= 1.0.0-beta.5 =
+= 1.0.0-beta.6 =
 * Enhanced: Added events for import
 * Enhanced: Added templates for element types
 * Enhanced: Bettered up CSS for entries
+
+= 1.0.0-beta.5 = 
+* Fixed: CSS in Backend
+* Fixed: Moved session start into header
+* Fixed: Removed language files for using polyglot translations from WordPress.org
 
 = 1.0.0-beta.4 =
 * Enhanced: Removed Skip framework

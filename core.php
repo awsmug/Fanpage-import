@@ -5,7 +5,7 @@
  *
  * @author  mahype, awesome.ug <very@awesome.ug>
  * @package Facebook Fanpage Import
- * @version 1.0.0-beta.4
+ * @version 1.0.0-beta.5
  * @since   1.0.0
  * @license GPL 2
  *          Copyright 2016 Awesome UG (very@awesome.ug)
@@ -39,6 +39,10 @@ class FacebookFanpageImport {
 		add_action( 'init', array( $this, 'load_components' ) );
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( $this, 'updates' ) );
+
+		if( '' === session_id() || ! isset( $_SESSION ) ) {
+			session_start();
+		}
 
 		if ( is_admin() ) {
 			add_action( 'admin_print_styles', array( $this, 'register_admin_styles' ) );
@@ -195,10 +199,6 @@ class FacebookFanpageImport {
 	 * @since 1.0.0
 	 */
 	public static function admin_notices() {
-		if( '' === session_id() || ! isset( $_SESSION ) ) {
-			session_start();
-		}
-
 		if( ! array_key_exists( 'fbfpi_notices', $_SESSION ) ) {
 			return;
 		}
