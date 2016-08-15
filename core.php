@@ -40,6 +40,10 @@ class FacebookFanpageImport {
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( $this, 'updates' ) );
 
+		if( '' === session_id() || ! isset( $_SESSION ) ) {
+			session_start();
+		}
+
 		if ( is_admin() ) {
 			add_action( 'admin_print_styles', array( $this, 'register_admin_styles' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'register_admin_scripts' ) );
@@ -195,10 +199,6 @@ class FacebookFanpageImport {
 	 * @since 1.0.0
 	 */
 	public static function admin_notices() {
-		if( '' === session_id() || ! isset( $_SESSION ) ) {
-			session_start();
-		}
-
 		if( ! array_key_exists( 'fbfpi_notices', $_SESSION ) ) {
 			return;
 		}
