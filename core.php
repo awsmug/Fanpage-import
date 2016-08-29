@@ -5,7 +5,7 @@
  *
  * @author  mahype, awesome.ug <very@awesome.ug>
  * @package Facebook Fanpage Import
- * @version 1.0.0-beta.5
+ * @version 1.0.0-beta.6
  * @since   1.0.0
  * @license GPL 2
  *          Copyright 2016 Awesome UG (very@awesome.ug)
@@ -231,6 +231,9 @@ class FacebookFanpageImport {
 		if ( ! file_exists( $plugin_log_dirname ) ) {
 			wp_mkdir_p( $plugin_log_dirname );
 		}
+
+		$date_time = date( 'Y-m-d - H:i:s', time() );
+		$string = $date_time . ' - ' . $string . chr( 13 );
 
 		$file = fopen( $plugin_log_dirname . 'fbfpi.log', 'a+');
 		fputs( $file, $string );

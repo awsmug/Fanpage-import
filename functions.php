@@ -14,8 +14,6 @@ if( defined( 'FBFPI_FOLDER' ) )
 {
 	function locate_fbfpi_template( $template_names, $load = FALSE, $require_once = TRUE )
 	{
-		$located = '';
-
 		$located = locate_template( $template_names, $load, $require_once );
 
 		if( '' == $located )

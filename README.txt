@@ -7,8 +7,8 @@ Author URI:        http://www.awesome.ug
 Contributors:      mahype, awesome-ug
 Requires at least: 4.1.1
 Tested up to:      4.6.0
-Stable tag:        1.0.0-beta.5
-Version:           1.0.0-beta.5
+Stable tag:        1.0.0-beta.6
+Version:           1.0.0-beta.6
 License:           GNU General Public License v3
 License URI:       http://www.gnu.org/licenses/gpl-3.0.html
 Tags:              facebook, fanpage, import
@@ -40,6 +40,14 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 1.0.0-beta.6 =
+* Enhanced: Added events for import
+* Enhanced: Added templates for element type photo
+* Enhanced: Bettered up CSS for entries
+* Enhanced: Added date and time in logging and added some logging entries
+* Fixed: Generating post thumbnail image metadata
+* Fixed: Category of posts didn't work
+
 = 1.0.0-beta.5 = 
 * Fixed: CSS in Backend
 * Fixed: Moved session start into header
@@ -50,6 +58,9 @@ This section describes how to install the plugin and get it working.
 * Enhanced: Added Gulp, composer & co.
 * Enhanced: Minified scripts and added sass files
 * Enhanced: Added deploy script
+* Enhnaced: Added log function
+* Enhanced: Bettered up admin notices
+* Enhanced: Added Facebook video embedding
 
 = 1.0.0 beta 3 =
 * Fixed allow_url_fopen problem

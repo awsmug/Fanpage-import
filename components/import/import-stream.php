@@ -5,7 +5,7 @@
  *
  * @author  mahype, awesome.ug <very@awesome.ug>
  * @package Facebook Fanpage Import
- * @version 1.0.0-beta.5
+ * @version 1.0.0-beta.6
  * @since   1.0.0
  * @license GPL 2
  *          Copyright 2016 Awesome UG (very@awesome.ug)
@@ -219,8 +219,9 @@ class FacebookFanpageImportFacebookStream {
 
 				$entry = $this->fpc->get_id( $entry->id, array( 'name', 'message', 'story', 'caption', 'description', 'full_picture', 'object_id', 'from', 'link', 'created_time', 'type' ) );
 
-				if( ! in_array( $entry->type, array( 'link', 'photo', 'video', 'status' ) ) ) {
+				if( ! in_array( $entry->type, array( 'link', 'photo', 'video', 'status', 'event' ) ) ) {
 					$skip_unknown_count ++;
+					FacebookFanpageImport::log( 'Skipped:' .chr(13) . print_r( $entry, true ) );
 					continue;
 				}
 
@@ -254,6 +255,15 @@ class FacebookFanpageImportFacebookStream {
 						$post->post_content = $this->get_link_content( $entry, $attach_id );
 						break;
 
+					case 'status':
+						$post->post_content = $entry->message;
+
+						if ( ! empty( $attach_id ) ) {
+							set_post_thumbnail( $post_id, $attach_id );
+						}
+
+						break;
+
 					case 'photo':
 						$picture_url = $this->fpc->get_photo_by_object( $entry->object_id );
 
@@ -278,8 +288,8 @@ class FacebookFanpageImportFacebookStream {
 
 						break;
 
-					case 'status':
-						$post->post_content = $entry->message;
+					case 'event':
+						$post->post_content = $this->get_event_content( $entry, $attach_id );
 
 						if ( ! empty( $attach_id ) ) {
 							set_post_thumbnail( $post_id, $attach_id );
@@ -290,21 +300,19 @@ class FacebookFanpageImportFacebookStream {
 					default:
 						break;
 				}
+
 				wp_update_post( $post );
+				FacebookFanpageImport::log( 'Imported "' . $entry->type . '" with the title "' . $post_title . '" - post ID #' . $post_id . ' as post type "' . $this->post_type . '"');
 
-				// assign term if one is set
-
-				if( 'posts' ===  $this->post_type ) {
-					if ( $this->term_id != 'none' ) {
-						$cat_ids           = array( intval( $this->term_id ) );
-						$term_taxonomy_ids = wp_set_object_terms( $post->ID, $cat_ids, 'category' );
+				// Adding terms
+				if( 'post' ===  $this->post_type ) {
+					if ( 'none' !== $this->term_id ) {
+						$term_ids           = array( intval( $this->term_id ) );
+						$term_taxonomy_ids = wp_set_object_terms( $post->ID, $term_ids, 'category' );
 						if ( is_wp_error( $term_taxonomy_ids ) ) {
-							// term could not be set
-							error_log( print_r( array(
-								                    'method'                => __METHOD__,
-								                    'term could not be set' => $this->term_id,
-								                    'entry'                 => $entry,
-							                    ), true ) );
+							FacebookFanpageImport::log( 'Error: Term could not be set. ' . count(  $this->term_id ). ' entries' );
+						} else {
+							FacebookFanpageImport::log( 'Added term #' . $this->term_id . ' to post #. ' . $post_id . ' entries' );
 						}
 					}
 				}
@@ -346,19 +354,25 @@ class FacebookFanpageImportFacebookStream {
 				do_action( 'fbfpi_entry_created', $post, $entry );
 			}
 
+			FacebookFanpageImport::log( 'Found ' . count( $entries ). ' entries' );
+			FacebookFanpageImport::log( 'Imported ' . $i. ' entries' );
+
 			FacebookFanpageImport::notice( sprintf( __( '%d entries have been found.', 'facebook-fanpage-import' ), count( $entries ) ) );
 			FacebookFanpageImport::notice( sprintf( __( '%d entries have been imported.', 'facebook-fanpage-import' ), $i ) );
 
 			if ( $skip_without_message > 0 ) {
 				FacebookFanpageImport::notice( sprintf( __( '%d skipped because containing no message.', 'facebook-fanpage-import' ), $skip_without_message ), 'error' );
+				FacebookFanpageImport::log( 'Skipped ' . $skip_without_message. ' because containing no message.' );
 			}
 
 			if ( $skip_existing_count > 0 ) {
 				FacebookFanpageImport::notice( sprintf( __( '%d skipped because already existing.', 'facebook-fanpage-import' ), $skip_existing_count ), 'error' );
+				FacebookFanpageImport::log( 'Skipped ' . $skip_existing_count. ' because already existing.' );
 			}
 
 			if ( $skip_unknown_count > 0 ) {
 				FacebookFanpageImport::notice( sprintf( __( '%d skipped because entry type unknown.', 'facebook-fanpage-import' ), $skip_unknown_count ), 'error' );
+				FacebookFanpageImport::log( 'Skipped ' . $skip_unknown_count. ' because entry type unknown.' );
 			}
 		}
 	}
@@ -671,6 +685,8 @@ class FacebookFanpageImportFacebookStream {
 	 * @since 1.0.0
 	 */
 	private function fetch_picture( $picture_url ) {
+		require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
 		$picture = wp_remote_get( $picture_url );
 		$type    = wp_remote_retrieve_header( $picture, 'content-type' );
 
@@ -699,6 +715,9 @@ class FacebookFanpageImportFacebookStream {
 		);
 
 		$picture_id = wp_insert_attachment( $attachment, $mirror[ 'file' ] );
+
+		$attach_data = wp_generate_attachment_metadata( $picture_id, $mirror[ 'file' ] );
+		wp_update_attachment_metadata( $picture_id, $attach_data );
 
 		return $picture_id;
 	}
@@ -765,44 +784,42 @@ class FacebookFanpageImportFacebookStream {
 	 * @since 1.0.0
 	 */
 	private function get_photo_content( $entry, $attach_id ) {
-		$attach_url = wp_get_attachment_url( $attach_id );
+		$post[ 'title' ] = '';
 
-		$content = $entry->message;
-		$content .= '<div class="fbfpi_photo">';
-		$content .= '<img src="' . $attach_url . '">';
+		$template_vars['link_target'] = $this->link_target;
 
-		// conditionally add descriptive content
-		if ( property_exists( $entry, 'name' ) OR property_exists( $entry, 'link' ) OR property_exists( $entry, 'description' ) ) {
+		$template_vars['text'] = $entry->message;
 
-			// wrapper
-			$content .= '<div class="fbfpi_text">';
+		$template_vars['photo_src'] = wp_get_attachment_url( $attach_id );
+		$template_vars['photo_url'] = $entry->link;
+		$template_vars['photo_title'] = '';
+		$template_vars['photo_text']  = '';
 
-			// add name if present
-			$title = '';
-			if ( property_exists( $entry, 'name' ) ) {
-				$title = $entry->name;
-			} else {
-				$title = __( 'Untitled photo', 'facebook-fanpage-import' );
-			}
-
-			// wrap in link if present
-			if ( property_exists( $entry, 'link' ) ) {
-				$title = '<a href="' . $entry->link . '" target="' . $this->link_target . '">' . $title . '</a>';
-			}
-
-			// make heading and add
-			$title = '<h4>' . $title . '</h4>';
-			$content .= $title;
-
-			// add description if present
-			if ( property_exists( $entry, 'description' ) ) {
-				$content .= '<p>' . $entry->description . '</p>';
-			}
-
-			$content .= '</div>';
+		if( ! empty( $entry->title ) && ! empty( $entry->description ) ){
+			$template_vars['photo_title'] = $entry->title;
+			$template_vars['photo_text']  = $entry->description;
 		}
 
-		$content .= '</div>';
+		/**
+		 * Filter for adding own variables
+		 *
+		 * @param array   $template_vars Template variables unfiltered
+		 * @param stdObject $entry Facebook Entry object
+		 *
+		 * @return array $template_vars Template variables filtered
+		 * @since 1.0.0
+		 */
+		$template_vars = apply_filters( 'fbfpi_entry_photo_vars', $template_vars, $entry );
+
+		extract( $template_vars );
+
+		$template_file = locate_fbfpi_template( 'photo.php' );
+
+		ob_start();
+		include ( $template_file );
+		$content = ob_get_clean();
+
+		$post[ 'content' ] = $content;
 
 		/**
 		 * Allow overrides.
@@ -852,6 +869,59 @@ class FacebookFanpageImportFacebookStream {
 		 * @since 1.1.0
 		 */
 		return apply_filters( 'fbfpi_entry_video', $content, $entry );
+	}
+
+	/**
+	 * Get link content
+	 *
+	 * @param $entry
+	 * @param $attach_id
+	 *
+	 * @return string
+	 * @since 1.0.0
+	 */
+	private function get_event_content( $entry, $attach_id ) {
+		$attach_url = wp_get_attachment_url( $attach_id );
+
+		if ( property_exists( $entry, 'caption' ) ) {
+			$copyright = '&copy; ' . $entry->caption;
+		} else {
+			$copyright = '&copy; ' . $entry->name;
+		}
+
+		$content  = $entry->story;
+
+		$content .= '<div class="fbfpi_link">';
+		if ( '' != $attach_url ) {
+			$content .= '<div class="fbfpi_image">';
+			$content .= '<a href="' . $entry->link . '" target="' . $this->link_target . '" title="' . $copyright . '"><img src="' . $attach_url . '" title="' . $copyright . '"></a>';
+			$content .= '</div>';
+		}
+		$content .= '<div class="fbfpi_text">';
+		$content .= '<h4><a href="' . $entry->link . '" target="' . $this->link_target . '" title="' . $copyright . '">' . $entry->name . '</a></h4>';
+
+		if ( property_exists( $entry, 'caption' ) ) {
+			$content .= '<p><small>' . $entry->caption . '</small><br /></p>';
+		}
+
+		if ( property_exists( $entry, 'description' ) ) {
+			$content .= '<p>' . $entry->description . '</p>';
+		}
+		$content .= '</div>';
+		$content .= '</div>';
+
+		/**
+		 * Allow overrides.
+		 *
+		 * @param string  $content   The constructed content
+		 * @param object  $entry     The entry object
+		 * @param integer $attach_id The numeric ID of the attachment
+		 *
+		 * @return string $content The constructed content
+		 *
+		 * @since 1.0.0
+		 */
+		return apply_filters( 'fbfpi_entry_link', $content, $entry, $attach_id );
 	}
 
 	/**
