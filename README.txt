@@ -44,6 +44,7 @@ This section describes how to install the plugin and get it working.
 * Enhanced: Added events for import
 * Enhanced: Added templates for element types
 * Enhanced: Bettered up CSS for entries
+* Fixed: Generating post thumbnail image metadata
 
 = 1.0.0-beta.5 = 
 * Fixed: CSS in Backend
