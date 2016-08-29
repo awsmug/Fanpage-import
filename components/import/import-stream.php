@@ -685,6 +685,8 @@ class FacebookFanpageImportFacebookStream {
 	 * @since 1.0.0
 	 */
 	private function fetch_picture( $picture_url ) {
+		require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
 		$picture = wp_remote_get( $picture_url );
 		$type    = wp_remote_retrieve_header( $picture, 'content-type' );
 
@@ -713,6 +715,9 @@ class FacebookFanpageImportFacebookStream {
 		);
 
 		$picture_id = wp_insert_attachment( $attachment, $mirror[ 'file' ] );
+
+		$attach_data = wp_generate_attachment_metadata( $picture_id, $mirror[ 'file' ] );
+		wp_update_attachment_metadata( $picture_id, $attach_data );
 
 		return $picture_id;
 	}
