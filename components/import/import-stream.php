@@ -248,8 +248,6 @@ class FacebookFanpageImportFacebookStream {
 					$attach_id = $this->fetch_picture( $picture_url, $post_id );
 				}
 
-				FacebookFanpageImport::log( print_r( $entry, true ) );
-
 				// Post content
 				switch ( $entry->type ) {
 
@@ -303,22 +301,18 @@ class FacebookFanpageImportFacebookStream {
 						break;
 				}
 
-				// $post->post_content = $entry->type . ': ' . $post->post_content;
 				wp_update_post( $post );
+				FacebookFanpageImport::log( 'Imported "' . $entry->type . '" with the title "' . $post_title . '" - post ID #' . $post_id . ' as post type "' . $this->post_type . '"');
 
-				// assign term if one is set
-
-				if( 'posts' ===  $this->post_type ) {
-					if ( $this->term_id != 'none' ) {
-						$cat_ids           = array( intval( $this->term_id ) );
-						$term_taxonomy_ids = wp_set_object_terms( $post->ID, $cat_ids, 'category' );
+				// Adding terms
+				if( 'post' ===  $this->post_type ) {
+					if ( 'none' !== $this->term_id ) {
+						$term_ids           = array( intval( $this->term_id ) );
+						$term_taxonomy_ids = wp_set_object_terms( $post->ID, $term_ids, 'category' );
 						if ( is_wp_error( $term_taxonomy_ids ) ) {
-							// term could not be set
-							error_log( print_r( array(
-								                    'method'                => __METHOD__,
-								                    'term could not be set' => $this->term_id,
-								                    'entry'                 => $entry,
-							                    ), true ) );
+							FacebookFanpageImport::log( 'Error: Term could not be set. ' . count(  $this->term_id ). ' entries' );
+						} else {
+							FacebookFanpageImport::log( 'Added term #' . $this->term_id . ' to post #. ' . $post_id . ' entries' );
 						}
 					}
 				}
@@ -360,19 +354,25 @@ class FacebookFanpageImportFacebookStream {
 				do_action( 'fbfpi_entry_created', $post, $entry );
 			}
 
+			FacebookFanpageImport::log( 'Found ' . count( $entries ). ' entries' );
+			FacebookFanpageImport::log( 'Imported ' . $i. ' entries' );
+
 			FacebookFanpageImport::notice( sprintf( __( '%d entries have been found.', 'facebook-fanpage-import' ), count( $entries ) ) );
 			FacebookFanpageImport::notice( sprintf( __( '%d entries have been imported.', 'facebook-fanpage-import' ), $i ) );
 
 			if ( $skip_without_message > 0 ) {
 				FacebookFanpageImport::notice( sprintf( __( '%d skipped because containing no message.', 'facebook-fanpage-import' ), $skip_without_message ), 'error' );
+				FacebookFanpageImport::log( 'Skipped ' . $skip_without_message. ' because containing no message.' );
 			}
 
 			if ( $skip_existing_count > 0 ) {
 				FacebookFanpageImport::notice( sprintf( __( '%d skipped because already existing.', 'facebook-fanpage-import' ), $skip_existing_count ), 'error' );
+				FacebookFanpageImport::log( 'Skipped ' . $skip_existing_count. ' because already existing.' );
 			}
 
 			if ( $skip_unknown_count > 0 ) {
 				FacebookFanpageImport::notice( sprintf( __( '%d skipped because entry type unknown.', 'facebook-fanpage-import' ), $skip_unknown_count ), 'error' );
+				FacebookFanpageImport::log( 'Skipped ' . $skip_unknown_count. ' because entry type unknown.' );
 			}
 		}
 	}
