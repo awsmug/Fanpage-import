@@ -42,9 +42,11 @@ This section describes how to install the plugin and get it working.
 
 = 1.0.0-beta.6 =
 * Enhanced: Added events for import
-* Enhanced: Added templates for element types
+* Enhanced: Added templates for element type photo
 * Enhanced: Bettered up CSS for entries
+* Enhanced: Added date and time in logging and added some logging entries
 * Fixed: Generating post thumbnail image metadata
+* Fixed: Category of posts didn't work
 
 = 1.0.0-beta.5 = 
 * Fixed: CSS in Backend
