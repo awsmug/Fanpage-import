@@ -232,6 +232,9 @@ class FacebookFanpageImport {
 			wp_mkdir_p( $plugin_log_dirname );
 		}
 
+		$date_time = date( 'Y-m-d - H:i:s', time() );
+		$string = $date_time . ' - ' . $string . chr( 13 );
+
 		$file = fopen( $plugin_log_dirname . 'fbfpi.log', 'a+');
 		fputs( $file, $string );
 		fclose( $file );
