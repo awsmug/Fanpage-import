@@ -7,8 +7,8 @@ Author URI:        http://www.awesome.ug
 Contributors:      mahype, awesome-ug
 Requires at least: 4.1.1
 Tested up to:      4.6.0
-Stable tag:        1.0.0-beta.6
-Version:           1.0.0-beta.6
+Stable tag:        1.0.0-beta.7
+Version:           1.0.0-beta.7
 License:           GNU General Public License v3
 License URI:       http://www.gnu.org/licenses/gpl-3.0.html
 Tags:              facebook, fanpage, import
@@ -39,6 +39,9 @@ This section describes how to install the plugin and get it working.
 2. **An imported Link**
 
 == Changelog ==
+
+= 1.0.0-beta.7 =
+* Fixed: Added Text Domain to plugin header
 
 = 1.0.0-beta.6 =
 * Enhanced: Added events for import
