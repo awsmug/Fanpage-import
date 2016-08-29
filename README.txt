@@ -40,6 +40,9 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 1.0.0-beta.7 =
+* Fixed: Added Text Domain to plugin header
+
 = 1.0.0-beta.6 =
 * Enhanced: Added events for import
 * Enhanced: Added templates for element type photo
