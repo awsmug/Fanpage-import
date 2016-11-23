@@ -79,7 +79,7 @@ class FacebookFanpageImportAdmin {
 	/**
 	 * Add Meta Box for Facebook Post infos
 	 *
-	 * @since 1.0.1
+	 * @since 1.0.0
 	 */
 	public function custom_meta_box() {
 		add_meta_box( 'facebook-post-info-meta-box', __( 'Facebook Post Infos', 'fbfpi-locale' ), array( $this, 'meta_box_output'), 'status-message', 'side', 'high' );
@@ -88,7 +88,7 @@ class FacebookFanpageImportAdmin {
 	/**
 	 * Output the Meta box on backoffice
 	 *
-	 * @since 1.0.1
+	 * @since 1.0.0
 	 */
 	public function meta_box_output( $post ) {
 		// create a nonce field
@@ -105,7 +105,7 @@ class FacebookFanpageImportAdmin {
 	/**
 	 * Save the Meta box value
 	 *
-	 * @since 1.0.1
+	 * @since 1.0.0
 	 */
 	public function custom_meta_box_save( $post_id ) {
 		// Stop the script when doing autosave
@@ -125,7 +125,7 @@ class FacebookFanpageImportAdmin {
 	/**
 	 * Return the custom field selected
 	 *
-	 * @since 1.0.1
+	 * @since 1.0.0
 	 */
 	private function get_custom_field( $value ) {
 		global $post;
