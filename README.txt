@@ -40,6 +40,9 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 1.0.0-beta.8 =
+* Added a new meta box dedicated to Facebook Post Infos (now only URL)
+
 = 1.0.0-beta.7 =
 * Fixed: Added Text Domain to plugin header
 
