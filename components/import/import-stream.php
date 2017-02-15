@@ -324,6 +324,7 @@ class FacebookFanpageImportFacebookStream {
 
 				if ( property_exists( $entry, 'id' ) ) {
 					update_post_meta( $post_id, '_fbfpi_entry_id', $entry->id );
+					update_post_meta( $post_id, 'fbfpi_facebook_post_url', 'https://www.facebook.com/' . $entry->id );
 				}
 				if ( property_exists( $entry, 'message' ) ) {
 					update_post_meta( $post_id, '_fbfpi_message', $entry->message );
