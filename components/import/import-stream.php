@@ -245,7 +245,7 @@ class FacebookFanpageImportFacebookStream {
 
 				$attach_id = '';
 				if ( ! empty( $picture_url ) ) {
-					$attach_id = $this->fetch_picture( $picture_url, $post_id );
+					$attach_id = $this->fetch_picture( $picture_url, $post_id, $post_date );
 				}
 
 				// Post content
@@ -268,7 +268,7 @@ class FacebookFanpageImportFacebookStream {
 						$picture_url = $this->fpc->get_photo_by_object( $entry->object_id );
 
 						if ( ! empty( $picture_url ) ) {
-							$attach_id = $this->fetch_picture( $picture_url, $post_id );
+							$attach_id = $this->fetch_picture( $picture_url, $post_id, $post_date );
 						}
 
 						$post->post_content = $this->get_photo_content( $entry, $attach_id );
@@ -685,7 +685,7 @@ class FacebookFanpageImportFacebookStream {
 	 * @return int
 	 * @since 1.0.0
 	 */
-	private function fetch_picture( $picture_url ) {
+	private function fetch_picture( $picture_url, $post_id, $post_date ) {
 		require_once( ABSPATH . 'wp-admin/includes/image.php' );
 
 		$picture = wp_remote_get( $picture_url );
@@ -708,14 +708,16 @@ class FacebookFanpageImportFacebookStream {
 
 		$filename = sanitize_file_name( substr( md5( mt_rand() ), 0, 8 ) . $suffix );
 
-		$mirror  = wp_upload_bits( $filename, '', wp_remote_retrieve_body( $picture ) );
+		$mirror  = wp_upload_bits( $filename, '', wp_remote_retrieve_body( $picture ), date('Y/m', strtotime( $post_date ) ) );
 
 		$attachment = array(
 			'post_title'     => $filename,
-			'post_mime_type' => $type
+			'post_mime_type' => $type,
+			'post_date'      => $post_date,
+			'post_status'    => 'publish'
 		);
 
-		$picture_id = wp_insert_attachment( $attachment, $mirror[ 'file' ] );
+		$picture_id = wp_insert_attachment( $attachment, $mirror[ 'file' ], $post_id );
 
 		$attach_data = wp_generate_attachment_metadata( $picture_id, $mirror[ 'file' ] );
 		wp_update_attachment_metadata( $picture_id, $attach_data );
