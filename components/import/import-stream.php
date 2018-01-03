@@ -535,9 +535,11 @@ class FacebookFanpageImportFacebookStream {
 	 */
 	private function get_post_excerpt( $entry ) {
 		$post_excerpt = '';
-		if ( property_exists( $entry, 'message' ) ) {
+		if ( property_exists( $entry, 'description' ) ) {
+			$post_excerpt = $entry->description;
+		}else if ( property_exists( $entry, 'message' ) ) {
 			$post_excerpt = $entry->message;
-		}
+ 		}
 
 		/**
 		 * Allow overrides.
