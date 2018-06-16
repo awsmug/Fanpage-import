@@ -49,8 +49,10 @@ tmp/
 temp/
 ._*
 .Trashes
-
 .svn
-
-
 tests/_output/*
+
+############
+## Misc
+############
+vendor

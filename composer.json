@@ -27,9 +27,7 @@
     "preferred-install": "dist"
   },
   "require": {
-    "composer/installers": "~1.0",
-    "phpoffice/phpexcel": "1.8.1",
-    "easydigitaldownloads/EDD-License-handler": "1.6.3"
+    "composer/installers": "~1.0"
   },
   "require-dev": {
     "codeclimate/php-test-reporter": "dev-master",
