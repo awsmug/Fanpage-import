@@ -77,6 +77,7 @@ class FacebookFanpageImportAdminSettings {
 	 */
 	public function register_settings() {
 		register_setting( 'fbfpi_options', 'fbfpi_fanpage_id' );
+		register_setting( 'fbfpi_options', 'fbapp_accesstoken' );
 		register_setting( 'fbfpi_options', 'fbfpi_fanpage_stream_language' );
 		register_setting( 'fbfpi_options', 'fbfpi_import_interval' );
 		register_setting( 'fbfpi_options', 'fbfpi_import_num' );
@@ -106,6 +107,7 @@ class FacebookFanpageImportAdminSettings {
 		do_settings_sections( 'fbfpi_options' );
 
 		$fanpage_id              = get_option( 'fbfpi_fanpage_id' );
+		$fbapp_accesstoken       = get_option( 'fbapp_accesstoken' );
 		$fanpage_stream_language = get_option( 'fbfpi_fanpage_stream_language' );
 		$import_interval         = get_option( 'fbfpi_import_interval' );
 		$import_num              = get_option( 'fbfpi_import_num' );
@@ -130,6 +132,17 @@ class FacebookFanpageImportAdminSettings {
 		echo '<label for="fbfpi_fanpage_id">' . __( 'Page ID', 'facebook-fanpage-import' ) . '</label>';
 		echo '<div class="input">';
 		echo '<input type="text" name="fbfpi_fanpage_id" id="fbfpi_fanpage_id" value="' . $fanpage_id . '" /><br /><small>' . __( 'Copy the fanpage ID from your Facebook fanpage info page.', 'facebook-fanpage-import' ) . '</small>';
+		echo '</div>';
+		echo '</div>';
+
+
+		/**
+		 * fbapp_accesstoken
+		 */
+		echo '<div class="fbfpi-form-field">';
+		echo '<label for="fbapp_accesstoken">' . __( 'Facebook App Access Token', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
+		echo '<input type="text" name="fbapp_accesstoken" id="fbapp_accesstoken" value="' . $fbapp_accesstoken . '" /><br /><small>' . __( 'Create a Facebook App and add the aceesstoken here.', 'facebook-fanpage-import' ) . '</small>';
 		echo '</div>';
 		echo '</div>';
 
