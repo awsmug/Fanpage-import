@@ -56,7 +56,7 @@ class FacebookFanpageConnect {
 	 * @since 1.0.0
 	 */
 	function __construct( $page_id, $access_token = '', $locale = 'en_EN' ) {
-		$this->access_token = '1412978082344911|a7f5722a2b02f24aad0cda61ae5c4fe9';
+		$this->access_token = get_option( 'fbapp_accesstoken' );
 		$this->graph_url    = 'https://graph.facebook.com/v2.7/';
 		$this->locale       = $locale;
 
@@ -117,8 +117,20 @@ class FacebookFanpageConnect {
 			curl_setopt( $con, CURLOPT_SSL_VERIFYPEER, false );
 
 			$data = curl_exec( $con );
-
+			
+			$responseCode = curl_getinfo($con, CURLINFO_HTTP_CODE);
 			curl_close( $con );
+
+
+		 	if ($responseCode >= 400) {
+		        echo "\n<br>HTTP Error: " . $responseCode;
+		        echo "\n<br>Result-Body: ";
+		        print_r($data);	
+		        echo "\n<br>\n<br>";
+		    }
+			
+			
+			
 		} elseif ( ini_get( 'allow_url_fopen' ) === true || ini_get( 'allow_url_fopen' ) == 1 ) {
 			$data = @file_get_contents( $url );
 		} else {
