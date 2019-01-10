@@ -253,11 +253,16 @@ class FacebookFanpageImportFacebookStream {
 
 					case 'link':
 						$post->post_content = $this->get_link_content( $entry, $attach_id );
+						
+						set_post_format($post_id, 'link');
+						
 						break;
 
 					case 'status':
 						$post->post_content = $entry->message;
-
+						
+						set_post_format($post_id, 'status');
+						
 						if ( ! empty( $attach_id ) ) {
 							set_post_thumbnail( $post_id, $attach_id );
 						}
@@ -272,6 +277,8 @@ class FacebookFanpageImportFacebookStream {
 						}
 
 						$post->post_content = $this->get_photo_content( $entry, $attach_id );
+						
+						set_post_format($post_id, 'image');
 
 						if ( ! empty( $attach_id ) ) {
 							set_post_thumbnail( $post_id, $attach_id );
@@ -281,6 +288,8 @@ class FacebookFanpageImportFacebookStream {
 
 					case 'video':
 						$post->post_content = $this->get_video_content( $entry, $attach_id );
+						
+						set_post_format($post_id, 'video');
 
 						if ( ! empty( $attach_id ) ) {
 							set_post_thumbnail( $post_id, $attach_id );
