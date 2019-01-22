@@ -5,7 +5,7 @@
  *
  * @author  mahype, awesome.ug <very@awesome.ug>
  * @package Facebook Fanpage Import
- * @version 1.0.0-beta.7
+ * @version 1.0.1-beta.1
  * @since   1.0.0
  * @license GPL 2
  *          Copyright 2016 Awesome UG (very@awesome.ug)
@@ -93,6 +93,12 @@ class FacebookFanpageImportFacebookStream {
 	var $post_format;
 
 	/**
+	 * @var string
+	 * @since 1.0.0
+	 */
+	var $reimport_format;
+
+	/**
 	 * @var int
 	 * @since 1.0.0
 	 */
@@ -120,6 +126,7 @@ class FacebookFanpageImportFacebookStream {
 		$this->post_format     = get_option( 'fbfpi_insert_post_format' );
 		$this->author_id       = get_option( 'fbfpi_insert_user_id' );
 		$this->term_id         = get_option( 'fbfpi_insert_term_id' );
+		$this->reimport_format = get_option( 'fbfpi_reimport_format' );
 
 		$this->fpc = new FacebookFanpageConnect( $this->page_id, '', get_locale() );
 
@@ -219,6 +226,12 @@ class FacebookFanpageImportFacebookStream {
 
 				$entry = $this->fpc->get_id( $entry->id, array( 'name', 'message', 'story', 'caption', 'description', 'full_picture', 'object_id', 'from', 'link', 'created_time', 'type' ) );
 
+				if ($this->entry_wp_exists ( $entry ) ) // If entry exists as WP Post
+					{
+					$skip_existing_count ++;
+					continue;
+					}
+
 				if( ! in_array( $entry->type, array( 'link', 'photo', 'video', 'status', 'event' ) ) ) {
 					$skip_unknown_count ++;
 					FacebookFanpageImport::log( 'Skipped:' .chr(13) . print_r( $entry, true ) );
@@ -235,10 +248,19 @@ class FacebookFanpageImportFacebookStream {
 
 				$entry->message = $this->replace_urls_by_links( $entry->message );
 
-				$post_id = $this->create_post( $post_title, $post_excerpt, $post_date );
+				// set content
+				$post_content = $this->crop_title($entry->message); 
+				
+
+				// set category
+				if ( 'none' !== $this->term_id ) {
+					$post_category = array( intval( $this->term_id ) );
+				}
+				
+				$post_id = $this->create_post( $post_title, $post_excerpt, $post_content, $post_category, $post_date );	// insert post with category & content
 
 				$post = get_post( $post_id );
-
+				
 				if ( count( $tags ) > 0 ) {
 					wp_set_post_tags( $post_id, $tags );
 				}
@@ -256,7 +278,7 @@ class FacebookFanpageImportFacebookStream {
 						break;
 
 					case 'status':
-						$post->post_content = $entry->message;
+						$post->post_content = $this->crop_title($entry->message);	// crop title from content
 
 						if ( ! empty( $attach_id ) ) {
 							set_post_thumbnail( $post_id, $attach_id );
@@ -265,9 +287,10 @@ class FacebookFanpageImportFacebookStream {
 						break;
 
 					case 'photo':
-						$picture_url = $this->fpc->get_photo_by_object( $entry->object_id );
-
-						if ( ! empty( $picture_url ) ) {
+						if ( empty( $picture_url ) ) {
+							$picture_url = $this->fpc->get_photo_by_object( $entry->object_id );
+						}
+						if (empty($attach_id) && (! empty( $picture_url ) ) ) {
 							$attach_id = $this->fetch_picture( $picture_url, $post_id, $post_date );
 						}
 
@@ -442,7 +465,41 @@ class FacebookFanpageImportFacebookStream {
 
 		return false;
 	}
+	/**
+	* New function to check for same post as WP post (re-import)
+	*
+	* @param $entry
+	*
+	* @return bool
+	*
+	* @since 1.0.1
+	*/
+	
+	private function entry_wp_exists ($entry) {
+		global $wpdb;		
+		//get creation date and text from fb post
+		$post_date = $this->get_post_date($entry);
+		$cropped_post = $this->crop_title($entry->message);
+		
+		//get heading, sanitize possible reimport format
+		$entry_title =  $this->filter_title($entry->message);
+		
+		FacebookFanpageImport::log( 'Checking for WP Posts with Post = "' . $entry->message . '" with the title "' . $entry_title . '". Cropped Content would be "' . $cropped_post . '"');
 
+		// count posts in db, repost is identified by same content and same timestamp
+		$sql = $wpdb->prepare( " SELECT COUNT(*) FROM $wpdb->posts WHERE post_content = '%s' AND post_date = '%s' AND post_type='%s' ",  $cropped_post, $post_date, $this->post_type );
+		
+		$post_count_wp = $wpdb->get_var( $sql );
+		
+		if ( $post_count_wp > 0 ) { 
+			FacebookFanpageImport::log( 'WP Post found!');
+			return true;
+		}
+	
+		FacebookFanpageImport::log( 'No corresponding WP Post found.');
+		return false;
+	}
+		
 	/**
 	 * Getting post title
 	 *
@@ -469,6 +526,11 @@ class FacebookFanpageImportFacebookStream {
 		}
 
 		$post_title = $this->filter_title( $post_title );
+		
+		// title for "Page has added an event"
+		if ($entry->type == 'event') {
+			$post_title = __( 'Neue Veranstaltung', 'facebook-fanpage-import' ) . ": ". $entry->caption;
+		} 
 
 		/**
 		 * Allow overrides.
@@ -492,16 +554,22 @@ class FacebookFanpageImportFacebookStream {
 	 * @return array|mixed
 	 */
 	private function filter_title( $string ) {
-		$title = explode( ':', $string );
-		$title = $title[ 0 ];
+		
+		$raw_title = $this->get_raw_title ($string);
+		
+		// get pattern from this->reimport_format
+		$format = $this->get_reimport_pattern();
+		
+		// RegEx: take everything in between, but not the pattern
+		if ($format['default']) {
+			$pattern = '/(?<=\Q'. $format['pre'] . '\E).*(?=\Q'.$format['inter'].'\E)/s';
+		} else {
+			$pattern = '/(?<=\Q'. $format['inter'] . '\E).*(?=\Q'.$format['post'].'\E)/s';
+		}
 
-		$title = explode( '!', $title );
-		$title = $title[ 0 ];
-
-		$title = str_replace( '+', '', $title );
-
-		$title = trim( $title );
-
+		preg_match($pattern, $raw_title, $found); 
+		$title = trim($found[0]); 	
+		
 		$desired_width = 50;
 
 		if ( strlen( $title ) > $desired_width ) {
@@ -525,7 +593,123 @@ class FacebookFanpageImportFacebookStream {
 		return apply_filters( 'fbfpi_entry_title', $title, $string );
 	}
 
+	
 	/**
+	* get raw title from post, leave post as is
+	*
+	* @var $string: the post containing the title
+	*
+	* return $title: the extracted title
+	*/
+	private function get_raw_title ($string) {
+	
+		// get parts of reimport_format
+		$format = $this->get_reimport_pattern();
+		
+		// get Heading Pattern
+		if ($format['default']) {
+			$pattern = '/\Q'. $format['pre'] . '\E.*\Q'.$format['inter'].'\E/s';
+		} else {
+			$pattern = '/\Q'. $format['inter'] . '\E.*\Q'.$format['post'].'\E/s';
+		}
+		
+		// search for Heading	
+		preg_match($pattern, $string, $found);  
+		
+		// if not re-import pattern, search for other common formats
+		if ((empty($found[0])) || (is_null($found[0]))) {
+			
+			/* Find...
+			*	[+ =*-]*\K.*(?= [+=*-]) => === yourTitle === or +++ yourTitle +++ or ** yourTitle **
+			*
+			* 	| => or else
+			*
+			*  .*?(?=\:\N) => excluding first : followed by newline
+			*
+			* 	| => or else
+			*
+			*  .*?[!] => including first !
+			*
+			* 	| => or else
+			*
+			*  .*?[?] => including first ?
+			*/
+		
+			$pattern = '/[+ =*-]*\K.*(?= [+=*-])|.*?(?=\:\N)|.*?[!]|.*?[?]/u';
+			
+			preg_match($pattern, $string, $found);
+		}
+		$title = $found[0];
+		
+		return $title;
+	
+	}
+	
+	/**
+	* delete Title from entry message
+	*
+	* @param $string including title
+	*
+	* @return $string without title
+	*
+	*/
+	private function crop_title ($string) {
+		// get title
+		$title = $this->get_raw_title ($string);
+		
+		// delete title
+		$string = str_replace($title, '', $string);
+		$string = trim($string);
+		
+		return $string;
+	}
+	
+	
+	/**
+	* get reimport_format pattern from settings
+	*
+	* @return $array 
+	* 
+	* default	$bool 		true if #post_title before #post_content
+	* first		$string		pattern before #post_title
+	* inter		$string		pattern between #post_title and #post_content
+	* post		$string		pattern after #post_content
+	*
+	*/
+	private function get_reimport_pattern() {
+		
+		// does #post_title come before #post_content or not?
+			if (strpos($this->reimport_format, '#post_title') < strpos($this->reimport_format, '#post_content')) {
+				$pattern['default'] = true;
+				$first = '#post_title';
+				$second = '#post_content';
+			} else {
+				$pattern['default'] = false;
+				$first = '#post_content';
+				$second = '#post_title';
+			}
+			// following comments consider default: title before content
+		
+			// get Part before #post_title
+			if (preg_match('/.*(?='.$first.')/s', $this->reimport_format, $found)) {
+				$pattern['pre'] = $found[0];
+			}
+			
+			// get Part between #post_title and #post_content, delete possible linebreak
+			if (preg_match('/(?<='.$first.').*(?='.$second.')/s', $this->reimport_format, $found)) {
+				$pattern['inter'] = str_replace(array("\r", "\n"), '',$found[0]);
+			}
+			
+			// get Part after #post_content
+			if (preg_match('/(?<='.$second.').*/s', $this->reimport_format, $found)) {
+				$pattern['post'] = $found[0];
+			}
+			
+		return $pattern;
+		
+	}
+	
+	/*
 	 * Getting post excerpt
 	 *
 	 * @param $entry
@@ -654,7 +838,7 @@ class FacebookFanpageImportFacebookStream {
 	}
 
 	/**
-	 * Inserting raw post without content
+	 * Inserting raw post with content
 	 *
 	 * @param $post_title
 	 * @param $post_excerpt
@@ -663,16 +847,18 @@ class FacebookFanpageImportFacebookStream {
 	 * @return int|WP_Error
 	 * @since 1.0.0
 	 */
-	private function create_post( $post_title, $post_excerpt, $post_date ) {
+	private function create_post( $post_title, $post_excerpt, $post_content, $post_category, $post_date ) { //EDIT: ADD $post_content, $post_category
 		$post = array(
 			'comment_status' => 'closed', // 'closed' means no comments.
 			'ping_status'    => 'open', // 'closed' means pingbacks or trackbacks turned off
 			'post_date'      => $post_date,
 			'post_status'    => $this->post_status,
-			'post_title'     => $post_title,
+			'post_title'     => ($post_title) ?: ' ', // title should not be empty
 			'post_type'      => $this->post_type,
 			'post_excerpt'   => $post_excerpt,
-			'post_author'    => $this->author_id
+			'post_author'    => $this->author_id,
+			'post_content'	 => $post_content,
+			'post_category'  => $post_category
 		);
 
 		return wp_insert_post( $post );
@@ -800,8 +986,8 @@ class FacebookFanpageImportFacebookStream {
 		$template_vars['photo_title'] = '';
 		$template_vars['photo_text']  = '';
 
-		if( ! empty( $entry->title ) && ! empty( $entry->description ) ){
-			$template_vars['photo_title'] = $entry->title;
+		if( ! empty( $entry->name ) && ! empty( $entry->description ) ){ // replaced entry->title with entry->name, the former not existing in photos
+			$template_vars['photo_title'] = $entry->name; // replaced entry->title with entry->name, the former not existing in photos
 			$template_vars['photo_text']  = $entry->description;
 		}
 
