@@ -1,7 +1,7 @@
 <?php
 /**
- * Facebook Fanpage Import Component.
- * Importing Facebook entries
+ * Facebook Fanpage Import Admin Component.
+ * This class initializes the component.
  *
  * @author  mahype, awesome.ug <very@awesome.ug>
  * @package Facebook Fanpage Import
@@ -25,1108 +25,450 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class FacebookFanpageImportFacebookStream {
-	/**
-	 * @var FacebookFanpageImportFacebookStream
-	 * @since 1.0.0
-	 */
-	protected static $_instance = null;
-
-	/**
-	 * @var string
-	 * @since 1.0.0
-	 */
+class FacebookFanpageImportAdminSettings {
 	var $name;
-
-	/**
-	 * @var string
-	 * @since 1.0.0
-	 */
-	var $app_id;
-
-	/**
-	 * @var string
-	 * @since 1.0.0
-	 */
-	var $app_secret;
-
-	/**
-	 * @var string
-	 * @since 1.0.0
-	 */
-	var $page_id;
-
-	/**
-	 * @var string
-	 * @since 1.0.0
-	 */
-	var $stream_language;
-
-	/**
-	 * @var string
-	 * @since 1.0.0
-	 */
-	var $update_interval;
-
-	/**
-	 * @var string
-	 * @since 1.0.0
-	 */
-	var $update_num;
-
-	/**
-	 * @var string
-	 * @since 1.0.0
-	 */
-	var $post_type;
-
-	/**
-	 * @var $string
-	 * @since 1.0.0
-	 */
-	var $post_status;
-
-	/**
-	 * @var string
-	 * @since 1.0.0
-	 */
-	var $post_format;
-
-	/**
-	 * @var string
-	 * @since 1.0.0
-	 */
-	var $reimport_format;
-
-	/**
-	 * @var int
-	 * @since 1.0.0
-	 */
-	var $term_id;
-
-	/**
-	 * @var FacebookFanpageConnect
-	 * @since 1.0.0
-	 */
-	var $fpc;
+	var $errors = array();
+	var $notices = array();
 
 	/**
 	 * Initializes the Component.
 	 *
 	 * @since 1.0.0
 	 */
-	private function __construct() {
-		$this->page_id         = get_option( 'fbfpi_fanpage_id' );
-		$this->stream_language = get_option( 'fbfpi_fanpage_stream_language' );
-		$this->update_interval = get_option( 'fbfpi_import_interval' );
-		$this->update_num      = get_option( 'fbfpi_import_num' );
-		$this->link_target     = get_option( 'fbfpi_insert_link_target' );
-		$this->post_type       = get_option( 'fbfpi_insert_post_type' );
-		$this->post_status     = get_option( 'fbfpi_insert_post_status' );
-		$this->post_format     = get_option( 'fbfpi_insert_post_format' );
-		$this->author_id       = get_option( 'fbfpi_insert_user_id' );
-		$this->term_id         = get_option( 'fbfpi_insert_term_id' );
-		$this->reimport_format = get_option( 'fbfpi_reimport_format' );
+	function __construct() {
+		$this->name = get_class( $this );
 
-		$this->fpc = new FacebookFanpageConnect( $this->page_id, '', get_locale() );
-
-		if ( '' == $this->page_id ) {
-			FacebookFanpageImport::notice( sprintf( __( '<a href="%s">Fanpage ID have to be provided.</a>', 'facebook-fanpage-import' ), admin_url( 'tools.php?page=fanpage-import/components/admin/settings.php' ) ), 'error' );
-		}
-
-		if ( '' == $this->stream_language ) {
-			$this->stream_language = 'en_US';
-		}
-
-		if ( '' == $this->update_interval ) {
-			$this->update_interval = 'hourly';
-		}
-
-		if ( '' == $this->update_num ) {
-			$this->update_num = false;
-		}
-
-		if ( 'status' == $this->post_type ) {
-			$this->post_type = 'status-message';
-		} else {
-			$this->post_type = 'post';
-		}
-
-		if ( '' == $this->post_status ) {
-			$this->post_status = 'draft';
-		}
-
-		if ( '' == $this->post_format ) {
-			$this->post_format = 'none';
-		}
-
-		// Schedule import if interval set
-		if ( $this->update_interval != 'never' ) {
-			if ( ! wp_next_scheduled( 'fanpage_import' ) ) {
-				wp_schedule_event( time(), $this->update_interval, 'fanpage_import' );
-			}
-		} else {
-			// get next scheduled event
-			$timestamp = wp_next_scheduled( 'fanpage_import' );
-
-			// unschedule it if there is one
-			if ( $timestamp !== false ) {
-				wp_unschedule_event( $timestamp, 'fanpage_import' );
-			}
-
-			// it's not clear whether wp_unschedule_event() clears everything,
-			// so remove existing scheduled hook as well
-			wp_clear_scheduled_hook( 'fanpage_import' );
-		}
-
-		add_action( 'fanpage_import', array( $this, 'import' ) );
+		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+		add_action( 'admin_init', array( $this, 'register_settings' ) );
+		add_action( 'admin_init', array( $this, 'import' ) );
 	}
 
-	/**
-	 * Instance
-	 *
-	 * @return FacebookFanpageImportFacebookStream|Singleton
-	 * @since 1.1.0
-	 */
-	public static function instance() {
-		if ( null === self::$_instance ) {
-			self::$_instance = new self;
-		}
-
-		return self::$_instance;
-	}
-
-	/**
-	 * Importing Stream
-	 *
-	 * @param $param
-	 *
-	 * @since 1.0.0
-	 */
 	public function import() {
-		set_time_limit( 240 );
+		if ( array_key_exists( 'fbfpi_now', $_POST ) || array_key_exists( 'fbfpi_next', $_POST ) ) {
+			$fbfpi_import = FacebookFanpageImportFacebookStream::instance();
+			$fbfpi_import->import();
+		}
 
-		$fanpage = $this->get_fanpage();
-		$entries = $this->get_entries();
-
-		$i = 0;
-
-		if ( count( $entries ) > 0 ) {
-			$skip_existing_count  = 0;
-			$skip_unknown_count   = 0;
-			$skip_without_message = 0;
-
-			foreach ( $entries AS $entry ) {
-
-				if ( $this->entry_exists( $entry->id ) ) // If entry already exists
-				{
-					$skip_existing_count ++;
-					continue;
-				}
-
-				$entry = $this->fpc->get_id( $entry->id, array( 'name', 'message', 'story', 'caption', 'description', 'full_picture', 'object_id', 'from', 'link', 'created_time', 'type' ) );
-
-				if ($this->entry_wp_exists ( $entry ) ) // If entry exists as WP Post
-					{
-					$skip_existing_count ++;
-					continue;
-					}
-
-				if( ! in_array( $entry->type, array( 'link', 'photo', 'video', 'status', 'event' ) ) ) {
-					$skip_unknown_count ++;
-					FacebookFanpageImport::log( 'Skipped:' .chr(13) . print_r( $entry, true ) );
-					continue;
-				}
-
-				$i ++;
-
-				$post_title   = $this->get_post_title( $entry );
-				$post_excerpt = $this->get_post_excerpt( $entry );
-				$picture_url  = $this->get_post_picture_url( $entry );
-				$post_date    = $this->get_post_date( $entry );
-				$tags         = $this->get_post_tags( $entry );
-
-				$entry->message = $this->replace_urls_by_links( $entry->message );
-
-				// set content
-				$post_content = $this->crop_title($entry->message); 
-				
-
-				// set category
-				if ( 'none' !== $this->term_id ) {
-					$post_category = array( intval( $this->term_id ) );
-				}
-				
-				$post_id = $this->create_post( $post_title, $post_excerpt, $post_content, $post_category, $post_date );	// insert post with category & content
-
-				$post = get_post( $post_id );
-				
-				if ( count( $tags ) > 0 ) {
-					wp_set_post_tags( $post_id, $tags );
-				}
-
-				$attach_id = '';
-				if ( ! empty( $picture_url ) ) {
-					$attach_id = $this->fetch_picture( $picture_url, $post_id, $post_date );
-				}
-
-				// Post content
-				switch ( $entry->type ) {
-
-					case 'link':
-						$post->post_content = $this->get_link_content( $entry, $attach_id );
-						break;
-
-					case 'status':
-						$post->post_content = $this->crop_title($entry->message);	// crop title from content
-
-						if ( ! empty( $attach_id ) ) {
-							set_post_thumbnail( $post_id, $attach_id );
-						}
-
-						break;
-
-					case 'photo':
-						if ( empty( $picture_url ) ) {
-							$picture_url = $this->fpc->get_photo_by_object( $entry->object_id );
-						}
-						if (empty($attach_id) && (! empty( $picture_url ) ) ) {
-							$attach_id = $this->fetch_picture( $picture_url, $post_id, $post_date );
-						}
-
-						$post->post_content = $this->get_photo_content( $entry, $attach_id );
-
-						if ( ! empty( $attach_id ) ) {
-							set_post_thumbnail( $post_id, $attach_id );
-						}
-
-						break;
-
-					case 'video':
-						$post->post_content = $this->get_video_content( $entry, $attach_id );
-
-						if ( ! empty( $attach_id ) ) {
-							set_post_thumbnail( $post_id, $attach_id );
-						}
-
-						break;
-
-					case 'event':
-						$post->post_content = $this->get_event_content( $entry, $attach_id );
-
-						if ( ! empty( $attach_id ) ) {
-							set_post_thumbnail( $post_id, $attach_id );
-						}
-
-						break;
-
-					default:
-						break;
-				}
-
-				wp_update_post( $post );
-				FacebookFanpageImport::log( 'Imported "' . $entry->type . '" with the title "' . $post_title . '" - post ID #' . $post_id . ' as post type "' . $this->post_type . '"');
-
-				// Adding terms
-				if( 'post' ===  $this->post_type ) {
-					if ( 'none' !== $this->term_id ) {
-						$term_ids           = array( intval( $this->term_id ) );
-						$term_taxonomy_ids = wp_set_object_terms( $post->ID, $term_ids, 'category' );
-						if ( is_wp_error( $term_taxonomy_ids ) ) {
-							FacebookFanpageImport::log( 'Error: Term could not be set. ' . count(  $this->term_id ). ' entries' );
-						} else {
-							FacebookFanpageImport::log( 'Added term #' . $this->term_id . ' to post #. ' . $post_id . ' entries' );
-						}
-					}
-				}
-
-				// Updating post meta
-				$ids           = explode( '_', $entry->id );
-				$pure_entry_id = $ids[ 1 ];
-				$entry_url     = $fanpage->link . '/posts/' . $pure_entry_id;
-
-				if ( property_exists( $entry, 'id' ) ) {
-					update_post_meta( $post_id, '_fbfpi_entry_id', $entry->id );
-					update_post_meta( $post_id, 'fbfpi_facebook_post_url', 'https://www.facebook.com/' . $entry->id );
-				}
-				if ( property_exists( $entry, 'message' ) ) {
-					update_post_meta( $post_id, '_fbfpi_message', $entry->message );
-				}
-				if ( property_exists( $entry, 'description' ) ) {
-					update_post_meta( $post_id, '_fbfpi_description', $entry->description );
-				}
-
-				update_post_meta( $post_id, '_fbfpi_image_url', $picture_url );
-				update_post_meta( $post_id, '_fbfpi_fanpage_id', $this->page_id );
-				update_post_meta( $post_id, '_fbfpi_fanpage_name', $fanpage->name );
-				update_post_meta( $post_id, '_fbfpi_fanpage_link', $fanpage->link );
-				update_post_meta( $post_id, '_fbfpi_entry_url', $entry_url );
-				update_post_meta( $post_id, '_fbfpi_type', $entry->type );
-
-				if( 'posts' ===  $this->post_type ) {
-					if ( 'none' != $this->post_format ) {
-						set_post_format( $post_id, $this->post_format );
-					}
-				}
-
-				/**
-				 * Allow plugins to do additional processing.
-				 *
-				 * @param WP_Post $post  The post object
-				 * @param object  $entry The Facebook entry object
-				 */
-				do_action( 'fbfpi_entry_created', $post, $entry );
-			}
-
-			FacebookFanpageImport::log( 'Found ' . count( $entries ). ' entries' );
-			FacebookFanpageImport::log( 'Imported ' . $i. ' entries' );
-
-			FacebookFanpageImport::notice( sprintf( __( '%d entries have been found.', 'facebook-fanpage-import' ), count( $entries ) ) );
-			FacebookFanpageImport::notice( sprintf( __( '%d entries have been imported.', 'facebook-fanpage-import' ), $i ) );
-
-			if ( $skip_without_message > 0 ) {
-				FacebookFanpageImport::notice( sprintf( __( '%d skipped because containing no message.', 'facebook-fanpage-import' ), $skip_without_message ), 'error' );
-				FacebookFanpageImport::log( 'Skipped ' . $skip_without_message. ' because containing no message.' );
-			}
-
-			if ( $skip_existing_count > 0 ) {
-				FacebookFanpageImport::notice( sprintf( __( '%d skipped because already existing.', 'facebook-fanpage-import' ), $skip_existing_count ), 'error' );
-				FacebookFanpageImport::log( 'Skipped ' . $skip_existing_count. ' because already existing.' );
-			}
-
-			if ( $skip_unknown_count > 0 ) {
-				FacebookFanpageImport::notice( sprintf( __( '%d skipped because entry type unknown.', 'facebook-fanpage-import' ), $skip_unknown_count ), 'error' );
-				FacebookFanpageImport::log( 'Skipped ' . $skip_unknown_count. ' because entry type unknown.' );
-			}
+		if ( array_key_exists( 'fbfpi_stop', $_POST  ) ) {
+			$fbfpi_import = FacebookFanpageImportFacebookStream::instance();
+			$fbfpi_import->stop_import();
 		}
 	}
 
 	/**
-	 * Getting Fanpage data
+	 * Testing Connection to Facebook API
 	 *
-	 * @return array|mixed|object|string
+	 * @todo Adding functionality
+	 */
+	public function test_con() {
+	}
+
+	/**
+	 * Adds the Admin menu.
 	 *
 	 * @since 1.0.0
 	 */
-	private function get_fanpage(){
-		return $this->fpc->get_page();
+	public function admin_menu() {
+		add_submenu_page( 'tools.php', __( 'Fanpage Import', 'facebook-fanpage-import' ), __( 'Fanpage Import', 'facebook-fanpage-import' ), 'manage_options', __FILE__, array( $this, 'admin_page' ) );
 	}
 
 	/**
-	 * Getting Fanpage entries depending on $_POST variables
-	 *
-	 * @return mixed
+	 * Register Settings
+	 */
+	public function register_settings() {
+		register_setting( 'fbfpi_options', 'fbfpi_fanpage_id' );
+		register_setting( 'fbfpi_options', 'fbfpi_accesstoken' );
+		register_setting( 'fbfpi_options', 'fbfpi_reimport_format' );
+		register_setting( 'fbfpi_options', 'fbfpi_fanpage_stream_language' );
+		register_setting( 'fbfpi_options', 'fbfpi_import_interval' );
+		register_setting( 'fbfpi_options', 'fbfpi_import_num' );
+		register_setting( 'fbfpi_options', 'fbfpi_insert_post_type' );
+		register_setting( 'fbfpi_options', 'fbfpi_insert_term_id' );
+		register_setting( 'fbfpi_options', 'fbfpi_insert_user_id' );
+		register_setting( 'fbfpi_options', 'fbfpi_insert_post_status' );
+		register_setting( 'fbfpi_options', 'fbfpi_insert_link_target' );
+		register_setting( 'fbfpi_options', 'fbfpi_insert_post_format' );
+		register_setting( 'fbfpi_options', 'fbfpi_deactivate_css' );
+	}
+
+	/**
+	 * Content of the admin page.
 	 *
 	 * @since 1.0.0
 	 */
-	private function get_entries() {
-		// get initial posts on first run or via schedule
-		if ( ( isset( $_POST ) && array_key_exists( 'fbfpi_now', $_POST ) && '' != $_POST[ 'fbfpi_now' ] ) || doing_action( 'fanpage_import' ) ) {
-			$entries = $this->fpc->get_posts( $this->update_num );
-		}
+	public function admin_page() {
+		echo '<div class="wrap">';
 
-		// get paged posts when selecting "next"
-		if ( isset( $_POST ) && array_key_exists( 'fbfpi_next', $_POST ) && '' != $_POST[ 'fbfpi_next' ] ) {
-			$url = get_option( '_facebook_fanpage_import_next', '' );
-			if ( ! empty( $url ) ) {
-				$entries = $this->fpc->get_posts_paged( $url );
-			}
-		}
+		echo '<div id="icon-options-general" class="icon32 icon32-posts-post"></div>';
+		echo '<h2>' . __( 'Facebook Fanpage Import', 'facebook-fanpage-import' ) . '</h2>';
 
-		$paging = $this->fpc->get_paging();
+		echo '<div class="fbfpi-form">';
+		echo '<form method="post" action="options.php">';
+		settings_fields( 'fbfpi_options' );
+		do_settings_sections( 'fbfpi_options' );
 
-		if ( is_object( $paging ) && property_exists( $paging, 'next' ) && ! empty( $paging->next ) ) {
-			update_option( '_facebook_fanpage_import_next', $paging->next );
-		} else {
-			delete_option( '_facebook_fanpage_import_next' );
-		}
+		$fanpage_id              = get_option( 'fbfpi_fanpage_id' );
+		$fbfpi_accesstoken       = get_option( 'fbfpi_accesstoken' );
+		$reimport_format	     = get_option( 'fbfpi_reimport_format' );
+		$fanpage_stream_language = get_option( 'fbfpi_fanpage_stream_language' );
+		$import_interval         = get_option( 'fbfpi_import_interval' );
+		$import_num              = get_option( 'fbfpi_import_num' );
+		$insert_post_type        = get_option( 'fbfpi_insert_post_type' );
+		$insert_term_id          = get_option( 'fbfpi_insert_term_id' );
+		$insert_user_id          = get_option( 'fbfpi_insert_user_id' );
+		$insert_post_status      = get_option( 'fbfpi_insert_post_status' );
+		$insert_link_target      = get_option( 'fbfpi_insert_link_target' );
+		$insert_post_format      = get_option( 'fbfpi_insert_post_format' );
+		$deactivate_css          = get_option( 'fbfpi_deactivate_css' );
 
-		return $entries;
-	}
-
-	/**
-	 * Checks if an entry exists
-	 *
-	 * @param $entry_id
-	 *
-	 * @return bool
-	 *
-	 * @since 1.0.0
-	 */
-	private function entry_exists( $entry_id ) {
-		global $wpdb;
-
-		$sql        = $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->posts AS p, $wpdb->postmeta AS m WHERE p.ID = m.post_id  AND p.post_type='%s' AND p.post_status <> 'trash' AND m.meta_key = '_fbfpi_entry_id'  AND m.meta_value = '%s'", $this->post_type, $entry_id );
-		$post_count = $wpdb->get_var( $sql );
-
-		if ( $post_count > 0 ) {
-			return true;
-		}
-
-		return false;
-	}
-	/**
-	* New function to check for same post as WP post (re-import)
-	*
-	* @param $entry
-	*
-	* @return bool
-	*
-	* @since 1.0.1
-	*/
-	
-	private function entry_wp_exists ($entry) {
-		global $wpdb;		
-		//get creation date and text from fb post
-		$post_date = $this->get_post_date($entry);
-		$cropped_post = $this->crop_title($entry->message);
-		
-		//get heading, sanitize possible reimport format
-		$entry_title =  $this->filter_title($entry->message);
-		
-		FacebookFanpageImport::log( 'Checking for WP Posts with Post = "' . $entry->message . '" with the title "' . $entry_title . '". Cropped Content would be "' . $cropped_post . '"');
-
-		// count posts in db, repost is identified by same content and same timestamp
-		$sql = $wpdb->prepare( " SELECT COUNT(*) FROM $wpdb->posts WHERE post_content = '%s' AND post_date = '%s' AND post_type='%s' ",  $cropped_post, $post_date, $this->post_type );
-		
-		$post_count_wp = $wpdb->get_var( $sql );
-		
-		if ( $post_count_wp > 0 ) { 
-			FacebookFanpageImport::log( 'WP Post found!');
-			return true;
-		}
-	
-		FacebookFanpageImport::log( 'No corresponding WP Post found.');
-		return false;
-	}
-		
-	/**
-	 * Getting post title
-	 *
-	 * @param $entry
-	 *
-	 * @return array|mixed|string|void
-	 *
-	 * @since 1.1.0
-	 */
-	private function get_post_title( $entry ) {
-		$post_title = '';
-		if ( ! property_exists( $entry, 'message' ) ) {
-			if ( property_exists( $entry, 'story' ) && '' != $entry->story ) {
-				$post_title     = $entry->story;
-				$entry->message = '';
-			} else {
-				$post_title     = __( 'Untitled post', 'facebook-fanpage-import' );
-				$entry->message = '';
-			}
-		} elseif ( property_exists( $entry, 'message' ) && '' != $entry->message ) {
-			$post_title = $entry->message;
-		} elseif ( property_exists( $entry, 'description' ) && '' != $entry->description && '' == $post_title ) {
-			$post_title = $entry->description;
-		}
-
-		$post_title = $this->filter_title( $post_title );
-		
-		// title for "Page has added an event"
-		if ($entry->type == 'event') {
-			$post_title = __( 'Neue Veranstaltung', 'facebook-fanpage-import' ) . ": ". $entry->caption;
-		} 
-
-		/**
-		 * Allow overrides.
-		 *
-		 * @param string $post_title  The unfiltered title
-		 * @param string $entry The entry
-		 *
-		 * @return string $title The filtered title
-		 * @since 1.0.0
-		 */
-		$post_title = apply_filters( 'fbfpi_import_post_title', $post_title, $entry );
-
-		return $post_title;
-	}
-
-	/**
-	 * Filter title
-	 *
-	 * @param $string
-	 *
-	 * @return array|mixed
-	 */
-	private function filter_title( $string ) {
-		
-		$raw_title = $this->get_raw_title ($string);
-		
-		// get pattern from this->reimport_format
-		$format = $this->get_reimport_pattern();
-		
-		// RegEx: take everything in between, but not the pattern
-		if ($format['default']) {
-			$pattern = '/(?<=\Q'. $format['pre'] . '\E).*(?=\Q'.$format['inter'].'\E)/s';
-		} else {
-			$pattern = '/(?<=\Q'. $format['inter'] . '\E).*(?=\Q'.$format['post'].'\E)/s';
-		}
-
-		preg_match($pattern, $raw_title, $found); 
-		$title = trim($found[0]); 	
-		
-		$desired_width = 50;
-
-		if ( strlen( $title ) > $desired_width ) {
-			$title = wordwrap( $title, $desired_width );
-			$i     = strpos( $title, "\n" );
-			if ( $i ) {
-				$title = substr( $title, 0, $i );
-			}
-			$title = $title . ' ...';
+		$imported_until = '';
+		parse_str( get_option( '_facebook_fanpage_import_next', false ), $opt );
+		if( ! empty( $opt['until'] ) ) {
+			$imported_until = date_i18n( get_option( 'date_format' ) . ' - ' . get_option( 'time_format' ), $opt[ 'until' ] );
 		}
 
 		/**
-		 * Allow overrides.
-		 *
-		 * @param string $title  The filtered title
-		 * @param string $string The unfiltered title
-		 *
-		 * @return string $title The filtered title
-		 * @since 1.0.0
+		 * Fanpage ID
 		 */
-		return apply_filters( 'fbfpi_entry_title', $title, $string );
-	}
+		echo '<div class="fbfpi-form-field">';
+		echo '<label for="fbfpi_fanpage_id">' . __( 'Page ID', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
+		echo '<input type="text" name="fbfpi_fanpage_id" id="fbfpi_fanpage_id" value="' . $fanpage_id . '" /><br /><small>' . __( 'Copy the fanpage ID from your Facebook fanpage info page.', 'facebook-fanpage-import' ) . '</small>';
+		echo '</div>';
+		echo '</div>';
 
-	
-	/**
-	* get raw title from post, leave post as is
-	*
-	* @var $string: the post containing the title
-	*
-	* return $title: the extracted title
-	*/
-	private function get_raw_title ($string) {
-	
-		// get parts of reimport_format
-		$format = $this->get_reimport_pattern();
-		
-		// get Heading Pattern
-		if ($format['default']) {
-			$pattern = '/\Q'. $format['pre'] . '\E.*\Q'.$format['inter'].'\E/s';
-		} else {
-			$pattern = '/\Q'. $format['inter'] . '\E.*\Q'.$format['post'].'\E/s';
-		}
-		
-		// search for Heading	
-		preg_match($pattern, $string, $found);  
-		
-		// if not re-import pattern, search for other common formats
-		if ((empty($found[0])) || (is_null($found[0]))) {
-			
-			/* Find...
-			*	[+ =*-]*\K.*(?= [+=*-]) => === yourTitle === or +++ yourTitle +++ or ** yourTitle **
-			*
-			* 	| => or else
-			*
-			*  .*?(?=\:\N) => excluding first : followed by newline
-			*
-			* 	| => or else
-			*
-			*  .*?[!] => including first !
-			*
-			* 	| => or else
-			*
-			*  .*?[?] => including first ?
-			*/
-		
-			$pattern = '/[+ =*-]*\K.*(?= [+=*-])|.*?(?=\:\N)|.*?[!]|.*?[?]/u';
-			
-			preg_match($pattern, $string, $found);
-		}
-		$title = $found[0];
-		
-		return $title;
-	
-	}
-	
-	/**
-	* delete Title from entry message
-	*
-	* @param $string including title
-	*
-	* @return $string without title
-	*
-	*/
-	private function crop_title ($string) {
-		// get title
-		$title = $this->get_raw_title ($string);
-		
-		// delete title
-		$string = str_replace($title, '', $string);
-		$string = trim($string);
-		
-		return $string;
-	}
-	
-	
-	/**
-	* get reimport_format pattern from settings
-	*
-	* @return $array 
-	* 
-	* default	$bool 		true if #post_title before #post_content
-	* first		$string		pattern before #post_title
-	* inter		$string		pattern between #post_title and #post_content
-	* post		$string		pattern after #post_content
-	*
-	*/
-	private function get_reimport_pattern() {
-		
-		// does #post_title come before #post_content or not?
-			if (strpos($this->reimport_format, '#post_title') < strpos($this->reimport_format, '#post_content')) {
-				$pattern['default'] = true;
-				$first = '#post_title';
-				$second = '#post_content';
-			} else {
-				$pattern['default'] = false;
-				$first = '#post_content';
-				$second = '#post_title';
-			}
-			// following comments consider default: title before content
-		
-			// get Part before #post_title
-			if (preg_match('/.*(?='.$first.')/s', $this->reimport_format, $found)) {
-				$pattern['pre'] = $found[0];
-			}
-			
-			// get Part between #post_title and #post_content, delete possible linebreak
-			if (preg_match('/(?<='.$first.').*(?='.$second.')/s', $this->reimport_format, $found)) {
-				$pattern['inter'] = str_replace(array("\r", "\n"), '',$found[0]);
-			}
-			
-			// get Part after #post_content
-			if (preg_match('/(?<='.$second.').*/s', $this->reimport_format, $found)) {
-				$pattern['post'] = $found[0];
-			}
-			
-		return $pattern;
-		
-	}
-	
-	/*
-	 * Getting post excerpt
-	 *
-	 * @param $entry
-	 *
-	 * @return string
-	 * @since 1.0.0
-	 */
-	private function get_post_excerpt( $entry ) {
-		$post_excerpt = '';
-		if ( property_exists( $entry, 'description' ) ) {
-			$post_excerpt = $entry->description;
-		}else if ( property_exists( $entry, 'message' ) ) {
-			$post_excerpt = $entry->message;
- 		}
 
 		/**
-		 * Allow overrides.
-		 *
-		 * @param string $post_excerpt  The unfiltered Excerpt
-		 * @param string $entry The entry
-		 *
-		 * @return string $title The filtered title
-		 * @since 1.0.0
+		 * fbfpi_accesstoken
 		 */
-		$post_excerpt = apply_filters( 'fbfpi_import_post_excerpt', $post_excerpt, $entry );
+		echo '<div class="fbfpi-form-field">';
+		echo '<label for="fbfpi_accesstoken">' . __( 'Facebook App Access Token', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
+		echo '<input type="text" name="fbfpi_accesstoken" id="fbfpi_accesstoken" value="' . $fbfpi_accesstoken . '" /><br /><small>' . __( 'Create a Facebook App and add the accesstoken here.', 'facebook-fanpage-import' ) . '</small>';
+		echo '</div>';
+		echo '</div>';
+		
+		
+		/**
+		 * fbfpi_reimport_format
+		 */
+		echo '<div class="fbfpi-form-field">';
+		echo '<label for="fbfpi_reimport_format">' . __( 'Format of Exported WordPress Posts', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
+		echo '<textarea name="fbfpi_reimport_format" id="fbfpi_reimport_format">'. $reimport_format . '</textarea><br /><small>' . __( 'The format of posts exported from wordpress to facebook to avoid re-imports.' ) . '</small>';
+		echo '<br /><small>' . __( 'Use #post_title and #post_content as placeholders.', 'facebook-fanpage-import' ) . '</small>';
+		echo '</div>';
+		echo '</div>';
 
-		return $post_excerpt;
-	}
+		/**
+		 * Select stream languages
+		 */
+		$available_languages = get_available_languages();
 
-	/**
-	 * Getting post picture URL
-	 *
-	 * @param $entry
-	 *
-	 * @return string
-	 * @since 1.0.0
-	 */
-	private function get_post_picture_url( $entry ) {
-		$picture_url = '';
-		if ( property_exists( $entry, 'full_picture' ) ) {
-			$picture_url = $entry->full_picture;
+		if ( ! in_array( 'en_US', $available_languages ) ) {
+			$available_languages[] = 'en_US';
 		}
 
-		/**
-		 * Allow overrides.
-		 *
-		 * @param string $picture_url  The unfiltered picture URL
-		 * @param string $entry The entry
-		 *
-		 * @return string $title The filtered picture URL
-		 * @since 1.0.0
-		 */
-		$picture_url = apply_filters( 'fbfpi_import_post_picture_url', $picture_url, $entry );
-
-		return $picture_url;
-	}
-
-	/**
-	 * Getting post date
-	 *
-	 * @param $entry
-	 *
-	 * @return bool|mixed|string|void
-	 * @since 1.0.0
-	 */
-	private function get_post_date( $entry ) {
-		$date = date( 'Y-m-d H:i:s', strtotime( $entry->created_time ) );
-
-		/**
-		 * Allow overrides.
-		 *
-		 * @param array $date  The unfiltered post date
-		 * @param string $entry The entry
-		 *
-		 * @return string $title The filtered post date
-		 * @since 1.0.0
-		 */
-		$date = apply_filters( 'fbfpi_import_post_date', $date, $entry );
-
-		return $date;
-	}
-
-	/**
-	 * Getting post tags
-	 *
-	 * @param $entry
-	 *
-	 * @return array|mixed|void
-	 * @since 1.0.0
-	 */
-	private function get_post_tags( $entry ) {
-		preg_match_all( "/(#\w+)/", $entry->message, $found_hash_tags );
-		$found_hash_tags = $found_hash_tags[ 1 ];
-
-		$tags = array();
-		foreach ( $found_hash_tags AS $hash_tag ) {
-			$tags[] = substr( $hash_tag, 1, strlen( $hash_tag ) );
+		foreach ( $available_languages AS $language ) {
+			$select_languages[] = array( 'value' => $language );
 		}
 
+		echo '<div class="fbfpi-form-field">';
+		echo '<label for="fbfpi_fanpage_stream_language">' . __( 'Facebook Language', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
+		echo '<select name="fbfpi_fanpage_stream_language" id="fbfpi_fanpage_stream_language">';
+		foreach ( $select_languages AS $language ) {
+			$selected = '';
+			if ( $language[ 'value' ] === $fanpage_stream_language ) {
+				$selected = ' selected="selected"';
+			}
+
+			echo '<option value="' . $language[ 'value' ] . '"' . $selected . '>' . $language[ 'value' ] . '</option>';
+		}
+		echo '</select>';
+		echo '</div>';
+		echo '</div>';
+
 		/**
-		 * Allow overrides.
-		 *
-		 * @param array $tags  The unfiltered post tags
-		 * @param string $entry The entry
-		 *
-		 * @return string $tags The filtered post tags
-		 * @since 1.0.0
+		 * Import WP Cron settings
 		 */
-		$tags = apply_filters( 'fbfpi_import_post_tags', $tags, $entry );
+		$select_schedules = array( array( 'label' => __( 'Never', 'facebook-fanpage-import' ), 'value' => 'never' ) );
+		$schedules        = wp_get_schedules(); // Getting WordPress schedules
+		foreach ( $schedules AS $key => $schedule ) {
+			$select_schedules[] = array( 'label' => $schedule[ 'display' ], 'value' => $key );
+		}
 
-		return $tags;
-	}
+		echo '<div class="fbfpi-form-field">';
+		echo '<label for="fbfpi_import_interval">' . __( 'Import Interval', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
+		echo '<select name="fbfpi_import_interval" id="fbfpi_import_interval">';
+		foreach ( $select_schedules AS $schedule ) {
+			$selected = '';
+			if ( $schedule[ 'value' ] === $import_interval ) {
+				$selected = ' selected="selected"';
+			}
 
-	/**
-	 * Replacing URLs with HTML Links
-	 *
-	 * @param $content
-	 *
-	 * @return mixed
-	 * @since 1.0.0
-	 */
-	private function replace_urls_by_links( $content ) {
-		$content = preg_replace( '@(https?://([-\w.]+[-\w])+(:\d+)?(/([\w-.~:/?#\[\]\@!$&\'()*+,;=%]*)?)?)@', '<a href="$1" target="_blank">$1</a>', $content );
+			echo '<option value="' . $schedule[ 'value' ] . '"' . $selected . '>' . $schedule[ 'label' ] . '</option>';
+		}
+		echo '</select>';
+		echo '</div>';
+		echo '</div>';
 
-		return $content;
-	}
+		/**
+		 * Num of entries to import
+		 */
+		$import_num_values = apply_filters( 'fbfpi_num_values', array( 5, 10, 25, 50, 100 ) );
 
-	/**
-	 * Inserting raw post with content
-	 *
-	 * @param $post_title
-	 * @param $post_excerpt
-	 * @param $post_date
-	 *
-	 * @return int|WP_Error
-	 * @since 1.0.0
-	 */
-	private function create_post( $post_title, $post_excerpt, $post_content, $post_category, $post_date ) { //EDIT: ADD $post_content, $post_category
-		$post = array(
-			'comment_status' => 'closed', // 'closed' means no comments.
-			'ping_status'    => 'open', // 'closed' means pingbacks or trackbacks turned off
-			'post_date'      => $post_date,
-			'post_status'    => $this->post_status,
-			'post_title'     => ($post_title) ?: ' ', // title should not be empty
-			'post_type'      => $this->post_type,
-			'post_excerpt'   => $post_excerpt,
-			'post_author'    => $this->author_id,
-			'post_content'	 => $post_content,
-			'post_category'  => $post_category
+		echo '<div class="fbfpi-form-field">';
+		echo '<label for="fbfpi_import_num">' . __( 'Entries to import', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
+		echo '<select name="fbfpi_import_num" id="fbfpi_import_num">';
+		foreach ( $import_num_values AS $num ) {
+			$selected = '';
+			if ( (int) $num == (int) $import_num ) {
+				$selected = ' selected="selected"';
+			}
+
+			echo '<option value="' . $num . '"' . $selected . '>' . $num . '</option>';
+		}
+		echo '</select>';
+		echo '</div>';
+		echo '</div>';
+
+		/**
+		 * Select where to import, as posts or as own post type
+		 */
+		$insert_post_types = array(
+			array(
+				'value' => 'posts',
+				'label' => __( 'Posts' )
+			),
+			array(
+				'value' => 'status',
+				'label' => __( 'Status message (own post type)', 'facebook-fanpage-import' )
+			)
 		);
 
-		return wp_insert_post( $post );
-	}
+		echo '<div class="fbfpi-form-field">';
+		echo '<label for="fbfpi_insert_post_type">' . __( 'Insert Messages as', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
+		echo '<select name="fbfpi_insert_post_type" id="fbfpi_insert_post_type">';
+		foreach ( $insert_post_types AS $post_type ) {
+			$selected = '';
+			if ( $insert_post_type === $post_type[ 'value' ] ) {
+				$selected = ' selected="selected"';
+			}
 
-	/**
-	 * Fetching picture
-	 *
-	 * @param $picture_url
-	 * @param $post_id
-	 *
-	 * @return int
-	 * @since 1.0.0
-	 */
-	private function fetch_picture( $picture_url, $post_id, $post_date ) {
-		require_once( ABSPATH . 'wp-admin/includes/image.php' );
+			echo '<option value="' . $post_type[ 'value' ] . '"' . $selected . '>' . $post_type[ 'label' ] . '</option>';
+		}
+		echo '</select>';
+		echo '</div>';
+		echo '</div>';
 
-		$picture = wp_remote_get( $picture_url );
-		$type    = wp_remote_retrieve_header( $picture, 'content-type' );
+		if( 'posts' === $insert_post_type ) {
+			/**
+			 * Select a category to apply to imported entries
+			 */
+			$insert_post_terms = array(
+				array(
+					'value' => 'none',
+					'label' => __( 'No category', 'facebook-fanpage-import' ),
+				)
+			);
 
-		switch( $type ) {
-			case 'image/jpeg':
-				$suffix = '.jpg';
-				break;
-			case 'image/png':
-				$suffix = '.png';
-				break;
-			case 'image/gif':
-				$suffix = '.gif';
-				break;
-			default:
-				$suffix = '';
-				break;
+			$terms = get_terms( array( 'taxonomy' => 'category', 'hide_empty' => false ) );
+			foreach ( $terms AS $term ) {
+				$insert_post_terms[] = array(
+					'value' => $term->term_id,
+					'label' => $term->name,
+				);
+			}
+
+			echo '<div class="fbfpi-form-field">';
+			echo '<label for="fbfpi_insert_term_id">' . __( 'Categorise Messages as', 'facebook-fanpage-import' ) . '</label>';
+			echo '<div class="input">';
+			echo '<select name="fbfpi_insert_term_id" id="fbfpi_insert_term_id">';
+			foreach ( $insert_post_terms AS $term ) {
+				$selected = '';
+				if ( (int) $insert_term_id === (int) $term[ 'value' ] ) {
+					$selected = ' selected="selected"';
+				}
+
+				echo '<option value="' . $term[ 'value' ] . '"' . $selected . '>' . $term[ 'label' ] . '</option>';
+			}
+			echo '</select>';
+			echo '<br /><small>' . sprintf( __( 'Add new categories in the <a href="%s">posts section</a>.', 'facebook-fanpage-import' ), admin_url( 'edit-tags.php?taxonomy=category' ) ) . '</small>';
+			echo '</div>';
+			echo '</div>';
 		}
 
-		$filename = sanitize_file_name( substr( md5( mt_rand() ), 0, 8 ) . $suffix );
+		/**
+		 * Select importing User
+		 */
+		$users     = get_users( array( 'fields' => array( 'ID', 'display_name' ) ) );
+		$user_list = array();
 
-		$mirror  = wp_upload_bits( $filename, '', wp_remote_retrieve_body( $picture ), date('Y/m', strtotime( $post_date ) ) );
+		foreach ( $users AS $user ) {
+			$user_list[] = array(
+				'value' => $user->ID,
+				'label' => $user->display_name
+			);
+		}
 
-		$attachment = array(
-			'post_title'     => $filename,
-			'post_mime_type' => $type,
-			'post_date'      => $post_date,
-			'post_status'    => 'publish'
+		echo '<div class="fbfpi-form-field">';
+		echo '<label for="fbfpi_insert_user_id">' . __( 'Inserting User', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
+		echo '<select name="fbfpi_insert_user_id" id="fbfpi_insert_user_id">';
+		foreach ( $user_list AS $user ) {
+			$selected = '';
+			if ( $insert_user_id === $user[ 'value' ] ) {
+				$selected = ' selected="selected"';
+			}
+
+			echo '<option value="' . $user[ 'value' ] . '"' . $selected . '>' . $user[ 'label' ] . '</option>';
+		}
+		echo '</select>';
+		echo '</div>';
+		echo '</div>';
+
+		/**
+		 * Post status
+		 */
+		$post_status_values = array(
+			array(
+				'value' => 'publish',
+				'label' => __( 'Published' )
+			),
+			array(
+				'value' => 'draft',
+				'label' => __( 'Draft' )
+			),
 		);
 
-		$picture_id = wp_insert_attachment( $attachment, $mirror[ 'file' ], $post_id );
+		echo '<div class="fbfpi-form-field">';
+		echo '<label for="fbfpi_insert_post_status">' . __( 'Post status', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
+		echo '<select name="fbfpi_insert_post_status" id="fbfpi_insert_post_status">';
+		foreach ( $post_status_values AS $post_status_value ) {
+			$selected = '';
+			if ( $insert_post_status === $post_status_value[ 'value' ] ) {
+				$selected = ' selected="selected"';
+			}
 
-		$attach_data = wp_generate_attachment_metadata( $picture_id, $mirror[ 'file' ] );
-		wp_update_attachment_metadata( $picture_id, $attach_data );
-
-		return $picture_id;
-	}
-
-	/**
-	 * Get link content
-	 *
-	 * @param $entry
-	 * @param $attach_id
-	 *
-	 * @return string
-	 * @since 1.0.0
-	 */
-	private function get_link_content( $entry, $attach_id ) {
-		$attach_url = wp_get_attachment_url( $attach_id );
-
-		if ( property_exists( $entry, 'caption' ) ) {
-			$copyright = '&copy; ' . $entry->caption . ' - ' . $entry->name;
-		} else {
-			$copyright = '&copy; ' . $entry->name;
+			echo '<option value="' . $post_status_value[ 'value' ] . '"' . $selected . '>' . $post_status_value[ 'label' ] . '</option>';
 		}
-
-		$content = $entry->message;
-		$content .= '<div class="fbfpi_link">';
-		if ( '' != $attach_url ) {
-			$content .= '<div class="fbfpi_image">';
-			$content .= '<a href="' . $entry->link . '" target="' . $this->link_target . '" title="' . $copyright . '"><img src="' . $attach_url . '" title="' . $copyright . '"></a>';
-			$content .= '</div>';
-		}
-		$content .= '<div class="fbfpi_text">';
-		$content .= '<h4><a href="' . $entry->link . '" target="' . $this->link_target . '" title="' . $copyright . '">' . $entry->name . '</a></h4>';
-
-		if ( property_exists( $entry, 'caption' ) ) {
-			$content .= '<p><small>' . $entry->caption . '</small><br /></p>';
-		}
-
-		if ( property_exists( $entry, 'description' ) ) {
-			$content .= '<p>' . $entry->description . '</p>';
-		}
-		$content .= '</div>';
-		$content .= '</div>';
+		echo '</select>';
+		echo '</div>';
+		echo '</div>';
 
 		/**
-		 * Allow overrides.
-		 *
-		 * @param string  $content   The constructed content
-		 * @param object  $entry     The entry object
-		 * @param integer $attach_id The numeric ID of the attachment
-		 *
-		 * @return string $content The constructed content
-		 *
-		 * @since 1.0.0
+		 * Link target for imported links
 		 */
-		return apply_filters( 'fbfpi_entry_link', $content, $entry, $attach_id );
-	}
+		$insert_link_target_values = array(
+			array(
+				'value' => '_self',
+				'label' => __( 'same window', 'facebook-fanpage-import' )
+			),
+			array(
+				'value' => '_blank',
+				'label' => __( 'new window', 'facebook-fanpage-import' )
+			),
+		);
 
-	/**
-	 * Get photo content
-	 *
-	 * @param $entry
-	 * @param $attach_id
-	 *
-	 * @return string
-	 * @since 1.0.0
-	 */
-	private function get_photo_content( $entry, $attach_id ) {
-		$post[ 'title' ] = '';
+		echo '<div class="fbfpi-form-field">';
+		echo '<label for="fbfpi_insert_link_target">' . __( 'Open Links in', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
+		echo '<select name="fbfpi_insert_link_target" id="fbfpi_insert_link_target">';
+		foreach ( $insert_link_target_values AS $insert_link_target_value ) {
+			$selected = '';
+			if ( $insert_link_target === $insert_link_target_value[ 'value' ] ) {
+				$selected = ' selected="selected"';
+			}
 
-		$template_vars['link_target'] = $this->link_target;
+			echo '<option value="' . $insert_link_target_value[ 'value' ] . '"' . $selected . '>' . $insert_link_target_value[ 'label' ] . '</option>';
+		}
+		echo '</select>';
+		echo '</div>';
+		echo '</div>';
 
-		$template_vars['text'] = $entry->message;
+		/**
+		 * Selecting post formats if existing
+		 */
+		if ( current_theme_supports( 'post-formats' ) && 'posts' === $insert_post_type ) {
+			$post_formats = get_theme_support( 'post-formats' );
 
-		$template_vars['photo_src'] = wp_get_attachment_url( $attach_id );
-		$template_vars['photo_url'] = $entry->link;
-		$template_vars['photo_title'] = '';
-		$template_vars['photo_text']  = '';
+			if ( false != $post_formats ) {
+				$post_formats = $post_formats[ 0 ];
 
-		if( ! empty( $entry->name ) && ! empty( $entry->description ) ){ // replaced entry->title with entry->name, the former not existing in photos
-			$template_vars['photo_title'] = $entry->name; // replaced entry->title with entry->name, the former not existing in photos
-			$template_vars['photo_text']  = $entry->description;
+				$insert_post_format_values[] = array(
+					'value' => 'none',
+					'label' => __( '-- None --', 'facebook-fanpage-import' )
+				);
+
+				foreach ( $post_formats as $post_format ) {
+					$insert_post_format_values[] = array(
+						'value' => $post_format,
+						'label' => $post_format
+					);
+				}
+
+				echo '<div class="fbfpi-form-field">';
+				echo '<label for="fbfpi_insert_post_format">' . __( 'Post format', 'facebook-fanpage-import' ) . '</label>';
+				echo '<div class="input">';
+				echo '<select name="fbfpi_insert_post_format" id="fbfpi_insert_post_format">';
+				foreach ( $insert_post_format_values AS $insert_post_format_value ) {
+					$selected = '';
+					if ( $insert_post_format === $insert_post_format_value[ 'value' ] ) {
+						$selected = ' selected="selected"';
+					}
+
+					echo '<option value="' . $insert_post_format_value[ 'value' ] . '"' . $selected . '>' . $insert_post_format_value[ 'label' ] . '</option>';
+				}
+				echo '</select>';
+				echo '</div>';
+				echo '</div>';
+			}
+		}
+
+		$checked = '';
+		if ( 'yes' === $deactivate_css ) {
+			$checked = ' checked="checked"';
+		}
+
+		echo '<div class="fbfpi-form-field">';
+		echo '<label for="fbfpi_deactivate_css">' . __( 'Deactivate Plugin CSS', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
+		echo '<input type="checkbox" value="yes" name="fbfpi_deactivate_css" id="fbfpi_deactivate_css"' . $checked . ' />';
+		echo '</div>';
+		echo '</div>';
+
+		do_action( 'fbfpi_settings_form' );
+
+		/**
+		 * Import button
+		 */
+		if ( ! empty( $fanpage_id ) ) {
+			if ( ! get_option( '_facebook_fanpage_import_next', false ) ) {
+				echo ' <input type="submit" name="fbfpi_now" value="' . __( 'Import Now', 'facebook-fanpage-import' ) . '" class="button" /> ';
+			} else {
+				echo ' <input type="submit" name="fbfpi_next" value="' . __( 'Import Next', 'facebook-fanpage-import' ) . '" class="button" /> <input type="submit" name="fbfpi_stop" value="' . __( 'Reset Import', 'facebook-fanpage-import' ) . '" class="button" style="margin-left:10px;" /> ';
+			}
+			if( ! empty( $imported_until ) ) {
+				echo '<div class="fbfpi-form-infotext">';
+				echo sprintf( __( 'Imported entries until %s', 'facebook-fanpage-import' ), $imported_until );
+				echo '</div>';
+			}
 		}
 
 		/**
-		 * Filter for adding own variables
-		 *
-		 * @param array   $template_vars Template variables unfiltered
-		 * @param stdObject $entry Facebook Entry object
-		 *
-		 * @return array $template_vars Template variables filtered
-		 * @since 1.0.0
+		 * Save Button
 		 */
-		$template_vars = apply_filters( 'fbfpi_entry_photo_vars', $template_vars, $entry );
+		submit_button();
 
-		extract( $template_vars );
-
-		$template_file = locate_fbfpi_template( 'photo.php' );
-
-		ob_start();
-		include ( $template_file );
-		$content = ob_get_clean();
-
-		$post[ 'content' ] = $content;
-
-		/**
-		 * Allow overrides.
-		 *
-		 * @param string  $content   The constructed content
-		 * @param object  $entry     The entry object
-		 * @param integer $attach_id The numeric ID of the attachment
-		 *
-		 * @return string $content The constructed content
-		 * @since 1.0.0
-		 */
-		return apply_filters( 'fbfpi_entry_photo', $content, $entry, $attach_id );
-	}
-
-	/**
-	 * Get video content
-	 *
-	 * @param $entry
-	 *
-	 * @return string
-	 * @since 1.0.0
-	 */
-	private function get_video_content( $entry ) {
-		$content = '<div class="fbfpi_video">';
-
-		// support JetPack's "facebook" shortcode for Facebook videos
-		if( false !== strpos( $entry->link, 'www.facebook.com' ) ) {
-			$content .= '[facebook_video url ="' . $entry->link . '"]';
-		} else {
-			$content .= '[embed]' . $entry->link . '[/embed]';
-		}
-		$content .= '<div class="fbfpi_text">';
-
-		if ( property_exists( $entry, 'message' ) ) {
-			$content .= '<p>' . $entry->message . '</p>';
-		}
-		$content .= '</div>';
-		$content .= '</div>';
-
-		/**
-		 * Allow overrides.
-		 *
-		 * @param string $content The constructed content
-		 * @param object $entry   The entry object
-		 *
-		 * @return string $content The constructed content
-		 * @since 1.1.0
-		 */
-		return apply_filters( 'fbfpi_entry_video', $content, $entry );
-	}
-
-	/**
-	 * Get link content
-	 *
-	 * @param $entry
-	 * @param $attach_id
-	 *
-	 * @return string
-	 * @since 1.0.0
-	 */
-	private function get_event_content( $entry, $attach_id ) {
-		$attach_url = wp_get_attachment_url( $attach_id );
-
-		if ( property_exists( $entry, 'caption' ) ) {
-			$copyright = '&copy; ' . $entry->caption;
-		} else {
-			$copyright = '&copy; ' . $entry->name;
-		}
-
-		$content  = $entry->story;
-
-		$content .= '<div class="fbfpi_link">';
-		if ( '' != $attach_url ) {
-			$content .= '<div class="fbfpi_image">';
-			$content .= '<a href="' . $entry->link . '" target="' . $this->link_target . '" title="' . $copyright . '"><img src="' . $attach_url . '" title="' . $copyright . '"></a>';
-			$content .= '</div>';
-		}
-		$content .= '<div class="fbfpi_text">';
-		$content .= '<h4><a href="' . $entry->link . '" target="' . $this->link_target . '" title="' . $copyright . '">' . $entry->name . '</a></h4>';
-
-		if ( property_exists( $entry, 'caption' ) ) {
-			$content .= '<p><small>' . $entry->caption . '</small><br /></p>';
-		}
-
-		if ( property_exists( $entry, 'description' ) ) {
-			$content .= '<p>' . $entry->description . '</p>';
-		}
-		$content .= '</div>';
-		$content .= '</div>';
-
-		/**
-		 * Allow overrides.
-		 *
-		 * @param string  $content   The constructed content
-		 * @param object  $entry     The entry object
-		 * @param integer $attach_id The numeric ID of the attachment
-		 *
-		 * @return string $content The constructed content
-		 *
-		 * @since 1.0.0
-		 */
-		return apply_filters( 'fbfpi_entry_link', $content, $entry, $attach_id );
-	}
-
-	/**
-	 * Stopping import
-	 *
-	 * @param $value
-	 *
-	 * @return mixed
-	 * @since 1.1.0
-	 */
-	public function stop_import() {
-		$value = delete_option( '_facebook_fanpage_import_next' );
-		return $value;
+		echo '</form>';
+		echo '</div>';
+		echo '</div>';
 	}
 }
 
-FacebookFanpageImportFacebookStream::instance();
+$FacebookFanpageImportAdminSettings = new FacebookFanpageImportAdminSettings();
