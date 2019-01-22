@@ -5,7 +5,7 @@
  *
  * @author  mahype, awesome.ug <very@awesome.ug>
  * @package Facebook Fanpage Import
- * @version 1.0.0-beta.7
+ * @version 1.0.1-beta.1
  * @since   1.0.0
  * @license GPL 2
  *          Copyright 2016 Awesome UG (very@awesome.ug)
@@ -77,7 +77,8 @@ class FacebookFanpageImportAdminSettings {
 	 */
 	public function register_settings() {
 		register_setting( 'fbfpi_options', 'fbfpi_fanpage_id' );
-		register_setting( 'fbfpi_options', 'fbapp_accesstoken' );
+		register_setting( 'fbfpi_options', 'fbfpi_accesstoken' );
+		register_setting( 'fbfpi_options', 'fbfpi_reimport_format' );
 		register_setting( 'fbfpi_options', 'fbfpi_fanpage_stream_language' );
 		register_setting( 'fbfpi_options', 'fbfpi_import_interval' );
 		register_setting( 'fbfpi_options', 'fbfpi_import_num' );
@@ -107,7 +108,8 @@ class FacebookFanpageImportAdminSettings {
 		do_settings_sections( 'fbfpi_options' );
 
 		$fanpage_id              = get_option( 'fbfpi_fanpage_id' );
-		$fbapp_accesstoken       = get_option( 'fbapp_accesstoken' );
+		$fbfpi_accesstoken       = get_option( 'fbfpi_accesstoken' );
+		$reimport_format	     = get_option( 'fbfpi_reimport_format' );
 		$fanpage_stream_language = get_option( 'fbfpi_fanpage_stream_language' );
 		$import_interval         = get_option( 'fbfpi_import_interval' );
 		$import_num              = get_option( 'fbfpi_import_num' );
@@ -137,12 +139,24 @@ class FacebookFanpageImportAdminSettings {
 
 
 		/**
-		 * fbapp_accesstoken
+		 * fbfpi_accesstoken
 		 */
 		echo '<div class="fbfpi-form-field">';
-		echo '<label for="fbapp_accesstoken">' . __( 'Facebook App Access Token', 'facebook-fanpage-import' ) . '</label>';
+		echo '<label for="fbfpi_accesstoken">' . __( 'Facebook App Access Token', 'facebook-fanpage-import' ) . '</label>';
 		echo '<div class="input">';
-		echo '<input type="text" name="fbapp_accesstoken" id="fbapp_accesstoken" value="' . $fbapp_accesstoken . '" /><br /><small>' . __( 'Create a Facebook App and add the aceesstoken here.', 'facebook-fanpage-import' ) . '</small>';
+		echo '<input type="text" name="fbfpi_accesstoken" id="fbfpi_accesstoken" value="' . $fbfpi_accesstoken . '" /><br /><small>' . __( 'Create a Facebook App and add the accesstoken here.', 'facebook-fanpage-import' ) . '</small>';
+		echo '</div>';
+		echo '</div>';
+		
+		
+		/**
+		 * fbfpi_reimport_format
+		 */
+		echo '<div class="fbfpi-form-field">';
+		echo '<label for="fbfpi_reimport_format">' . __( 'Format of Exported WordPress Posts', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
+		echo '<textarea name="fbfpi_reimport_format" id="fbfpi_reimport_format">'. $reimport_format . '</textarea><br /><small>' . __( 'The format of posts exported from wordpress to facebook to avoid re-imports.' ) . '</small>';
+		echo '<br /><small>' . __( 'Use #post_title and #post_content as placeholders.', 'facebook-fanpage-import' ) . '</small>';
 		echo '</div>';
 		echo '</div>';
 
