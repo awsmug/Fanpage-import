@@ -5,7 +5,7 @@
  *
  * @author  mahype, awesome.ug <very@awesome.ug>
  * @package Facebook Fanpage Import
- * @version 1.0.0-beta.7
+ * @version 1.0.0-beta.8
  * @since   1.0.0
  * @license GPL 2
  *          Copyright 2016 Awesome UG (very@awesome.ug)
@@ -124,7 +124,7 @@ class FacebookFanpageImportFacebookStream {
 		$this->fpc = new FacebookFanpageConnect( $this->page_id, '', get_locale() );
 
 		if ( '' == $this->page_id ) {
-			FacebookFanpageImport::notice( sprintf( __( '<a href="%s">Fanpage ID have to be provided.</a>', 'facebook-fanpage-import' ), admin_url( 'tools.php?page=fanpage-import/components/admin/settings.php' ) ), 'error' );
+			FacebookFanpageImport::notice( sprintf( '<a href="%s">'.__( 'Fanpage ID has to be provided', 'facebook-fanpage-import' ).'</a>', admin_url( 'tools.php?page=facebook-fanpage-import/components/admin/settings.php' ) ), 'error' );
 		}
 
 		if ( '' == $this->stream_language ) {
@@ -219,7 +219,7 @@ class FacebookFanpageImportFacebookStream {
 
 				$entry = $this->fpc->get_id( $entry->id, array( 'message', 'story', 'created_time', 'from', 'full_picture', 'parent_id', 'attachments{media_type,description,unshimmed_url,title,target{id}}' ) );
 
-				if( ! in_array( $entry->type, array( 'link', 'photo', 'video', 'status', 'event' ) ) ) {
+				if( ! in_array( $entry->type, array( 'link', 'photo', 'album', 'video', 'status', 'event' ) ) ) {
 					$skip_unknown_count ++;
 					FacebookFanpageImport::log( 'Skipped:' .chr(13) . print_r( $entry, true ) );
 					continue;
@@ -235,7 +235,12 @@ class FacebookFanpageImportFacebookStream {
 
 				$entry->message = $this->replace_urls_by_links( $entry->message );
 
-				$post_id = $this->create_post( $post_title, $post_excerpt, $post_date );
+				// set category
+				if ( 'none' !== $this->term_id ) {
+					$post_category = array( intval( $this->term_id ) );
+				}
+				
+				$post_id = $this->create_post( $post_title, $post_excerpt, $post_content, $post_category, $post_date );	// insert post with category & content
 
 				$post = get_post( $post_id );
 
@@ -256,7 +261,7 @@ class FacebookFanpageImportFacebookStream {
 						break;
 
 					case 'status':
-						$post->post_content = $entry->message;
+						// post_content already set
 
 						if ( ! empty( $attach_id ) ) {
 							set_post_thumbnail( $post_id, $attach_id );
@@ -278,8 +283,9 @@ class FacebookFanpageImportFacebookStream {
 							set_post_thumbnail( $post_id, $attach_id );
 						}
 
+						break;
+
 					case 'album':
-						
 						$photo_entry = $this->fpc->get_id( $entry->id, array( 'attachments{media_type,subattachments}' ) );
 						foreach ($photo_entry->photos as $photodata) {
 							$picture_url = $photodata->media->image->src;
@@ -291,9 +297,7 @@ class FacebookFanpageImportFacebookStream {
 							$post->post_content .= $this->get_photo_content( $temp_entry, $attach_id );
 						}
 						unset($temp_entry);
-						
-						set_post_format($post_id, 'gallery');
-						
+
 						break;
 
 					case 'video':
@@ -556,6 +560,7 @@ class FacebookFanpageImportFacebookStream {
 			$post_excerpt = $entry->description;
 		}else if ( property_exists( $entry, 'message' ) ) {
 			$post_excerpt = $entry->message;
+
  		}
 
 		/**
@@ -665,9 +670,9 @@ class FacebookFanpageImportFacebookStream {
 	 * @since 1.0.0
 	 */
 	private function replace_urls_by_links( $content ) {
-		$content = preg_replace( '@(https?://([-\w.]+[-\w])+(:\d+)?(/([\w-.~:/?#\[\]\@!$&\'()*+,;=%]*)?)?)@', '<a href="$1" target="_blank">$1</a>', $content );
+		$new_content = preg_replace( '|((https?://)?([\d\w\.-]+\.[\w\.]{2,6})[^\s\]\[\<\>]*/?)|i', '<a href="$1" target="_blank">$3</a>', $content );
 
-		return $content;
+		return ($new_content) ?? $content;
 	}
 
 	/**
@@ -680,16 +685,18 @@ class FacebookFanpageImportFacebookStream {
 	 * @return int|WP_Error
 	 * @since 1.0.0
 	 */
-	private function create_post( $post_title, $post_excerpt, $post_date ) {
+	private function create_post( $post_title, $post_excerpt, $post_content, $post_category, $post_date ) { //EDIT: ADD $post_content, $post_category
 		$post = array(
 			'comment_status' => 'closed', // 'closed' means no comments.
 			'ping_status'    => 'open', // 'closed' means pingbacks or trackbacks turned off
 			'post_date'      => $post_date,
 			'post_status'    => $this->post_status,
-			'post_title'     => $post_title,
+			'post_title'     => ($post_title) ?? ' ', // title should not be empty
 			'post_type'      => $this->post_type,
 			'post_excerpt'   => $post_excerpt,
-			'post_author'    => $this->author_id
+			'post_author'    => $this->author_id,
+			'post_content'	 => $post_content,
+			'post_category'  => $post_category
 		);
 
 		return wp_insert_post( $post );
@@ -756,11 +763,7 @@ class FacebookFanpageImportFacebookStream {
 	private function get_link_content( $entry, $attach_id ) {
 		$attach_url = wp_get_attachment_url( $attach_id );
 
-		if ( property_exists( $entry, 'caption' ) ) {
-			$copyright = '&copy; ' . $entry->caption . ' - ' . $entry->name;
-		} else {
-			$copyright = '&copy; ' . $entry->name;
-		}
+		$copyright = '&copy; ' . $entry->title;
 
 		$content = $entry->message;
 		$content .= '<div class="fbfpi_link">';
@@ -770,10 +773,10 @@ class FacebookFanpageImportFacebookStream {
 			$content .= '</div>';
 		}
 		$content .= '<div class="fbfpi_text">';
-		$content .= '<h4><a href="' . $entry->link . '" target="' . $this->link_target . '" title="' . $copyright . '">' . $entry->name . '</a></h4>';
+		$content .= '<h4><a href="' . $entry->link . '" target="' . $this->link_target . '" title="' . $copyright . '">' . $entry->title . '</a></h4>';
 
-		if ( property_exists( $entry, 'caption' ) ) {
-			$content .= '<p><small>' . $entry->caption . '</small><br /></p>';
+		if ( property_exists( $entry, 'title' ) ) {
+			$content .= '<p><small>' . $entry->title . '</small><br /></p>';
 		}
 
 		if ( property_exists( $entry, 'description' ) ) {
@@ -905,11 +908,7 @@ class FacebookFanpageImportFacebookStream {
 	private function get_event_content( $entry, $attach_id ) {
 		$attach_url = wp_get_attachment_url( $attach_id );
 
-		if ( property_exists( $entry, 'caption' ) ) {
-			$copyright = '&copy; ' . $entry->caption;
-		} else {
 		$copyright = '&copy; ' . $entry->title;
-		}
 
 		$content  = $entry->story;
 
