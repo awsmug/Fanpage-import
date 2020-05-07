@@ -126,7 +126,6 @@ class FacebookFanpageImportAdminSettings {
 		$fbfpi_accesstoken_expire= get_option( 'fbfpi_accesstoken_expire' );
 		$fbfpi_appid             = get_option( 'fbfpi_appid' );
 		$fbfpi_appsecret         = get_option( 'fbfpi_appsecret' );
-		$reimport_format	     = get_option( 'fbfpi_reimport_format' );
 		$fanpage_stream_language = get_option( 'fbfpi_fanpage_stream_language' );
 		$import_interval         = get_option( 'fbfpi_import_interval' );
 		$import_num              = get_option( 'fbfpi_import_num' );
