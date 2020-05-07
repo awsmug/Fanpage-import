@@ -5,7 +5,7 @@
  *
  * @author  mahype, awesome.ug <very@awesome.ug>
  * @package Facebook Fanpage Import
- * @version 1.0.0-beta.7
+ * @version 1.0.1-beta.8
  * @since   1.0.0
  * @license GPL 2
  *          Copyright 2016 Awesome UG (very@awesome.ug)
@@ -25,10 +25,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once __DIR__ . '/../../assets/php-graph-sdk/src/Facebook/autoload.php';
+
 class FacebookFanpageImportAdminSettings {
+
 	var $name;
 	var $errors = array();
 	var $notices = array();
+
 
 	/**
 	 * Initializes the Component.
@@ -38,9 +42,15 @@ class FacebookFanpageImportAdminSettings {
 	function __construct() {
 		$this->name = get_class( $this );
 
+		add_action( 'init', array( $this, 'start_session' ) );
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 		add_action( 'admin_init', array( $this, 'import' ) );
+		
+	}
+
+	public function start_session() {
+		session_start();
 	}
 
 	public function import() {
@@ -77,7 +87,10 @@ class FacebookFanpageImportAdminSettings {
 	 */
 	public function register_settings() {
 		register_setting( 'fbfpi_options', 'fbfpi_fanpage_id' );
-		register_setting( 'fbfpi_options', 'fbapp_accesstoken' );
+		register_setting( 'fbfpi_options', 'fbfpi_appid' );
+		register_setting( 'fbfpi_options', 'fbfpi_appsecret' );
+		register_setting( 'fbfpi_options', 'fbfpi_accesstoken' );
+		register_setting( 'fbfpi_options', 'fbfpi_accesstoken_expire' );
 		register_setting( 'fbfpi_options', 'fbfpi_fanpage_stream_language' );
 		register_setting( 'fbfpi_options', 'fbfpi_import_interval' );
 		register_setting( 'fbfpi_options', 'fbfpi_import_num' );
@@ -96,6 +109,7 @@ class FacebookFanpageImportAdminSettings {
 	 * @since 1.0.0
 	 */
 	public function admin_page() {
+
 		echo '<div class="wrap">';
 
 		echo '<div id="icon-options-general" class="icon32 icon32-posts-post"></div>';
@@ -106,8 +120,13 @@ class FacebookFanpageImportAdminSettings {
 		settings_fields( 'fbfpi_options' );
 		do_settings_sections( 'fbfpi_options' );
 
+
 		$fanpage_id              = get_option( 'fbfpi_fanpage_id' );
-		$fbapp_accesstoken       = get_option( 'fbapp_accesstoken' );
+		$fbfpi_accesstoken       = get_option( 'fbfpi_accesstoken' );
+		$fbfpi_accesstoken_expire= get_option( 'fbfpi_accesstoken_expire' );
+		$fbfpi_appid             = get_option( 'fbfpi_appid' );
+		$fbfpi_appsecret         = get_option( 'fbfpi_appsecret' );
+		$reimport_format	     = get_option( 'fbfpi_reimport_format' );
 		$fanpage_stream_language = get_option( 'fbfpi_fanpage_stream_language' );
 		$import_interval         = get_option( 'fbfpi_import_interval' );
 		$import_num              = get_option( 'fbfpi_import_num' );
@@ -118,12 +137,36 @@ class FacebookFanpageImportAdminSettings {
 		$insert_link_target      = get_option( 'fbfpi_insert_link_target' );
 		$insert_post_format      = get_option( 'fbfpi_insert_post_format' );
 		$deactivate_css          = get_option( 'fbfpi_deactivate_css' );
+		
+		if ( ($fbfpi_appid == '') || ($fbfpi_appsecret == '') ) {
+			FacebookFanpageImport::notice( sprintf( '<a href="%s">'.__( 'App ID and App Secret have to be provided', 'facebook-fanpage-import' ).'</a>', admin_url( 'tools.php?page=facebook-fanpage-import/components/admin/settings.php' ) ), 'error' );
+
+		}
+		if ( ($fbfpi_accesstoken == '') ) {
+			FacebookFanpageImport::notice( sprintf( '<a href="%s">'.__( 'Facebook access token has to be provided', 'facebook-fanpage-import' ).'</a>', admin_url( 'tools.php?page=facebook-fanpage-import/components/admin/settings.php' ) ), 'error' );
+		}
+		if ( (($fbfpi_accesstoken_expire != '0') && ((int)$fbfpi_accesstoken_expire-time() < 604800 ) ) ) {
+			FacebookFanpageImport::notice( sprintf( '<a href="%s">'.__( 'Your Facebook access token will expire in a few days!', 'facebook-fanpage-import' ).'</a>', admin_url( 'tools.php?page=facebook-fanpage-import/components/admin/settings.php' ) ), 'error' );
+		}
+		
 
 		$imported_until = '';
 		parse_str( get_option( '_facebook_fanpage_import_next', false ), $opt );
 		if( ! empty( $opt['until'] ) ) {
 			$imported_until = date_i18n( get_option( 'date_format' ) . ' - ' . get_option( 'time_format' ), $opt[ 'until' ] );
 		}
+		if ((!empty($fbfpi_appid)) && (!empty($fbfpi_appsecret))) {
+		$fb = new \Facebook\Facebook([
+		  'app_id' => $fbfpi_appid,
+		  'app_secret' => $fbfpi_appsecret,
+		  'default_graph_version' => 'v7.0'
+		]);
+		
+		$helper = $fb->getRedirectLoginHelper();
+		$permissions = [];
+		$loginUrl = $helper->getLoginUrl( plugin_dir_url(__FILE__) . 'facebook-callback.php', $permissions);
+		} else $loginUrl = "javascript:void(0)";
+		
 
 		/**
 		 * Fanpage ID
@@ -134,15 +177,47 @@ class FacebookFanpageImportAdminSettings {
 		echo '<input type="text" name="fbfpi_fanpage_id" id="fbfpi_fanpage_id" value="' . $fanpage_id . '" /><br /><small>' . __( 'Copy the fanpage ID from your Facebook fanpage info page.', 'facebook-fanpage-import' ) . '</small>';
 		echo '</div>';
 		echo '</div>';
+		
+		/**
+		 * App ID
+		 */
+		echo '<div class="fbfpi-form-field">';
+		echo '<label for="fbfpi_appid">' . __( 'App ID', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
+		echo '<input type="text" name="fbfpi_appid" id="fbfpi_appid" value="' . $fbfpi_appid . '" /><br /><small>' . __( 'Paste the app ID from your Facebook App Settings.', 'facebook-fanpage-import' ) . '</small>';
+		echo '</div>';
+		echo '</div>';
+		
+		/**
+		 * App Secret
+		 */
+		echo '<div class="fbfpi-form-field">';
+		echo '<label for="fbfpi_appsecret">' . __( 'App Secret', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
+		echo '<input type="text" name="fbfpi_appsecret" id="fbfpi_appsecret" value="' . $fbfpi_appsecret . '" /><br /><small>' . __( 'Paste the app secret from your Facebook App Settings.', 'facebook-fanpage-import' ) . '</small>';
+		echo '</div>';
+		echo '</div>';
 
 
 		/**
-		 * fbapp_accesstoken
+		 * fbfpi_accesstoken
 		 */
 		echo '<div class="fbfpi-form-field">';
-		echo '<label for="fbapp_accesstoken">' . __( 'Facebook App Access Token', 'facebook-fanpage-import' ) . '</label>';
+		echo '<label for="fbfpi_accesstoken">' . __( 'Facebook App Access Token', 'facebook-fanpage-import' ) . '</label>';
 		echo '<div class="input">';
-		echo '<input type="text" name="fbapp_accesstoken" id="fbapp_accesstoken" value="' . $fbapp_accesstoken . '" /><br /><small>' . __( 'Create a Facebook App and add the aceesstoken here.', 'facebook-fanpage-import' ) . '</small>';
+		echo '<textarea name="fbfpi_accesstoken" id="fbfpi_accesstoken" rows="9">'. $fbfpi_accesstoken . '</textarea><br /><small>' . __( 'Create a Facebook App and add the accesstoken here  (will expire after certain time).', 'facebook-fanpage-import' ) . '</small>';
+		echo '<br/><a href="' . $loginUrl . '">' . __( 'Login with Facebook to get a new AccessToken', 'facebook-fanpage-import' ). '</a>';
+		echo '<br/><small>' . __( 'You need to be a Facebook developer, admin of the Facebook App with the ID above and admin of the Facebook page.', 'facebook-fanpage-import' ). '</small>';
+		echo '</div>';
+		echo '</div>';
+
+		/**
+		 * fbfpi_accesstoken Expire Date
+		 */
+		echo '<div class="fbfpi-form-field">';
+		echo '<label for="fbfpi_accesstoken_expire">' . __( 'Access Token Expiration', 'facebook-fanpage-import' ) . '</label>';
+		echo '<div class="input">';
+		echo '<input type="text" name="fbfpi_accesstoken_expire" id="fbfpi_accesstoken_expire" disabled="disabled" value="' . (($fbfpi_accesstoken_expire > 0) ? date("Y-m-d H:i:s", $fbfpi_accesstoken_expire) : __( 'never', 'facebook-fanpage-import' )) . '" /><br /><small>' . __( 'Fomat is Y-m-d H:i:s, UTC. If you have undergone the Facebook review, your token may ever expire.', 'facebook-fanpage-import' ) . '</small>';
 		echo '</div>';
 		echo '</div>';
 
