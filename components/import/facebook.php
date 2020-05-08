@@ -86,7 +86,7 @@ class FacebookFanpageConnect {
 	 */
 	function __construct( $page_id, $access_token = '', $locale = 'en_EN' ) {
 		$this->access_token = get_option( 'fbfpi_accesstoken' );
-		$this->graph_url    = 'https://graph.facebook.com/v6.0'; // no ending "/"
+		$this->graph_url    = 'https://graph.facebook.com/v7.0'; // no ending "/"
 		$this->locale       = $locale;
 		$this->app_id       = get_option( 'fbfpi_appid' );
 		$this->app_secret   = get_option( 'fbfpi_appsecret' );
