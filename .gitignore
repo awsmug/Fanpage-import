@@ -54,3 +54,4 @@ temp/
 
 
 tests/_output/*
+vendor/*
