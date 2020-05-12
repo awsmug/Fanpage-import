@@ -1,6 +1,6 @@
 # Facebook Fanpage import
 
-Stable tag: 1.0.0-beta.6
+Stable tag: 1.0.0-beta.8
 
 Easy import Facebook Fanpage messages to your WordPress.
 
